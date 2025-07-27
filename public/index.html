@@ -1302,18 +1302,41 @@
                     if (!item) return;
                     const trendData = allData.filter(d => 
                         d.institute === item.institute && d.branch === item.branch && d.category === item.category && d.quota === item.quota && d.seat_type === item.seat_type
-                    ).sort((a, b) => a.year - b.year);
+                    ).sort((a, b) => a.year - b.year || a.round - b.round);
                     const ranks = trendData.map(d => d.closing_rank).filter(r => r !== null);
+                    const years = trendData.map(d => d.year).filter((_, i) => trendData[i].closing_rank !== null);
                     const avgRank = ranks.length ? Math.round(ranks.reduce((a, b) => a + b, 0) / ranks.length) : 'N/A';
                     const bestRank = ranks.length ? Math.min(...ranks) : 'N/A';
-                    const recentRank = item.closing_rank ?? 'N/A';
-                    let trend = { text: 'Stable', color: 'text-gray-500' };
-                    if (ranks.length >= 2) {
-                        const first = ranks[0];
-                        const last = ranks[ranks.length - 1];
-                        if (last < first) trend = { text: 'Getting More Competitive ▲', color: 'text-green-500' };
-                        else if (last > first) trend = { text: 'Getting Less Competitive ▼', color: 'text-red-500' };
+                    // --- Recent Rank (most recent year/round) ---
+                    let recentRank = 'N/A', recentYear = '', recentRound = '';
+                    if (trendData.length) {
+                        const mostRecent = trendData.reduce((a, b) => {
+                            if (b.year > a.year) return b;
+                            if (b.year === a.year && b.round > a.round) return b;
+                            return a;
+                        }, trendData[0]);
+                        recentRank = mostRecent.closing_rank ?? 'N/A';
+                        recentYear = mostRecent.year;
+                        recentRound = mostRecent.round;
                     }
+                    // --- Linear Regression Slope Trend ---
+                    function calculateTrendSlope(years, ranks) {
+                        const n = years.length;
+                        if (n < 2) return 0;
+                        const meanX = years.reduce((a, b) => a + b, 0) / n;
+                        const meanY = ranks.reduce((a, b) => a + b, 0) / n;
+                        let num = 0, den = 0;
+                        for (let i = 0; i < n; i++) {
+                            num += (years[i] - meanX) * (ranks[i] - meanY);
+                            den += (years[i] - meanX) ** 2;
+                        }
+                        return den === 0 ? 0 : num / den;
+                    }
+                    const slope = calculateTrendSlope(years, ranks);
+                    let trend = { text: 'Stable', color: 'text-gray-500' };
+                    if (slope < -10) trend = { text: 'Getting More Competitive ▲', color: 'text-green-500' };
+                    else if (slope > 10) trend = { text: 'Getting Less Competitive ▼', color: 'text-red-500' };
+                    // --- END Linear Regression Slope Trend ---
                     const column = document.createElement('div');
                     column.className = 'bg-gray-100 p-4 rounded-lg';
                     column.innerHTML = `
@@ -1322,7 +1345,7 @@
                         <canvas id="compare-chart-${index}"></canvas>
                         <div class="mt-4 space-y-2 text-sm">
                             <p><strong>Category:</strong> ${item.category}</p>
-                            <p><strong>Recent Rank (${item.year}):</strong> ${recentRank}</p>
+                            <p><strong>Recent Rank (${recentYear}${recentRound ? ', Round ' + recentRound : ''}):</strong> ${recentRank}</p>
                             <p><strong>Avg. Rank:</strong> ${avgRank}</p>
                             <p><strong>Best Rank:</strong> ${bestRank}</p>
                             <p><strong>Trend:</strong> <span class="${trend.color}">${trend.text}</span></p>
@@ -1394,5 +1417,13 @@
             initializeApp();
         });
     </script>
+
+    <footer class="bg-white border-t border-gray-200 mt-12 py-6 text-center text-sm text-gray-500">
+      <div>
+        &copy; 2024 WBJEE College/Branch Finder. Not affiliated with WBJEEB.<br>
+        Created by <a href="https://www.reddit.com/user/rizzz6" class="text-blue-600 hover:underline" target="_blank" rel="noopener">rizzz6</a><br>
+        Join our community, <a href="https://www.reddit.com/r/wbjee" class="text-blue-600 hover:underline" target="_blank" rel="noopener">r/wbjee</a>
+      </div>
+    </footer>
 </body>
 </html>
