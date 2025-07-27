@@ -198,7 +198,6 @@
                 <div class="flex flex-wrap justify-end gap-4">
                     <button id="export-shortlist-btn" class="px-5 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Export Shortlist</button>
                     <button id="share-shortlist-btn" class="px-5 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Share Shortlist</button>
-                    <button id="export-csv-btn" class="px-5 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Export CSV</button>
                     <button id="copy-link-button" class="px-5 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Copy Link</button>
                     <button id="reset-button" class="px-5 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Reset</button>
                 </div>
@@ -388,7 +387,6 @@
             const searchButton = document.getElementById('search-button');
             const resetButton = document.getElementById('reset-button');
             const copyLinkButton = document.getElementById('copy-link-button');
-            const exportCsvBtn = document.getElementById('export-csv-btn');
             const entriesPerPageSelect = document.getElementById('entries-per-page');
             const prevPageButton = document.getElementById('prev-page');
             const nextPageButton = document.getElementById('next-page');
@@ -465,7 +463,7 @@
             function setControlsDisabled(disabled) {
                 const controls = [
                     rankInput, searchButton, resetButton, copyLinkButton, 
-                    exportCsvBtn, entriesPerPageSelect, prevPageButton, nextPageButton,
+                    entriesPerPageSelect, prevPageButton, nextPageButton,
                     showFavoritesBtn, compareFavoritesBtn, tieringBtn
                 ];
                 controls.forEach(control => {
@@ -1094,7 +1092,6 @@
                     }
                 });
 
-                exportCsvBtn.addEventListener('click', exportToCSV);
                 entriesPerPageSelect.addEventListener('change', (e) => {
                     entriesPerPage = e.target.value === 'all' ? 'all' : Number(e.target.value);
                     currentPage = 1;
