@@ -414,6 +414,54 @@
             let rankTrendChart = null;
             let comparisonCharts = [];
 
+            // --- ID and Base64 Filter State System ---
+            const filterIdMaps = {};
+            const filterValueMaps = {};
+            filterKeys.forEach(key => {
+                filterIdMaps[key] = new Map(); // value -> id
+                filterValueMaps[key] = new Map(); // id -> value
+            });
+
+            function generateShortId(str, idx) {
+                // Simple hash + index for uniqueness
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                return (Math.abs(hash) + idx).toString(36);
+            }
+
+            function buildFilterIdMaps(data) {
+                filterKeys.forEach(key => {
+                    const uniqueValues = Array.from(new Set(data.map(item => String(item[key])))).filter(v => v && v !== 'null');
+                    uniqueValues.forEach((val, idx) => {
+                        const id = generateShortId(key + ':' + val, idx);
+                        filterIdMaps[key].set(val, id);
+                        filterValueMaps[key].set(id, val);
+                    });
+                });
+            }
+
+            function encodeFiltersToBase64() {
+                const obj = { rank: activeFilters.rank };
+                filterKeys.forEach(key => {
+                    obj[key] = activeFilters[key].map(val => filterIdMaps[key].get(val)).filter(Boolean);
+                });
+                return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+            }
+
+            function decodeFiltersFromBase64(b64) {
+                try {
+                    const obj = JSON.parse(decodeURIComponent(escape(atob(b64))));
+                    const filters = { rank: obj.rank || '' };
+                    filterKeys.forEach(key => {
+                        filters[key] = (obj[key] || []).map(id => filterValueMaps[key].get(id)).filter(Boolean);
+                    });
+                    return filters;
+                } catch {
+                    return null;
+                }
+            }
+            // --- END ID and Base64 Filter State System ---
+
             function setControlsDisabled(disabled) {
                 const controls = [
                     rankInput, searchButton, resetButton, copyLinkButton, 
@@ -455,6 +503,7 @@
                         prediction: { text: '-', order: CONFIG.PREDICTION_TIERS.length + 1 }
                     }));
                     
+                    buildFilterIdMaps(allData);
                     const allValidIds = new Set(allData.map(item => item.id));
                     favorites = new Set([...favorites].filter(id => allValidIds.has(id)));
                     saveFavorites();
@@ -813,12 +862,12 @@
             }
 
             function updateURLWithFilters() {
-                const params = new URLSearchParams();
-                if (activeFilters.rank) params.set('rank', activeFilters.rank);
+                const obj = { rank: activeFilters.rank };
                 filterKeys.forEach(key => {
-                    activeFilters[key].forEach(value => params.append(key, value));
+                    obj[key] = activeFilters[key].map(val => filterIdMaps[key].get(val)).filter(Boolean);
                 });
-                const newUrl = `${window.location.pathname}?${params.toString()}`;
+                const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+                const newUrl = `${window.location.pathname}?f=${b64}`;
                 history.pushState({ path: newUrl }, '', newUrl);
             }
 
@@ -849,13 +898,16 @@
                     }
                 }
 
-                if (params.toString()) {
-                    rankInput.value = params.get('rank') || '';
-                    updateFilterState('rank', rankInput.value);
-                    filterKeys.forEach(key => {
-                        const values = params.getAll(key);
-                        values.forEach(value => updateFilterState(key, value, true));
-                    });
+                const b64 = params.get('f');
+                if (b64) {
+                    const decoded = decodeFiltersFromBase64(b64);
+                    if (decoded) {
+                        rankInput.value = decoded.rank || '';
+                        updateFilterState('rank', rankInput.value);
+                        filterKeys.forEach(key => {
+                            if (decoded[key]) decoded[key].forEach(val => updateFilterState(key, val, true));
+                        });
+                    }
                 } else if (savedFilters) {
                     rankInput.value = savedFilters.rank || '';
                     filterKeys.forEach(key => {
