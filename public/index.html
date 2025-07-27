@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WBJEE College/Branch Finder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        th .sort-indicator {
+            display: inline-block;
+            margin-left: 5px;
+            opacity: 0.5;
+            width: 1em;
+            transition: opacity 0.2s;
+        }
+        th.sorted-asc .sort-indicator,
+        th.sorted-desc .sort-indicator {
+            opacity: 1;
+        }
+        tbody tr:hover {
+            background-color: #f3f4f6 !important;
+        }
+        .filter-panel, .modal {
+            z-index: 50;
+        }
+        .filter-panel-body::-webkit-scrollbar, .modal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .filter-panel-body::-webkit-scrollbar-track, .modal-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .filter-panel-body::-webkit-scrollbar-thumb, .modal-body::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        .filter-panel-body::-webkit-scrollbar-thumb:hover, .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        .favorite-btn {
+            cursor: pointer;
+            color: #9ca3af;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+        .favorite-btn.favorited {
+            color: #facc15;
+        }
+        .rank-confirm { background-color: rgba(74, 222, 128, 0.3); }
+        .rank-great { background-color: rgba(96, 165, 250, 0.3); }
+        .rank-good { background-color: rgba(34, 211, 238, 0.25); }
+        .rank-low { background-color: rgba(251, 191, 36, 0.25); }
+        .rank-no { background-color: rgba(248, 113, 113, 0.3); }
+
+        tr.rank-confirm td, tr.rank-great td, tr.rank-good td, tr.rank-low td, tr.rank-no td {
+            color: #111827;
+        }
+        tr.rank-confirm .institute-link, tr.rank-great .institute-link, tr.rank-good .institute-link, tr.rank-low .institute-link, tr.rank-no .institute-link {
+             color: #1d4ed8;
+        }
+        #table-body tr {
+            cursor: pointer;
+        }
+        .predictions-hidden #prediction-header,
+        .predictions-hidden .prediction-cell {
+            display: none;
+        }
+        .filter-option-hidden {
+            display: none;
+        }
+    </style>
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+</head>
+<body class="bg-[#FFFCF2] text-gray-800">
+
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+        <div class="flex items-center gap-4 bg-gray-800 p-6 rounded-lg shadow-xl">
+             <svg class="loading-spinner h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+             <span class="text-xl font-semibold text-white">Filtering...</span>
+        </div>
+    </div>
+    
+    <div id="chart-modal" class="hidden modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b border-gray-200">
+                <h3 id="chart-title" class="text-lg font-semibold text-gray-900">Rank Trend</h3>
+                <button id="close-chart-modal" class="text-gray-500 hover:text-gray-800 text-2xl" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto modal-body">
+                <canvas id="rank-trend-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div id="college-details-modal" class="hidden modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b border-gray-200">
+                <h3 id="college-details-title" class="text-lg font-semibold text-gray-900">College Details</h3>
+                <button id="close-college-details-modal" class="text-gray-500 hover:text-gray-800 text-2xl" aria-label="Close modal">&times;</button>
+            </div>
+            <div id="college-details-body" class="p-6 overflow-y-auto modal-body">
+            </div>
+        </div>
+    </div>
+    
+    <div id="comparison-modal" class="hidden modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Shortlist Comparison</h3>
+                <button id="close-comparison-modal" class="text-gray-500 hover:text-gray-800 text-2xl" aria-label="Close modal">&times;</button>
+            </div>
+            <div id="comparison-body" class="p-6 overflow-y-auto modal-body grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="relative text-center mb-8 bg-gradient-to-r from-green-50 to-blue-50 py-8 px-6 rounded-lg shadow-sm border border-green-100">
+            <h1 class="text-3xl md:text-4xl font-bold" style="color: #FF4500;">WBJEE College/Branch Finder</h1>
+            <p class="text-gray-600 mt-2">Predict potential colleges and branches based on your rank.</p>
+            <button id="open-help-modal" class="absolute top-4 right-4 w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center text-gray-600 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2" aria-label="Help">?</button>
+        </header>
+
+        <section class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <div class="mb-4">
+                <label for="rank" class="block text-lg font-semibold text-gray-800 mb-2">Your Rank</label>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="number" id="rank" placeholder="Enter your WBJEE rank" min="1" class="w-full sm:w-auto sm:max-w-xs p-3 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 focus:border-blue-600 text-gray-900 placeholder-gray-400 text-base">
+                    <button id="search-button" class="w-full sm:w-auto px-5 py-2 text-sm font-medium text-white rounded-md shadow-sm hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-[#4064BF]" aria-label="Search colleges">Search</button>
+            </div>
+            </div>
+            <h2 class="text-base font-semibold mb-2 text-gray-700">Filters</h2>
+            <div class="flex flex-col sm:flex-row sm:flex-wrap gap-3 mb-6">
+                <div id="institute-filter" class="relative filter-dropdown"></div>
+                <div id="branch-filter" class="relative filter-dropdown"></div>
+                <div id="category-filter" class="relative filter-dropdown"></div>
+                <div id="year-filter" class="relative filter-dropdown"></div>
+                <div id="round-filter" class="relative filter-dropdown"></div>
+                <div id="quota-filter" class="relative filter-dropdown"></div>
+                <div id="seat_type-filter" class="relative filter-dropdown"></div>
+            </div>
+            <div class="flex items-center flex-nowrap gap-4 mt-4">
+                <div id="tiering-toggle-container" class="flex items-center gap-2">
+                    <button id="tiering-btn" type="button" class="px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 bg-[#00c61c]">
+                        Show Predictions
+                    </button>
+                    <button id="legend-popover-btn" class="sm:hidden flex items-center px-4 py-2 text-sm font-medium bg-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2" aria-label="Show legend" type="button">
+                        Legend
+                    </button>
+                </div>
+                <div id="highlight-legend" class="hidden sm:flex flex-1 min-w-0 flex-nowrap items-center gap-x-3 text-sm overflow-x-auto pb-2">
+                    <span class="font-semibold shrink-0 mr-1">Legend:</span>
+                    <span class="px-2.5 py-1 rounded-md bg-green-400/30 text-green-900 font-medium shrink-0">Confirm</span>
+                    <span class="px-2.5 py-1 rounded-md bg-blue-400/30 text-blue-900 font-medium shrink-0">Great</span>
+                    <span class="px-2.5 py-1 rounded-md bg-cyan-400/25 text-cyan-900 font-medium shrink-0">Good</span>
+                    <span class="px-2.5 py-1 rounded-md bg-amber-400/25 text-amber-900 font-medium shrink-0">Low</span>
+                    <span class="px-2.5 py-1 rounded-md bg-red-400/30 text-red-900 font-medium shrink-0">No Chance</span>
+                </div>
+            </div>
+            <!-- Mobile legend modal -->
+            <div id="legend-modal" class="sm:hidden fixed inset-0 z-50 bg-black bg-opacity-30 flex items-center justify-center hidden">
+                <div class="bg-white rounded-lg shadow-xl p-6 w-11/12 max-w-xs relative">
+                    <button id="close-legend-modal" class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl" aria-label="Close legend">&times;</button>
+                    <div class="flex flex-col gap-2 text-sm">
+                        <span class="font-semibold mb-2">Legend:</span>
+                        <span class="px-2.5 py-1 rounded-md bg-green-400/30 text-green-900 font-medium">Confirm</span>
+                        <span class="px-2.5 py-1 rounded-md bg-blue-400/30 text-blue-900 font-medium">Great</span>
+                        <span class="px-2.5 py-1 rounded-md bg-cyan-400/25 text-cyan-900 font-medium">Good</span>
+                        <span class="px-2.5 py-1 rounded-md bg-amber-400/25 text-amber-900 font-medium">Low</span>
+                        <span class="px-2.5 py-1 rounded-md bg-red-400/30 text-red-900 font-medium">No Chance</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-t border-gray-200 pt-6 mt-6">
+                 <div class="flex items-center gap-4">
+                    <button id="show-favorites-btn" class="px-5 py-2 text-sm font-medium text-white rounded-md shadow-sm hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center gap-2 bg-[#00c61c]">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                        <span id="favorites-btn-text">Show Shortlist</span>
+                        <span id="favorites-count-badge" class="ml-1 bg-yellow-300 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full hidden"></span>
+                    </button>
+                    <button id="compare-favorites-btn" class="hidden px-5 py-2 text-sm font-medium text-white rounded-md shadow-sm hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed bg-[#4064BF]" disabled>Compare Selected</button>
+                </div>
+                <div class="flex flex-wrap justify-end gap-4">
+                    <button id="export-shortlist-btn" class="px-5 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Export Shortlist</button>
+                    <button id="share-shortlist-btn" class="px-5 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Share Shortlist</button>
+                    <button id="export-csv-btn" class="px-5 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Export CSV</button>
+                    <button id="copy-link-button" class="px-5 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Copy Link</button>
+                    <button id="reset-button" class="px-5 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Reset</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white p-6 rounded-lg shadow-md">
+             <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                <h3 id="results-count" class="text-xl font-semibold text-gray-900 flex items-center gap-3">
+                    <svg class="loading-spinner h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span>Loading data...</span>
+                </h3>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <label for="entries-per-page" class="text-sm font-medium text-gray-700">Show</label>
+                        <select id="entries-per-page" class="bg-white border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="50" selected>50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                            <option value="all">All</option>
+                        </select>
+                    </div>
+                    <div id="pagination-nav" class="flex items-center gap-2">
+                        <button id="prev-page" class="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">&lt; Prev</button>
+                        <span id="page-info" class="text-sm text-gray-700"></span>
+                        <button id="next-page" class="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">Next &gt;</button>
+                    </div>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table id="results-table" class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th id="fav-header" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Fav</th>
+                            <th id="prediction-header" data-column="prediction" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Prediction <span class="sort-indicator"></span></th>
+                            <th data-column="institute" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Institute <span class="sort-indicator"></span></th>
+                            <th data-column="branch" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Branch <span class="sort-indicator"></span></th>
+                            <th data-column="category" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Category <span class="sort-indicator"></span></th>
+                            <th data-column="opening_rank" data-type="number" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Opening Rank <span class="sort-indicator"></span></th>
+                            <th data-column="closing_rank" data-type="number" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Closing Rank <span class="sort-indicator"></span></th>
+                            <th data-column="year" data-type="number" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Year <span class="sort-indicator"></span></th>
+                            <th data-column="round" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Round <span class="sort-indicator"></span></th>
+                            <th data-column="quota" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Quota <span class="sort-indicator"></span></th>
+                            <th data-column="seat_type" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Seat Type <span class="sort-indicator"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="bg-white divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <div id="input-error-modal" class="fixed inset-0 z-50 bg-black bg-opacity-30 flex items-center justify-center hidden">
+  <div class="bg-white rounded-lg shadow-xl p-6 w-11/12 max-w-xs relative text-center">
+    <div class="mb-4">
+      <span class="text-red-600 text-2xl font-bold">!</span>
+    </div>
+    <div id="input-error-message" class="text-gray-800 text-base mb-6">Please enter your WBJEE rank.</div>
+    <button id="close-input-error-modal" class="px-5 py-2 text-sm font-medium text-white rounded-md bg-[#4064BF] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2">OK</button>
+  </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="fixed inset-0 z-50 bg-black bg-opacity-30 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-11/12 max-w-2xl max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Help & Guide</h3>
+                <button id="close-help-modal" class="text-gray-500 hover:text-gray-800 text-2xl" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="font-semibold text-lg mb-2">How to Use</h4>
+                        <ol class="list-decimal list-inside space-y-2 text-sm">
+                            <li>Enter your WBJEE rank in the input field</li>
+                            <li>Click "Search" to find matching colleges</li>
+                            <li>Use filters to narrow down results</li>
+                            <li>Click the star (★) to add colleges to your shortlist</li>
+                            <li>Click on any row to view rank trends</li>
+                            <li>Click on college names to see detailed information</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-lg mb-2">Predictions</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="w-4 h-4 bg-green-400/30 rounded"></span>
+                                <span><strong>Confirm:</strong> Your rank is better than opening rank</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-4 h-4 bg-blue-400/30 rounded"></span>
+                                <span><strong>Great:</strong> 75% of closing rank</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-4 h-4 bg-cyan-400/25 rounded"></span>
+                                <span><strong>Good:</strong> 95% of closing rank</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-4 h-4 bg-amber-400/25 rounded"></span>
+                                <span><strong>Low:</strong> 125% of closing rank</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-4 h-4 bg-red-400/30 rounded"></span>
+                                <span><strong>No Chance:</strong> Beyond 125% of closing rank</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JSON Error Overlay -->
+    <div id="json-error-overlay" class="fixed inset-0 z-50 bg-black bg-opacity-30 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-11/12 max-w-md relative text-center">
+            <div class="mb-4">
+                <span class="text-red-600 text-2xl font-bold">!</span>
+            </div>
+            <div class="text-gray-800 text-base mb-6">
+                <p class="font-semibold mb-2">Data Loading Error</p>
+                <p>Failed to load college data. Please check your internet connection and try again.</p>
+            </div>
+            <button id="retry-load-btn" class="px-5 py-2 text-sm font-medium text-white rounded-md bg-[#4064BF] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2">Retry</button>
+        </div>
+    </div>
+
+    <script>
+        // Basic protection against copying
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+        document.addEventListener('selectstart', (e) => e.preventDefault());
+        document.addEventListener('keydown', (e) => {
+            // Disable Ctrl+A, Ctrl+C, Ctrl+S, F12, Ctrl+U
+            if ((e.ctrlKey && (e.key === 'a' || e.key === 'c' || e.key === 's' || e.key === 'u')) || 
+                e.key === 'F12' || e.key === 'F5') {
+                e.preventDefault();
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if Chart.js is available
+            if (typeof Chart === 'undefined') {
+                console.warn('Chart.js not loaded. Charts will be disabled.');
+            }
+
+            const CONFIG = {
+                JSON_FILE_PATH: '/api/data', // Changed to API endpoint
+                PREDICTION_TIERS: [
+                    { name: 'Confirm',   check: 'opening_rank', color: 'text-green-500', class: 'rank-confirm' },
+                    { name: 'Great',     threshold: 0.75, color: 'text-blue-500',  class: 'rank-great' },
+                    { name: 'Good',      threshold: 0.95, color: 'text-cyan-500',  class: 'rank-good' },
+                    { name: 'Low',       threshold: 1.25, color: 'text-amber-500', class: 'rank-low' },
+                    { name: 'No Chance', threshold: Infinity, color: 'text-red-500',   class: 'rank-no' }
+                ],
+                RANK_DISPLAY_LIMITS: [
+                    { userRankUpTo: 1000,   startRank: 1,    base: 0,     multiplier: 4.0 },
+                    { userRankUpTo: 5000,   startRank: 1001, base: 4000,  multiplier: 2.5 },
+                    { userRankUpTo: 15000,  startRank: 5001, base: 14000, multiplier: 1.75 },
+                    { userRankUpTo: 40000,  startRank: 15001,base: 31500, multiplier: 1.5 },
+                    { userRankUpTo: Infinity, startRank: 40001,base: 69000, multiplier: 1.2 }
+                ],
+                COMPARISON_MIN: 2,
+                COMPARISON_MAX: 4,
+            };
+
+            const filterKeys = ['institute', 'branch', 'category', 'year', 'round', 'quota', 'seat_type'];
+            
+            let allData = [];
+            let filteredData = [];
+            let favorites = new Set();
+            let isShowingFavorites = false;
+            let isTieringEnabled = true;
+            let sortState = { column: null, direction: 'none', type: 'string' };
+            let currentPage = 1;
+            let entriesPerPage = 50;
+
+            let activeFilters = {};
+            const initializeFilters = () => {
+                activeFilters = { rank: '' };
+                filterKeys.forEach(key => activeFilters[key] = []);
+            };
+
+            const rankInput = document.getElementById('rank');
+            const tableBody = document.getElementById('table-body');
+            const resultsCount = document.getElementById('results-count');
+            const tableHeaders = document.querySelectorAll('#results-table th');
+            const favHeader = document.getElementById('fav-header');
+            const searchButton = document.getElementById('search-button');
+            const resetButton = document.getElementById('reset-button');
+            const copyLinkButton = document.getElementById('copy-link-button');
+            const exportCsvBtn = document.getElementById('export-csv-btn');
+            const entriesPerPageSelect = document.getElementById('entries-per-page');
+            const prevPageButton = document.getElementById('prev-page');
+            const nextPageButton = document.getElementById('next-page');
+            const pageInfoSpan = document.getElementById('page-info');
+            const paginationNav = document.getElementById('pagination-nav');
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const showFavoritesBtn = document.getElementById('show-favorites-btn');
+            const favoritesBtnText = document.getElementById('favorites-btn-text');
+            const favoritesCountBadge = document.getElementById('favorites-count-badge');
+            const compareFavoritesBtn = document.getElementById('compare-favorites-btn');
+            const highlightLegend = document.getElementById('highlight-legend');
+            const tieringBtn = document.getElementById('tiering-btn');
+            const chartModal = document.getElementById('chart-modal');
+            const closeChartModalBtn = document.getElementById('close-chart-modal');
+            const chartTitle = document.getElementById('chart-title');
+            const collegeDetailsModal = document.getElementById('college-details-modal');
+            const closeCollegeDetailsModalBtn = document.getElementById('close-college-details-modal');
+            const collegeDetailsTitle = document.getElementById('college-details-title');
+            const collegeDetailsBody = document.getElementById('college-details-body');
+            const comparisonModal = document.getElementById('comparison-modal');
+            const closeComparisonModalBtn = document.getElementById('close-comparison-modal');
+            const comparisonBody = document.getElementById('comparison-body');
+            let rankTrendChart = null;
+            let comparisonCharts = [];
+
+            function setControlsDisabled(disabled) {
+                const controls = [
+                    rankInput, searchButton, resetButton, copyLinkButton, 
+                    exportCsvBtn, entriesPerPageSelect, prevPageButton, nextPageButton,
+                    showFavoritesBtn, compareFavoritesBtn, tieringBtn
+                ];
+                controls.forEach(control => {
+                    if (control) control.disabled = disabled;
+                });
+            }
+
+            async function initializeApp() {
+                try {
+                    initializeFilters();
+                    loadSettings();
+                    updateFavoritesUI();
+                    
+                    const response = await fetch(CONFIG.JSON_FILE_PATH);
+                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}. Failed to load data.`);
+                    const rawData = await response.json();
+                    
+                    const getStr = (val) => (val != null ? String(val).trim() : null);
+                    const getRank = (val) => {
+                        const parsed = parseInt(val, 10);
+                        return isNaN(parsed) ? null : parsed;
+                    };
+
+                    allData = rawData.map((item) => ({
+                        id: `${getStr(item["Institute"])}-${getStr(item["Program"])}-${getStr(item["Category"])}-${getStr(item["Round"])}-${getRank(item["Year"])}-${getStr(item["Quota"])}-${getStr(item["Seat Type"])}`,
+                        round: getStr(item["Round"]),
+                        institute: getStr(item["Institute"]),
+                        branch: getStr(item["Program"]),
+                        seat_type: getStr(item["Seat Type"]),
+                        quota: getStr(item["Quota"]),
+                        category: getStr(item["Category"]),
+                        opening_rank: getRank(item["Opening Rank"]),
+                        closing_rank: getRank(item["Closing Rank"]),
+                        year: getRank(item["Year"]),
+                        prediction: { text: '-', order: CONFIG.PREDICTION_TIERS.length + 1 }
+                    }));
+                    
+                    const allValidIds = new Set(allData.map(item => item.id));
+                    favorites = new Set([...favorites].filter(id => allValidIds.has(id)));
+                    saveFavorites();
+
+                    createFilterDropdowns();
+                    addEventListeners();
+                    loadFiltersFromURL(); 
+                    applyFiltersAndRender(true);
+                } catch (error) {
+                    console.error('Initialization Error:', error);
+                    const jsonErrorOverlay = document.getElementById('json-error-overlay');
+                    if (jsonErrorOverlay) {
+                        jsonErrorOverlay.classList.remove('hidden');
+                        setControlsDisabled(true);
+                    } else {
+                        resultsCount.innerHTML = `<span>Error loading data.</span>`;
+                        tableBody.innerHTML = `<tr class="bg-red-100"><td colspan="11" class="px-6 py-12 text-center text-red-700 font-semibold">${error.message}</td></tr>`;
+                    }
+                }
+            }
+            
+            function loadSettings() {
+                const storedFavorites = JSON.parse(localStorage.getItem('wbjeeFavorites') || '[]');
+                favorites = new Set(storedFavorites);
+                const storedTiering = localStorage.getItem('wbjeeTieringEnabled');
+                isTieringEnabled = storedTiering === null ? true : storedTiering === 'true';
+                updateTieringButtonUI();
+            }
+
+            function updateFilterState(key, value, isChecked) {
+                if (key === 'rank') {
+                    activeFilters.rank = value;
+                    return;
+                }
+                if (isChecked) {
+                    if (!activeFilters[key].includes(value)) {
+                        activeFilters[key].push(value);
+                    }
+                } else {
+                    activeFilters[key] = activeFilters[key].filter(v => v !== value);
+                }
+            }
+            
+            function applyFiltersAndRender(isInitialLoad = false) {
+                if (!isInitialLoad) loadingOverlay.classList.remove('hidden'); 
+
+                setTimeout(() => {
+                    try {
+                    if (isShowingFavorites) {
+                        filteredData = allData.filter(item => favorites.has(item.id));
+                    } else {
+                        const userRank = parseInt(activeFilters.rank, 10);
+                        
+                        let displayLimit = Infinity;
+                        if (!isNaN(userRank)) {
+                            const limitRule = CONFIG.RANK_DISPLAY_LIMITS.find(rule => userRank <= rule.userRankUpTo);
+                            if (limitRule) {
+                                displayLimit = limitRule.base + (userRank - (limitRule.startRank - 1)) * limitRule.multiplier;
+                            }
+                        }
+
+                        filteredData = allData.filter(item => {
+                            if (displayLimit !== Infinity && (item.closing_rank === null || item.closing_rank > displayLimit)) {
+                                return false;
+                            }
+                            if (activeFilters.rank && (item.closing_rank === null || item.closing_rank < userRank)) return false;
+                            for (const key of filterKeys) {
+                                if (activeFilters[key].length > 0 && !activeFilters[key].includes(String(item[key]))) return false;
+                            }
+                            return true;
+                        });
+                    }
+                    
+                    const userRank = parseInt(activeFilters.rank, 10);
+                    calculatePredictions(filteredData, userRank);
+                    
+                    currentPage = 1;
+                    if (!isShowingFavorites) {
+                        updateURLWithFilters();
+                        localStorage.setItem('wbjeeFilters', JSON.stringify(activeFilters));
+                    }
+                    updateFilterButtonLabels();
+                    applySorting();
+                    renderTable();
+                    } catch (error) {
+                        console.error('Error applying filters and rendering:', error);
+                        resultsCount.innerHTML = `<span>Error applying filters.</span>`;
+                        tableBody.innerHTML = `<tr class="bg-red-100"><td colspan="11" class="px-6 py-12 text-center text-red-700 font-semibold">${error.message}</td></tr>`;
+                    }
+                    if (!isInitialLoad) loadingOverlay.classList.add('hidden'); 
+                }, 10);
+            }
+            
+            function updateHeaderStyles() {
+                tableHeaders.forEach(header => {
+                    header.classList.remove('sorted-asc', 'sorted-desc', 'bg-gray-200');
+                    const indicator = header.querySelector('.sort-indicator');
+                    if (!indicator) return;
+                    
+                    if (header.dataset.column === sortState.column) {
+                        header.classList.add('bg-gray-200');
+                        if (sortState.direction === 'asc') {
+                            header.classList.add('sorted-asc');
+                            indicator.textContent = '▲';
+                        } else if (sortState.direction === 'desc') {
+                            header.classList.add('sorted-desc');
+                            indicator.textContent = '▼';
+                        } else {
+                            indicator.textContent = '';
+                        }
+                    } else {
+                        indicator.textContent = '';
+                    }
+                });
+            }
+            
+            function applySorting() {
+                const { column, direction } = sortState;
+                if (direction === 'none' || column === null) {
+                    updateHeaderStyles();
+                    return;
+                }
+
+                filteredData.sort((a, b) => {
+                    if (column === 'prediction') {
+                        const comparison = (a.prediction.order || 99) - (b.prediction.order || 99);
+                        return direction === 'asc' ? comparison : -comparison;
+                    }
+                    
+                    const valA = a[column]; 
+                    const valB = b[column];
+                    let comparison = 0;
+                    if (sortState.type === 'number') {
+                        comparison = (valA || Infinity) - (valB || Infinity);
+                    } else {
+                        comparison = String(valA || '').localeCompare(String(valB || ''));
+                    }
+                    return direction === 'asc' ? comparison : -comparison;
+                });
+                updateHeaderStyles();
+            }
+            
+            function calculatePredictions(data, userRank) {
+                if (isNaN(userRank)) {
+                    data.forEach(item => {
+                        item.prediction = { text: '-', order: 99 };
+                    });
+                    return;
+                }
+
+                const tiers = CONFIG.PREDICTION_TIERS;
+
+                data.forEach(item => {
+                    const { opening_rank, closing_rank } = item;
+                    let prediction = { text: '-', order: 99 }; 
+
+                    if (opening_rank !== null && closing_rank !== null) {
+                        if (userRank < opening_rank) {
+                            const tier = tiers[0];
+                            prediction = { text: tier.name, order: 1, color: tier.color, class: tier.class };
+                        } else {
+                            let foundTier = false;
+                            for (let i = 1; i < tiers.length - 1; i++) {
+                                const tier = tiers[i];
+                                if (userRank <= closing_rank * tier.threshold) {
+                                    prediction = { text: tier.name, order: i + 1, color: tier.color, class: tier.class };
+                                    foundTier = true;
+                                    break;
+                                }
+                            }
+                            if (!foundTier) {
+                                const tier = tiers[tiers.length - 1];
+                                prediction = { text: tier.name, order: tiers.length, color: tier.color, class: tier.class };
+                            }
+                        }
+                    }
+                    item.prediction = prediction;
+                });
+            }
+
+            function createFilterDropdowns() {
+                const uniqueValues = {};
+                filterKeys.forEach(key => uniqueValues[key] = new Set());
+                
+                allData.forEach(item => {
+                    filterKeys.forEach(key => {
+                        if (item[key] != null) uniqueValues[key].add(item[key]);
+                    });
+                });
+
+                filterKeys.forEach(key => {
+                    const container = document.getElementById(`${key}-filter`);
+                    if (!container) return;
+                    const title = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    
+                    const isNumeric = key === 'year';
+                    const sortedOptions = Array.from(uniqueValues[key]).sort(isNumeric ? (a, b) => b - a : (a, b) => String(a).localeCompare(String(b)));
+                    
+                    let panelContent = sortedOptions.map((value, index) => {
+                        const safeValue = String(value).replace(/\s+/g, '-').toLowerCase();
+                        const id = `${key}-${safeValue}-${index}`;
+                        return `
+                        <label for="${id}" class="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100 cursor-pointer group">
+                            <input type="checkbox" id="${id}" data-filter-key="${key}" value="${value}" class="filter-checkbox h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-blue-600">
+                            <span class="text-sm text-gray-700 group-hover:text-gray-900">${value}</span>
+                        </label>
+                    `}).join('');
+                    
+                    container.innerHTML = `
+                        <button id="${key}-filter-btn" class="filter-btn relative flex items-center justify-between w-full sm:w-48 bg-white border border-gray-300 rounded-md shadow-sm px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <span class="filter-btn-label truncate pr-10">${title} (All)</span>
+                            <span class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
+                                <span data-key="${key}" class="clear-single-filter hidden text-gray-400 hover:text-gray-800 text-lg mr-1">&times;</span>
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </span>
+                        </button>
+                        <div id="${key}-filter-panel" class="filter-panel hidden absolute mt-2 w-72 bg-white rounded-md shadow-lg border border-gray-200">
+                            <div class="p-2 border-b border-gray-200">
+                                <input type="search" placeholder="Search..." class="filter-search w-full p-2 text-sm border border-gray-300 bg-white rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400">
+                            </div>
+                            <div class="p-2 flex justify-between border-b border-gray-200">
+                                <button class="select-all-btn text-xs text-blue-600 hover:underline">Select All Visible</button>
+                                <button class="clear-all-btn text-xs text-blue-600 hover:underline">Clear Visible</button>
+                            </div>
+                            <div class="filter-panel-body p-2 max-h-60 overflow-y-auto">${panelContent}</div>
+                            <div class="p-2 border-t border-gray-200 flex justify-end">
+                                <button class="done-filter-btn px-4 py-1 text-sm font-medium bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none" aria-label="Done filtering">Done</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            function renderTable() {
+                tableBody.innerHTML = ''; 
+                
+                const totalItems = filteredData.length;
+                const totalPages = entriesPerPage === 'all' ? 1 : Math.ceil(totalItems / entriesPerPage);
+                if (currentPage > totalPages) currentPage = totalPages || 1;
+
+                const startIndex = entriesPerPage === 'all' ? 0 : (currentPage - 1) * entriesPerPage;
+                const endIndex = entriesPerPage === 'all' ? totalItems : startIndex + entriesPerPage;
+                const paginatedData = filteredData.slice(startIndex, endIndex);
+
+                const resultsCountSpan = resultsCount.querySelector('span');
+                const loadingSpinner = resultsCount.querySelector('.loading-spinner');
+                if (loadingSpinner) loadingSpinner.classList.add('hidden');
+                
+                if (isShowingFavorites) {
+                    favHeader.innerHTML = 'Actions';
+                } else {
+                    favHeader.innerHTML = 'Fav';
+                }
+
+                if (paginatedData.length === 0) {
+                    const emptyHtml = isShowingFavorites && favorites.size === 0 
+                        ? `<td colspan="11" class="px-6 py-12 text-center text-gray-500">
+                                <h4 class="text-lg font-semibold text-gray-700">Your Shortlist is Empty</h4>
+                                <p class="mt-2">Click the <span class="inline-block text-yellow-400 text-xl align-middle">★</span> icon on any row to add a college!</p>
+                           </td>`
+                        : `<td colspan="11" class="px-6 py-12 text-center text-gray-500">No matching results found.</td>`;
+                    tableBody.innerHTML = `<tr>${emptyHtml}</tr>`;
+                    resultsCountSpan.textContent = `Showing 0 of ${totalItems.toLocaleString()} records`;
+                } else {
+                    const fragment = document.createDocumentFragment();
+                    paginatedData.forEach(item => {
+                        const row = document.createElement('tr');
+                        const isFavorited = favorites.has(item.id);
+                        const identifier = { institute: item.institute, branch: item.branch, category: item.category, quota: item.quota, seat_type: item.seat_type };
+                        row.dataset.identifier = JSON.stringify(identifier);
+                        
+                        if (isTieringEnabled && item.prediction.class) {
+                            row.classList.add(item.prediction.class);
+                        }
+                        
+                        const favAriaLabel = isFavorited ? `Remove ${item.institute} - ${item.branch} from shortlist` : `Add ${item.institute} - ${item.branch} to shortlist`;
+                        
+                        let favCell;
+                        if (isShowingFavorites) {
+                            favCell = `
+                                <td class="px-4 py-3 align-middle text-center">
+                                    <div class="flex items-center justify-center gap-x-4">
+                                        <button type="button" class="favorite-btn favorited" data-id="${item.id}" aria-label="${favAriaLabel}" title="Remove from shortlist">★</button>
+                                        <input type="checkbox" id="compare-${item.id}" class="compare-checkbox h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-blue-600" data-id="${item.id}" title="Select for comparison">
+                                    </div>
+                                </td>`;
+                        } else {
+                            favCell = `<td class="px-4 py-3 align-middle text-center"><button type="button" class="favorite-btn ${isFavorited ? 'favorited' : ''}" data-id="${item.id}" aria-label="${favAriaLabel}">★</button></td>`;
+                        }
+                        
+                        row.innerHTML = `
+                            ${favCell}
+                            <td class="prediction-cell px-6 py-4 align-middle whitespace-nowrap text-sm font-semibold ${item.prediction.color || ''}">${item.prediction.text}</td>
+                            <td class="px-6 py-4 align-middle whitespace-nowrap text-sm"><span class="institute-link text-blue-600 hover:underline" data-institute="${item.institute}">${item.institute || 'N/A'}</span></td>
+                            <td class="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500">${item.branch || 'N/A'}</td>
+                            <td class="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500">${item.category || 'N/A'}</td>
+                            <td class="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500 font-mono">${item.opening_rank ?? 'N/A'}</td>
+                            <td class="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500 font-mono">${item.closing_rank ?? 'N/A'}</td>
+                            <td class="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500">${item.year ?? 'N/A'}</td>
+                            <td class="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500">${item.round || 'N/A'}</td>
+                            <td class="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500">${item.quota || 'N/A'}</td>
+                            <td class="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500">${item.seat_type || 'N/A'}</td>
+                        `;
+                        fragment.appendChild(row);
+                    });
+                    tableBody.appendChild(fragment);
+                    
+                    const startNum = totalItems > 0 ? startIndex + 1 : 0;
+                    const endNum = entriesPerPage === 'all' ? totalItems : Math.min(endIndex, totalItems);
+                    resultsCountSpan.textContent = `Showing ${startNum.toLocaleString()} to ${endNum.toLocaleString()} of ${totalItems.toLocaleString()} records`;
+                }
+                
+                if (isShowingFavorites) updateCompareButtonState();
+                updatePaginationUI(totalPages);
+            }
+            
+            function updateFilterButtonLabels() {
+                filterKeys.forEach(key => {
+                    const button = document.getElementById(`${key}-filter-btn`);
+                    if(!button) return;
+                    const title = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    const count = activeFilters[key].length;
+                    button.querySelector('.filter-btn-label').textContent = count > 0 ? `${title} (${count} selected)` : `${title} (All)`;
+                    button.querySelector('.clear-single-filter').classList.toggle('hidden', count === 0);
+                });
+            }
+
+            function updateHeaderStyles() {
+                tableHeaders.forEach(header => {
+                    header.classList.remove('sorted-asc', 'sorted-desc', 'bg-gray-200');
+                    const indicator = header.querySelector('.sort-indicator');
+                    if (!indicator) return;
+                    
+                    if (header.dataset.column === sortState.column) {
+                        header.classList.add('bg-gray-200');
+                        if (sortState.direction === 'asc') {
+                            header.classList.add('sorted-asc');
+                            indicator.textContent = '▲';
+                        } else if (sortState.direction === 'desc') {
+                            header.classList.add('sorted-desc');
+                            indicator.textContent = '▼';
+                        } else {
+                            indicator.textContent = '';
+                        }
+                    } else {
+                        indicator.textContent = '';
+                    }
+                });
+            }
+
+            function updatePaginationUI(totalPages) {
+                paginationNav.classList.toggle('hidden', totalPages <= 1);
+                pageInfoSpan.textContent = `Page ${currentPage} of ${totalPages}`;
+                prevPageButton.disabled = currentPage === 1;
+                nextPageButton.disabled = currentPage >= totalPages;
+            }
+
+            function updateURLWithFilters() {
+                const params = new URLSearchParams();
+                if (activeFilters.rank) params.set('rank', activeFilters.rank);
+                filterKeys.forEach(key => {
+                    activeFilters[key].forEach(value => params.append(key, value));
+                });
+                const newUrl = `${window.location.pathname}?${params.toString()}`;
+                history.pushState({ path: newUrl }, '', newUrl);
+            }
+
+            function loadFiltersFromURL() {
+                const params = new URLSearchParams(window.location.search);
+                const savedFilters = JSON.parse(localStorage.getItem('wbjeeFilters'));
+
+                // Handle shared shortlist
+                const sharedShortlist = params.get('shortlist');
+                if (sharedShortlist) {
+                    const shortlistIds = sharedShortlist.split(',').filter(id => id.trim());
+                    if (shortlistIds.length > 0) {
+                        // Add shared items to favorites
+                        shortlistIds.forEach(id => favorites.add(id));
+                        saveFavorites();
+                        
+                        // Show shortlist view
+                        isShowingFavorites = true;
+                        favoritesBtnText.textContent = 'Show All';
+                        compareFavoritesBtn.classList.remove('hidden');
+                        
+                        // Clear other filters and show shortlist
+                        rankInput.value = '';
+                        initializeFilters();
+                        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                        applyFiltersAndRender(false);
+                        return; // Don't load other filters
+                    }
+                }
+
+                if (params.toString()) {
+                    rankInput.value = params.get('rank') || '';
+                    updateFilterState('rank', rankInput.value);
+                    filterKeys.forEach(key => {
+                        const values = params.getAll(key);
+                        values.forEach(value => updateFilterState(key, value, true));
+                    });
+                } else if (savedFilters) {
+                    rankInput.value = savedFilters.rank || '';
+                    filterKeys.forEach(key => {
+                        if (savedFilters[key]) {
+                           savedFilters[key].forEach(value => updateFilterState(key, value, true));
+                        }
+                    });
+                }
+                
+                document.querySelectorAll('.filter-checkbox').forEach(cb => {
+                    const key = cb.dataset.filterKey;
+                    cb.checked = activeFilters[key].includes(cb.value);
+                });
+            }
+
+            function saveFavorites() {
+                localStorage.setItem('wbjeeFavorites', JSON.stringify(Array.from(favorites)));
+                updateFavoritesUI();
+            }
+            
+            function updateTieringButtonUI() {
+                tieringBtn.textContent = isTieringEnabled ? 'Hide Predictions' : 'Show Predictions';
+                tieringBtn.classList.toggle('bg-gray-300', !isTieringEnabled);
+                document.getElementById('results-table').classList.toggle('predictions-hidden', !isTieringEnabled);
+            }
+
+            function updateFavoritesUI() {
+                favoritesCountBadge.textContent = favorites.size;
+                favoritesCountBadge.classList.toggle('hidden', favorites.size === 0);
+            }
+
+            function updateCompareButtonState() {
+                const selectedCount = tableBody.querySelectorAll('.compare-checkbox:checked').length;
+                const canCompare = selectedCount >= CONFIG.COMPARISON_MIN && selectedCount <= CONFIG.COMPARISON_MAX;
+                compareFavoritesBtn.disabled = !canCompare;
+                compareFavoritesBtn.textContent = `Compare Selected (${selectedCount})`;
+            }
+
+            function addEventListeners() {
+                rankInput.addEventListener('keydown', (e) => {
+                    if (['e', '+', '-', '.'].includes(e.key)) {
+                    e.preventDefault();
+    }
+});
+                rankInput.addEventListener('input', () => {
+                    if (parseInt(rankInput.value, 10) < 1) {
+                        rankInput.value = '';
+                    }
+                    updateFilterState('rank', rankInput.value);
+                });
+
+                searchButton.addEventListener('click', () => {
+                    if (rankInput.value === '') {
+                        showInputErrorModal();
+                        return;
+                    }
+                    applyFiltersAndRender(false);
+                });
+                
+                resetButton.addEventListener('click', () => {
+                    rankInput.value = '';
+                    initializeFilters(); 
+                    document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                    
+                    sortState = { column: null, direction: 'none', type: 'string' };
+
+                    if (isShowingFavorites) {
+                        isShowingFavorites = false;
+                        favoritesBtnText.textContent = 'Show Shortlist';
+                        compareFavoritesBtn.classList.add('hidden');
+                    }
+                    localStorage.removeItem('wbjeeFilters');
+                    applyFiltersAndRender(false);
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.filter-dropdown')) {
+                        document.querySelectorAll('.filter-panel').forEach(p => p.classList.add('hidden'));
+                    }
+                    if (e.target.classList.contains('favorite-btn')) {
+                        const id = e.target.dataset.id;
+                        if (favorites.has(id)) favorites.delete(id);
+                        else favorites.add(id);
+                        saveFavorites();
+                        if(isShowingFavorites) {
+                            applyFiltersAndRender(false);
+                        } else {
+                            e.target.classList.toggle('favorited', favorites.has(id));
+                        }
+                    }
+                });
+
+                document.querySelectorAll('.filter-dropdown').forEach(container => {
+                    container.addEventListener('click', (e) => {
+                        if (e.target.closest('.filter-btn')) {
+                            e.stopPropagation();
+                            const panel = e.target.closest('.filter-btn').nextElementSibling;
+                            document.querySelectorAll('.filter-panel').forEach(p => {
+                                if (p !== panel) p.classList.add('hidden');
+                            });
+                            panel.classList.toggle('hidden');
+                        }
+                        if (e.target.closest('.clear-single-filter')) {
+                            e.stopPropagation();
+                            const key = e.target.closest('.clear-single-filter').dataset.key;
+                            activeFilters[key] = [];
+                            container.querySelectorAll('.filter-checkbox').forEach(cb => cb.checked = false);
+                            applyFiltersAndRender(false);
+                        }
+                    });
+                    
+                    container.addEventListener('change', (e) => {
+                        if (e.target.classList.contains('filter-checkbox')) {
+                            updateFilterState(e.target.dataset.filterKey, e.target.value, e.target.checked);
+                        }
+                    });
+
+                    container.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('done-filter-btn')) {
+                            e.stopPropagation();
+                            const panel = e.target.closest('.filter-panel');
+                            panel.classList.add('hidden');
+                        }
+                    });
+                });
+
+                tableHeaders.forEach(header => {
+                    header.addEventListener('click', () => {
+                        const column = header.dataset.column;
+                        if (!column) return;
+                        
+                        if (sortState.column === column) {
+                            sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+                        } else {
+                            sortState.column = column;
+                            sortState.direction = 'asc';
+                            sortState.type = header.dataset.type || 'string';
+                        }
+                        
+                        applySorting();
+                        renderTable();
+                    });
+                });
+
+                copyLinkButton.addEventListener('click', () => {
+                    navigator.clipboard.writeText(window.location.href);
+                    copyLinkButton.textContent = 'Copied!';
+                    setTimeout(() => { copyLinkButton.textContent = 'Copy Link'; }, 2000);
+                });
+
+                // Export and Share Shortlist buttons
+                const exportShortlistBtn = document.getElementById('export-shortlist-btn');
+                const shareShortlistBtn = document.getElementById('share-shortlist-btn');
+
+                exportShortlistBtn.addEventListener('click', () => {
+                    if (favorites.size === 0) {
+                        alert('Your shortlist is empty. Add some colleges first!');
+                        return;
+                    }
+                    const shortlistData = allData.filter(item => favorites.has(item.id));
+                    exportShortlistToCSV(shortlistData);
+                });
+
+                shareShortlistBtn.addEventListener('click', () => {
+                    if (favorites.size === 0) {
+                        alert('Your shortlist is empty. Add some colleges first!');
+                        return;
+                    }
+                    const shortlistIds = Array.from(favorites);
+                    const shareUrl = `${window.location.origin}${window.location.pathname}?shortlist=${shortlistIds.join(',')}`;
+                    
+                    // Try to copy to clipboard, fallback to showing URL
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(shareUrl).then(() => {
+                            shareShortlistBtn.textContent = 'Copied!';
+                            setTimeout(() => { shareShortlistBtn.textContent = 'Share Shortlist'; }, 2000);
+                        }).catch(() => {
+                            // Fallback: show URL in alert
+                            alert(`Share this URL:\n\n${shareUrl}`);
+                        });
+                    } else {
+                        // Fallback for browsers without clipboard API
+                        alert(`Share this URL:\n\n${shareUrl}`);
+                    }
+                });
+
+                exportCsvBtn.addEventListener('click', exportToCSV);
+                entriesPerPageSelect.addEventListener('change', (e) => {
+                    entriesPerPage = e.target.value === 'all' ? 'all' : Number(e.target.value);
+                    currentPage = 1;
+                    renderTable();
+                });
+                prevPageButton.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderTable(); } });
+                nextPageButton.addEventListener('click', () => {
+                    const totalPages = entriesPerPage === 'all' ? 1 : Math.ceil(filteredData.length / entriesPerPage);
+                    if (currentPage < totalPages) { currentPage++; renderTable(); }
+                });
+                showFavoritesBtn.addEventListener('click', () => {
+                    isShowingFavorites = !isShowingFavorites;
+                    favoritesBtnText.textContent = isShowingFavorites ? 'Show All' : 'Show Shortlist';
+                    compareFavoritesBtn.classList.toggle('hidden', !isShowingFavorites);
+                    applyFiltersAndRender(false);
+                });
+                tableBody.addEventListener('click', (e) => {
+                    const instituteLink = e.target.closest('.institute-link');
+                    if (instituteLink) {
+                        showCollegeDetails(instituteLink.dataset.institute);
+                        return;
+                    }
+                    const row = e.target.closest('tr');
+                    if (row && row.dataset.identifier && !e.target.closest('button, a, input, label')) {
+                        showRankTrendChart(JSON.parse(row.dataset.identifier));
+                    }
+                });
+                tableBody.addEventListener('change', (e) => {
+                    if (e.target.classList.contains('compare-checkbox')) {
+                        updateCompareButtonState();
+                    }
+                });
+                tieringBtn.addEventListener('click', () => {
+                    isTieringEnabled = !isTieringEnabled;
+                    localStorage.setItem('wbjeeTieringEnabled', isTieringEnabled);
+                    updateTieringButtonUI();
+                });
+                closeChartModalBtn.addEventListener('click', () => chartModal.classList.add('hidden'));
+                closeCollegeDetailsModalBtn.addEventListener('click', () => collegeDetailsModal.classList.add('hidden'));
+                closeComparisonModalBtn.addEventListener('click', () => comparisonModal.classList.add('hidden'));
+                compareFavoritesBtn.addEventListener('click', () => {
+                    const selectedToCompare = Array.from(document.querySelectorAll('.compare-checkbox:checked')).map(cb => cb.dataset.id);
+                    showComparison(selectedToCompare);
+                });
+
+                // Mobile legend popover
+                const legendPopoverBtn = document.getElementById('legend-popover-btn');
+                const legendModal = document.getElementById('legend-modal');
+                const closeLegendModalBtn = document.getElementById('close-legend-modal');
+
+                legendPopoverBtn.addEventListener('click', () => {
+                    legendModal.classList.remove('hidden');
+                });
+                closeLegendModalBtn.addEventListener('click', () => {
+                    legendModal.classList.add('hidden');
+                });
+                legendModal.addEventListener('click', (e) => {
+                    if (e.target === legendModal) {
+                        legendModal.classList.add('hidden');
+                    }
+                });
+
+                // Input error modal event listeners
+                const inputErrorModal = document.getElementById('input-error-modal');
+                const closeInputErrorModalBtn = document.getElementById('close-input-error-modal');
+                
+                closeInputErrorModalBtn.addEventListener('click', () => {
+                    inputErrorModal.classList.add('hidden');
+                });
+                
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && !inputErrorModal.classList.contains('hidden')) {
+                        inputErrorModal.classList.add('hidden');
+                    }
+                });
+                
+                inputErrorModal.addEventListener('click', (e) => {
+                    if (e.target === inputErrorModal) {
+                        inputErrorModal.classList.add('hidden');
+                    }
+                });
+
+                // Help modal event listeners
+                const helpModal = document.getElementById('help-modal');
+                const closeHelpModalBtn = document.getElementById('close-help-modal');
+                const openHelpModalBtn = document.getElementById('open-help-modal');
+
+                openHelpModalBtn.addEventListener('click', () => {
+                    helpModal.classList.remove('hidden');
+                });
+                closeHelpModalBtn.addEventListener('click', () => {
+                    helpModal.classList.add('hidden');
+                });
+                helpModal.addEventListener('click', (e) => {
+                    if (e.target === helpModal) {
+                        helpModal.classList.add('hidden');
+                    }
+                });
+
+                // JSON error overlay event listeners
+                const jsonErrorOverlay = document.getElementById('json-error-overlay');
+                const retryLoadBtn = document.getElementById('retry-load-btn');
+
+                retryLoadBtn.addEventListener('click', () => {
+                    jsonErrorOverlay.classList.add('hidden');
+                    initializeApp(); // Retry loading data
+                });
+            }
+
+            function showRankTrendChart(identifier) {
+                const trendData = allData.filter(item => 
+                    item.institute === identifier.institute &&
+                    item.branch === identifier.branch &&
+                    item.category === identifier.category &&
+                    item.quota === identifier.quota &&
+                    item.seat_type === identifier.seat_type
+                ).sort((a, b) => a.year - b.year);
+                const validTrendData = trendData.filter(d => d.closing_rank !== null);
+                chartTitle.textContent = `Rank Trend for ${identifier.branch} at ${identifier.institute}`;
+                const ctx = document.getElementById('rank-trend-chart').getContext('2d');
+                if (rankTrendChart) { rankTrendChart.destroy(); }
+                if (validTrendData.length < 2) {
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                    ctx.font = "16px Inter, sans-serif";
+                    ctx.fillStyle = "#6b7280";
+                    ctx.textAlign = "center";
+                    ctx.fillText("Not enough historical data to show a trend.", ctx.canvas.width / 2, 50);
+                    chartModal.classList.remove('hidden');
+                    return;
+                }
+                try {
+                    rankTrendChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: validTrendData.map(d => d.year),
+                            datasets: [{
+                                label: 'Closing Rank',
+                                data: validTrendData.map(d => d.closing_rank),
+                                borderColor: 'rgba(59, 130, 246, 0.8)',
+                                backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                                fill: true,
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: { title: { display: true, text: 'Rank', color: '#374151' }, ticks: { color: '#374151' } },
+                                x: { title: { display: true, text: 'Year', color: '#374151' }, ticks: { color: '#374151' } }
+                            },
+                            plugins: { legend: { labels: { color: '#374151' } } }
+                        }
+                    });
+                    chartModal.classList.remove('hidden');
+                } catch (error) {
+                    console.error('Error creating chart:', error);
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                    ctx.font = "16px Inter, sans-serif";
+                    ctx.fillStyle = "#6b7280";
+                    ctx.textAlign = "center";
+                    ctx.fillText("Error loading chart. Please try again.", ctx.canvas.width / 2, 50);
+                    chartModal.classList.remove('hidden');
+                }
+            }
+            
+            function showCollegeDetails(instituteName) {
+                collegeDetailsTitle.textContent = instituteName;
+                const collegeBranches = allData.filter(item => item.institute === instituteName);
+                if (collegeBranches.length === 0) {
+                    collegeDetailsBody.innerHTML = `<p class="text-gray-500">No data found for this college.</p>`;
+                } else {
+                    let html = '<div class="space-y-4">';
+                    const groupedBranches = {};
+                    collegeBranches.forEach(item => {
+                        if (!groupedBranches[item.branch]) groupedBranches[item.branch] = [];
+                        groupedBranches[item.branch].push(item);
+                    });
+                    const sortedBranchNames = Object.keys(groupedBranches).sort((a, b) => {
+                        const bestRankA = Math.min(...groupedBranches[a].map(i => i.closing_rank || Infinity));
+                        const bestRankB = Math.min(...groupedBranches[b].map(i => i.closing_rank || Infinity));
+                        return bestRankA - bestRankB;
+                    });
+                    for (const branchName of sortedBranchNames) {
+                        html += `<div class="p-3 bg-gray-100 rounded-lg">
+                                    <h4 class="font-bold text-lg text-gray-800">${branchName}</h4>
+                                    <ul class="mt-2 space-y-1 pl-2 border-l border-gray-300">`;
+                        const sortedItems = groupedBranches[branchName].sort((a, b) => (b.year - a.year) || a.category.localeCompare(b.category));
+                        sortedItems.forEach(item => {
+                            html += `<li class="text-sm text-gray-600">
+                                <strong>${item.year}:</strong> ${item.category} (${item.quota}) - 
+                                <strong>Closing Rank:</strong> <span class="font-mono">${item.closing_rank ?? 'N/A'}</span>
+                            </li>`;
+                        });
+                        html += `</ul></div>`;
+                    }
+                    html += `</div>`;
+                    collegeDetailsBody.innerHTML = html;
+                }
+                collegeDetailsModal.classList.remove('hidden');
+            }
+            
+            function showComparison(selectedIds) {
+                comparisonBody.innerHTML = '';
+                comparisonCharts.forEach(chart => chart.destroy());
+                comparisonCharts = [];
+                selectedIds.forEach((id, index) => {
+                    const item = allData.find(d => d.id === id);
+                    if (!item) return;
+                    const trendData = allData.filter(d => 
+                        d.institute === item.institute && d.branch === item.branch && d.category === item.category && d.quota === item.quota && d.seat_type === item.seat_type
+                    ).sort((a, b) => a.year - b.year);
+                    const ranks = trendData.map(d => d.closing_rank).filter(r => r !== null);
+                    const avgRank = ranks.length ? Math.round(ranks.reduce((a, b) => a + b, 0) / ranks.length) : 'N/A';
+                    const bestRank = ranks.length ? Math.min(...ranks) : 'N/A';
+                    const recentRank = item.closing_rank ?? 'N/A';
+                    let trend = { text: 'Stable', color: 'text-gray-500' };
+                    if (ranks.length >= 2) {
+                        const first = ranks[0];
+                        const last = ranks[ranks.length - 1];
+                        if (last < first) trend = { text: 'Getting More Competitive ▲', color: 'text-green-500' };
+                        else if (last > first) trend = { text: 'Getting Less Competitive ▼', color: 'text-red-500' };
+                    }
+                    const column = document.createElement('div');
+                    column.className = 'bg-gray-100 p-4 rounded-lg';
+                    column.innerHTML = `
+                        <h4 class="font-bold text-lg text-gray-900">${item.institute}</h4>
+                        <p class="text-blue-600 mb-4">${item.branch}</p>
+                        <canvas id="compare-chart-${index}"></canvas>
+                        <div class="mt-4 space-y-2 text-sm">
+                            <p><strong>Category:</strong> ${item.category}</p>
+                            <p><strong>Recent Rank (${item.year}):</strong> ${recentRank}</p>
+                            <p><strong>Avg. Rank:</strong> ${avgRank}</p>
+                            <p><strong>Best Rank:</strong> ${bestRank}</p>
+                            <p><strong>Trend:</strong> <span class="${trend.color}">${trend.text}</span></p>
+                        </div>`;
+                    comparisonBody.appendChild(column);
+                    const ctx = document.getElementById(`compare-chart-${index}`).getContext('2d');
+                    try {
+                        const newChart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: trendData.map(d => d.year),
+                                datasets: [{ label: 'Closing Rank', data: trendData.map(d => d.closing_rank), borderColor: 'rgba(79, 70, 229, 0.8)', tension: 0.1 }]
+                            },
+                            options: { scales: { y: { ticks: { color: '#374151' } }, x: { ticks: { color: '#374151' } } }, plugins: { legend: { display: false } } }
+                        });
+                        comparisonCharts.push(newChart);
+                    } catch (error) {
+                        console.error('Error creating comparison chart:', error);
+                        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                        ctx.font = "14px Inter, sans-serif";
+                        ctx.fillStyle = "#6b7280";
+                        ctx.textAlign = "center";
+                        ctx.fillText("Chart unavailable", ctx.canvas.width / 2, 30);
+                    }
+                });
+                comparisonModal.classList.remove('hidden');
+            }
+
+            function exportToCSV() {
+                const headers = ["Institute", "Branch", "Category", "Quota", "Seat Type", "Opening Rank", "Closing Rank", "Year", "Round"];
+                const rows = filteredData.map(item => [
+                    `"${item.institute || ''}"`,`"${item.branch || ''}"`,`"${item.category || ''}"`,`"${item.quota || ''}"`,`"${item.seat_type || ''}"`,
+                    item.opening_rank ?? '', item.closing_rank ?? '', item.year ?? '', `"${item.round || ''}"`
+                ]);
+                let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + rows.map(e => e.join(",")).join("\n");
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "wbjee_predictor_data.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            function exportShortlistToCSV(shortlistData) {
+                const headers = ["Institute", "Branch", "Category", "Quota", "Seat Type", "Opening Rank", "Closing Rank", "Year", "Round"];
+                const rows = shortlistData.map(item => [
+                    `"${item.institute || ''}"`,`"${item.branch || ''}"`,`"${item.category || ''}"`,`"${item.quota || ''}"`,`"${item.seat_type || ''}"`,
+                    item.opening_rank ?? '', item.closing_rank ?? '', item.year ?? '', `"${item.round || ''}"`
+                ]);
+                let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + rows.map(e => e.join(",")).join("\n");
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "wbjee_shortlist.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            function showInputErrorModal() {
+                const modal = document.getElementById('input-error-modal');
+                const message = document.getElementById('input-error-message');
+
+                message.textContent = 'Please enter your WBJEE rank.';
+                modal.classList.remove('hidden');
+            }
+
+            initializeApp();
+        });
+    </script>
+</body>
+</html>
