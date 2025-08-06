@@ -1922,12 +1922,9 @@
                         const multiplier = getDynamicMultiplier(userRank);
                         const maxDisplayRank = Math.round(userRank * multiplier);
 
-                        filteredData = allData.filter(item => {
-                            // Filter by rank range: show colleges where user has a realistic chance
-                            // User can get into colleges where closing_rank is between user_rank and maxDisplayRank
-                            if (item.closing_rank === null || 
-                                item.closing_rank < userRank || 
-                                item.closing_rank > maxDisplayRank) {
+                        // First, get all colleges within the reasonable range
+                        let allRelevantData = allData.filter(item => {
+                            if (item.closing_rank === null || item.closing_rank > maxDisplayRank) {
                                 return false;
                             }
                             
@@ -1939,6 +1936,20 @@
                             }
                             return true;
                         });
+
+                        // Separate colleges into "realistic chances" and "no chance"
+                        const realisticChances = allRelevantData.filter(item => item.closing_rank >= userRank);
+                        const noChanceOptions = allRelevantData.filter(item => item.closing_rank < userRank);
+
+                        // Limit "No Chance" options to colleges with closing rank >= 70% of user's rank
+                        // This prevents showing colleges that are way out of reach (e.g., rank 1000 showing colleges with closing rank 50)
+                        const minNoChanceRank = Math.round(userRank * 0.7); // 70% of user's rank
+                        const limitedNoChanceOptions = noChanceOptions
+                            .filter(item => item.closing_rank >= minNoChanceRank)
+                            .sort((a, b) => a.closing_rank - b.closing_rank);
+
+                        // Combine realistic chances with limited no chance options
+                        filteredData = [...realisticChances, ...limitedNoChanceOptions];
                     }
                     
                     const userRank = parseInt(activeFilters.rank, 10);
@@ -4090,6 +4101,9 @@
 
     </script>
 
-
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
