@@ -1,10 +1,9 @@
 const CACHE_NAME = 'wbjee-finder-v5';
 const urlsToCache = [
   '/',
-  '/index.html',
-  '/manifest.json',
-  '/api/data',
-  '/api/compression-status',
+  '/predictor/index.html',
+  '/predictor/manifest.json',
+  '/predictor/data.json',
 ];
 
 self.addEventListener('install', (event) => {
@@ -64,4 +63,4 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
-}); 
+});

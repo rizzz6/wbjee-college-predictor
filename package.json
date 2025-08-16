@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "wbjee-college-predictor",
   "version": "1.0.0",
   "description": "WBJEE College/Branch Finder with API protection",
@@ -15,26 +16,9 @@
     "express": "^4.18.2",
     "express-rate-limit": "^6.11.2"
   },
+=======
+>>>>>>> subdirectory-move
   "devDependencies": {
-    "autoprefixer": "^10.4.21",
-    "nodemon": "^3.1.10",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.1"
-  },
-  "keywords": [
-    "wbjee",
-    "college",
-    "predictor"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rizzz6/wbjee-college-predictor.git"
-  },
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/rizzz6/wbjee-college-predictor/issues"
-  },
-  "homepage": "https://github.com/rizzz6/wbjee-college-predictor#readme"
+    "prettier": "3.6.2"
+  }
 }
