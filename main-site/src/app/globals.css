@@ -1,0 +1,4 @@
+@config "../../tailwind.config.ts";
+@import "tailwindcss";
+
+/* Global light/dark background defaults can be controlled via classes; keep minimal base styles */

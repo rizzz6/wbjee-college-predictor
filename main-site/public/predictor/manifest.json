@@ -1,8 +1,8 @@
-{
+﻿{
   "name": "WBJEE College/Branch Finder",
   "short_name": "WBJEE Finder",
   "description": "Free WBJEE college predictor tool to find colleges and branches based on your rank",
-  "start_url": "/",
+  "start_url": "/predictor/",
   "display": "standalone",
   "background_color": "#FFFCF2",
   "theme_color": "#53AC5D",
