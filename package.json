@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "name": "wbjee-college-predictor",
   "version": "1.0.0",
   "description": "WBJEE College/Branch Finder with API protection",
@@ -16,8 +15,6 @@
     "express": "^4.18.2",
     "express-rate-limit": "^6.11.2"
   },
-=======
->>>>>>> subdirectory-move
   "devDependencies": {
     "prettier": "3.6.2"
   }
