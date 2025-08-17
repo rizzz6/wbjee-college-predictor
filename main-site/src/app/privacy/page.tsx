@@ -36,14 +36,14 @@ export default function PrivacyPolicyPage() {
         The security of your data is important to us, but remember that no method of transmission over the Internet or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your data, we cannot guarantee its absolute security.
       </p>
 
-      <h4 className="text-lg font-bold mt-6 mb-2">6. Children's Privacy</h4>
+      <h4 className="text-lg font-bold mt-6 mb-2">6. Children&apos;s Privacy</h4>
       <p className="mb-6">
         Our Service is intended for students, some of whom may be under the age of 18. We do not knowingly collect personally identifiable information from anyone under the age of 13. If you are a parent or guardian and you are aware that your child has provided us with Personal Data, please contact us so we can take appropriate action.
       </p>
 
       <h4 className="text-lg font-bold mt-6 mb-2">7. Links to Other Websites</h4>
       <p className="mb-6">
-        Our Service may contain links to other websites that are not operated by us. If you click on a third-party link, you will be directed to that third party's site. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party sites or services.
+        Our Service may contain links to other websites that are not operated by us. If you click on a third-party link, you will be directed to that third party&apos;s site. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party sites or services.
       </p>
 
       <h4 className="text-lg font-bold mt-6 mb-2">8. Changes to This Privacy Policy</h4>

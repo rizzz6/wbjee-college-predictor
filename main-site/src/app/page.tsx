@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, type Variants, useInView, animate } from "framer-motion";
+import Image from "next/image";
 import {
   PencilSquareIcon,
   PresentationChartBarIcon,
@@ -166,18 +167,22 @@ function JoinCommunity() {
       <div className="max-w-7xl mx-auto px-4 py-16 md:py-20">
         <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
           <div>
-            <img
+            <Image
               src={subredditData?.banner_background_image.split('?')[0] || "https://styles.redditmedia.com/t5_910ggt/styles/bannerBackgroundImage_87tgbzaljjxe1.png"}
               alt="Subreddit Banner"
               className="w-full h-32 object-cover"
+              width={1200}
+              height={128}
             />
           </div>
           <div className="p-4 md:p-6 bg-white dark:bg-gray-800">
             <div className="flex items-center">
-              <img
+              <Image
                 src={subredditData?.icon_img.split('?')[0] || "https://styles.redditmedia.com/t5_910ggt/styles/communityIcon_t8j2nugd23j71.png"}
                 alt="Subreddit Icon"
                 className="w-16 h-16 rounded-full border-4 border-white dark:border-gray-800"
+                width={64}
+                height={64}
               />
               <div className="ml-4">
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white">{subredditData?.display_name_prefixed || 'r/wbjee'}</h2>

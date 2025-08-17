@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
+import { SunIcon, MoonIcon } from '@heroicons/react/24/outline'
 import Link from "next/link";
 import { useAppTheme } from "../providers";
 
@@ -30,12 +30,12 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/70 backdrop-blur border-b border-gray-100 dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-4">
         <div className="h-16 flex items-center justify-between">
-          <a href="/" className="text-2xl font-bold tracking-tight text-red-600 dark:text-red-400">
+          <Link href="/" className="text-2xl font-bold tracking-tight text-red-600 dark:text-red-400">
             r/wbjee Companion
-          </a>
+          </Link>
 
           <nav className="hidden md:flex items-center gap-6 text-gray-700 dark:text-gray-200">
-            <a href="/#home" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Home</a>
+            <Link href="/#home" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Home</Link>
             
             <ThemeToggle />
           </nav>
