@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { SunIcon, MoonIcon, UserIcon } from "@heroicons/react/24/outline";
+import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 import { useAppTheme } from "../providers";
 
 function ThemeToggle() {
@@ -53,7 +54,7 @@ export default function Navbar() {
         {open && (
           <div className="md:hidden pb-4">
             <nav className="flex flex-col gap-3 text-gray-700 dark:text-gray-200">
-              <a href="/#home" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Home</a>
+              <Link href="/#home" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Home</Link>
               
               <ThemeToggle />
             </nav>

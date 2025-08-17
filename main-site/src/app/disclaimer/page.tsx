@@ -3,10 +3,10 @@ export default function DisclaimerPage() {
     <div className="max-w-4xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-4">Disclaimer</h1>
 
-      <p className="mb-6">The information provided by <strong>r/wbjee companion</strong> ("we," "us," or "our") on <strong>wbjeesubreddit.wiki</strong> (the "Site") is for general informational and educational purposes only. All information on the Site is provided in good faith, however, we make no representation or warranty of any kind, express or implied, regarding the accuracy, adequacy, validity, reliability, availability, or completeness of any information on the Site.</p>
+      <p className="mb-4">This is a placeholder for the Disclaimer page.</p>
 
       <h4 className="text-lg font-bold mt-6 mb-2">1. Not Official or Affiliated with WBJEE</h4>
-      <p className="mb-6">This Site is an unofficial, student-run community resource. It is not affiliated with, endorsed by, or in any way officially connected with the <strong>West Bengal Joint Entrance Examinations Board (WBJEEB)</strong> or any of its subsidiaries or its affiliates. The official WBJEE website can be found at [wbjeeb.nic.in]. The name "WBJEE" is a trademark of the WBJEEB.</p>
+      <p className="mb-6">This Site is an unofficial, student-run community resource. It is not affiliated with, endorsed by, or in any way officially connected with the &quot;West Bengal Joint Entrance Examinations Board (WBJEEB)&quot; or any of its subsidiaries or its affiliates. The official WBJEE website can be found at [wbjeeb.nic.in]. The name &quot;WBJEE&quot; is a trademark of the WBJEEB.</p>
 
       <h4 className="text-lg font-bold mt-6 mb-2">2. No Professional Advice</h4>
       <p className="mb-6">The information on this Site is not intended as, and shall not be understood or construed as, professional academic, career, or legal advice. The content, including study materials, tips, and user comments, represents personal opinions and shared knowledge from the community. You should consult with a qualified professional before making any decisions based on the information provided here. Your reliance on any information on this Site is solely at your own risk.</p>

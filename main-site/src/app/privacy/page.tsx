@@ -4,7 +4,7 @@ export default function PrivacyPolicyPage() {
       <h1 className="text-3xl font-bold mb-4">Privacy Policy</h1>
 
       <p className="mt-4 mb-6">
-        <strong>r/wbjee companion</strong> ("us," "we," or "our") operates the <strong>wbjeesubreddit.wiki</strong> website (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.
+        <strong>r/wbjee companion</strong> (&quot;us,&quot; &quot;we,&quot; or &quot;our&quot;) operates the <strong>wbjeesubreddit.wiki</strong> website (the &quot;Service&quot;). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.
       </p>
 
       <h4 className="text-lg font-bold mt-6 mb-2">1. Information We Collect</h4>
