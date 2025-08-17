@@ -3,9 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, type Variants, useInView, animate } from "framer-motion";
 import {
-  SunIcon,
-  MoonIcon,
-  UserIcon,
   PencilSquareIcon,
   PresentationChartBarIcon,
   CheckBadgeIcon,
@@ -225,7 +222,7 @@ export default function Page() {
       <Hero />
       <HowItWorks />
       <JoinCommunity />
-      <Footer />
+      
     </div>
   );
 }
