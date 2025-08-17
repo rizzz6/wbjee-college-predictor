@@ -26,15 +26,7 @@ export default function Footer() {
           <p className="text-sm text-gray-600 dark:text-gray-300">
             For any queries or suggestions, feel free to reach out on Reddit.
           </p>
-          <a
-              href="https://www.reddit.com/u/rizzz6"
-            target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-            >
-              <UserIcon className="w-4 h-4 text-gray-700 dark:text-gray-200" />
-              <span className="text-gray-700 dark:text-gray-200">Contact u/rizzz6</span>
-            </a>
+          
           <p className="text-sm text-gray-500 dark:text-gray-400">#Aazadi</p>
         </div>
       </div>
