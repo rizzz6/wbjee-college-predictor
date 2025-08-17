@@ -1,3 +1,3 @@
-# WBJEE College Predictor
+# rwbjee companion
  
 Find your potential colleges based on WBJEE rank. 
