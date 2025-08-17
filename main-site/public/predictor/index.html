@@ -2551,10 +2551,7 @@
             function renderTable() {
                 tableBody.innerHTML = '';
 
-                if (isVirtualScrollEnabled) {
-                    virtualScrollData = [...filteredData];
-                    handleVirtualScroll();
-                }
+                
 
                 const totalItems = filteredData.length;
                 const totalPages = entriesPerPage === 'all' ? 1 : Math.ceil(totalItems / entriesPerPage);
