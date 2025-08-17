@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 const PREDICTOR_ORIGIN = "https://wbjee-college-predictor.vercel.app";
 
 const nextConfig: NextConfig = {
+  images: {
+    domains: ["styles.redditmedia.com", "i.redd.it", "b.thumbs.redditmedia.com"],
+  },
   async rewrites() {
     return [
       // Serve local static predictor

@@ -166,19 +166,19 @@ function JoinCommunity() {
     <section className="bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-16 md:py-20">
         <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-          <div>
+          <div className="relative h-32">
             <Image
               src={subredditData?.banner_background_image.split('?')[0] || "https://styles.redditmedia.com/t5_910ggt/styles/bannerBackgroundImage_87tgbzaljjxe1.png"}
               alt="Subreddit Banner"
-              className="w-full h-32 object-cover"
-              width={1200}
-              height={128}
+              fill
+              className="object-cover"
+              priority
             />
           </div>
           <div className="p-4 md:p-6 bg-white dark:bg-gray-800">
             <div className="flex items-center">
               <Image
-                src={subredditData?.icon_img.split('?')[0] || "https://styles.redditmedia.com/t5_910ggt/styles/communityIcon_t8j2nugd23j71.png"}
+                src={subredditData?.icon_img ? subredditData.icon_img.split('?')[0] : "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"}
                 alt="Subreddit Icon"
                 className="w-16 h-16 rounded-full border-4 border-white dark:border-gray-800"
                 width={64}
