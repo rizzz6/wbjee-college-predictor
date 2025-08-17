@@ -20,15 +20,6 @@ export default function Footer() {
           <div className="flex items-center gap-6 text-gray-700 dark:text-gray-200">
             <a href="/privacy" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Privacy Policy</a>
             <a href="/disclaimer" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Disclaimer</a>
-            <a
-              href="https://www.reddit.com/u/rizzz6"
-            target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-            >
-              <UserIcon className="w-4 h-4 text-gray-700 dark:text-gray-200" />
-              <span className="text-gray-700 dark:text-gray-200">Contact u/rizzz6</span>
-            </a>
           </div>
         </div>
         <div className="mt-4 flex flex-col md:flex-row items-center justify-between gap-4">
