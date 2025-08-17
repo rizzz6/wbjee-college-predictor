@@ -64,18 +64,7 @@ export default function Navbar() {
           <div className="md:hidden pb-4">
             <nav className="flex flex-col gap-3 text-gray-700 dark:text-gray-200">
               <a href="/#home" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Home</a>
-              <a href="/#about" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>About</a>
-              <a href="/#contact" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Contact</a>
-              <a
-                href="https://www.reddit.com/u/rizzz6"
-          target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                onClick={() => setOpen(false)}
-              >
-                <UserIcon className="w-4 h-4 text-gray-700 dark:text-gray-200" />
-                <span>Contact u/rizzz6</span>
-              </a>
+              
               <ThemeToggle />
             </nav>
           </div>
