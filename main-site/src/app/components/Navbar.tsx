@@ -35,17 +35,7 @@ export default function Navbar() {
 
           <nav className="hidden md:flex items-center gap-6 text-gray-700 dark:text-gray-200">
             <a href="/#home" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Home</a>
-            <a href="/#about" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">About</a>
-            <a href="/#contact" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Contact</a>
-            <a
-              href="https://www.reddit.com/u/rizzz6"
-            target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-            >
-              <UserIcon className="w-4 h-4 text-gray-700 dark:text-gray-200" />
-              <span className="text-gray-700 dark:text-gray-200">Contact u/rizzz6</span>
-            </a>
+            
             <ThemeToggle />
           </nav>
 
