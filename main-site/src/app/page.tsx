@@ -150,17 +150,51 @@ interface SubredditData {
 
 function JoinCommunity() {
   const [subredditData, setSubredditData] = useState<SubredditData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("https://www.reddit.com/r/wbjee/about.json")
-      .then((response) => response.json())
+    fetch("/api/reddit-data")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) => {
         setSubredditData(data.data);
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching Reddit subreddit data:", error);
+        setError(error.message);
+        setLoading(false);
       });
   }, []);
+
+  if (loading) {
+    return (
+      <section className="bg-white dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-4 py-16 md:py-20 text-center">
+          <p className="text-gray-500 dark:text-gray-300">Loading subreddit data...</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="bg-white dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-4 py-16 md:py-20 text-center">
+          <p className="text-red-500">Error loading subreddit data: {error}</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (!subredditData) {
+    return null; // Or a message indicating no data
+  }
 
   return (
     <section className="bg-white dark:bg-gray-900">
