@@ -9,51 +9,51 @@
     <!-- Critical CSS for dark mode - inline to ensure immediate loading -->
     <style>
         /* Critical dark mode styles that must load immediately */
-        html.dark .dark\\:text-white {
+        html.dark .dark\:text-white {
             color: rgb(255 255 255) !important;
         }
 
-        html.dark .dark\\:text-gray-100 {
+        html.dark .dark\:text-gray-100 {
             color: rgb(243 244 246) !important;
         }
 
-        html.dark .dark\\:text-gray-200 {
+        html.dark .dark\:text-gray-200 {
             color: rgb(229 231 235) !important;
         }
 
-        html.dark .dark\\:text-gray-300 {
+        html.dark .dark\:text-gray-300 {
             color: rgb(209 213 219) !important;
         }
 
-        html.dark .dark\\:text-gray-400 {
+        html.dark .dark\:text-gray-400 {
             color: rgb(156 163 175) !important;
         }
 
-        html.dark .dark\\:bg-gray-700 {
+        html.dark .dark\:bg-gray-700 {
             background-color: rgb(55 65 81) !important;
         }
 
-        html.dark .dark\\:bg-gray-800 {
+        html.dark .dark\:bg-gray-800 {
             background-color: rgb(31 41 55) !important;
         }
 
-        html.dark .dark\\:border-gray-600 {
+        html.dark .dark\:border-gray-600 {
             border-color: rgb(75 85 99) !important;
         }
 
-        html.dark .dark\\:bg-white {
+        html.dark .dark\:bg-white {
             background-color: rgb(31 41 55) !important;
         }
 
-        html.dark .dark\\:bg-gray-50 {
+        html.dark .dark\:bg-gray-50 {
             background-color: rgb(55 65 81) !important;
         }
 
-        html.dark .dark\\:border-gray-200 {
+        html.dark .dark\:border-gray-200 {
             border-color: rgb(75 85 99) !important;
         }
 
-        html.dark .dark\\:border-gray-300 {
+        html.dark .dark\:border-gray-300 {
             border-color: rgb(75 85 99) !important;
         }
 
@@ -473,35 +473,35 @@
         }
 
         /* Force dark mode styles with higher specificity */
-        html.dark .dark\\:text-white {
+        html.dark .dark\:text-white {
             color: rgb(255 255 255) !important;
         }
 
-        html.dark .dark\\:text-gray-100 {
+        html.dark .dark\:text-gray-100 {
             color: rgb(243 244 246) !important;
         }
 
-        html.dark .dark\\:text-gray-200 {
+        html.dark .dark\:text-gray-200 {
             color: rgb(229 231 235) !important;
         }
 
-        html.dark .dark\\:text-gray-300 {
+        html.dark .dark\:text-gray-300 {
             color: rgb(209 213 219) !important;
         }
 
-        html.dark .dark\\:text-gray-400 {
+        html.dark .dark\:text-gray-400 {
             color: rgb(156 163 175) !important;
         }
 
-        html.dark .dark\\:bg-gray-700 {
+        html.dark .dark\:bg-gray-700 {
             background-color: rgb(55 65 81) !important;
         }
 
-        html.dark .dark\\:bg-gray-800 {
+        html.dark .dark\:bg-gray-800 {
             background-color: rgb(31 41 55) !important;
         }
 
-        html.dark .dark\\:border-gray-600 {
+        html.dark .dark\:border-gray-600 {
             border-color: rgb(75 85 99) !important;
         }
 
@@ -1317,7 +1317,11 @@
                 </div>
                 <div class="flex flex-wrap justify-end gap-4">
 
-                    
+                    <button id="toggle-smart-filter-btn" type="button"
+                        class="action-button px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                        style="outline: none !important; box-shadow: none !important; border: 1px solid transparent;">
+                        Disable Smart Filtering
+                    </button>
 
                     <div class="relative">
                         <button id="export-share-dropdown-btn"
@@ -1585,17 +1589,6 @@
                         </ol>
                     </div>
                     <div>
-                        <h4 class="font-semibold text-lg mb-2 text-gray-900 dark:text-white">Relevant Options Filtering
-                        </h4>
-                        <div
-                            class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4">
-                            <p class="text-sm text-blue-700 dark:text-blue-300">The filters automatically show only
-                                relevant options within 1.5x of your rank. This means if you enter rank 1000, you'll see
-                                colleges with closing ranks up to 1500, making your search more focused and practical.
-                            </p>
-                        </div>
-                    </div>
-                    <div>
                         <h4 class="font-semibold text-lg mb-2 text-gray-900 dark:text-white">Predictions</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                             <div class="flex items-center gap-2">
@@ -1638,7 +1631,7 @@
                             <p class="text-sm text-yellow-800 dark:text-yellow-200 mb-3"><strong>🎯 Recommended
                                     Sorting:</strong></p>
                             <ul class="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
-                                <li>• <strong>Sort by Prediction</strong> (No Chance â†’ Confirm) to see your best
+                                <li>• <strong>Sort by Prediction</strong> (No Chance → Confirm) to see your best
                                     chances first</li>
                                 <li>• <strong>Use filters</strong> to focus on specific colleges, branches, or
                                     categories</li>
@@ -1672,14 +1665,14 @@
                         </ul>
                     </div>
                     <div>
-                        <h4 class="font-semibold text-lg mb-2 text-gray-900 dark:text-white">Smart Dynamic Filtering
+                        <h4 class="font-semibold text-lg mb-2 text-gray-900 dark:text-white">Smart Filtering
                         </h4>
                         <div
                             class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4">
                             <p class="text-sm text-blue-700 dark:text-blue-300">Our intelligent filtering adapts
                                 smoothly to your rank. Top ranks (1-100) get wider ranges (up to 3x), mid ranks
                                 (100-3000) get moderate ranges (1.5-2.2x), and higher ranks get focused ranges (minimum
-                                1.5x). This provides personalized, realistic options without sudden jumps.</p>
+                                1.5x). This provides personalized, realistic options without sudden jumps. You can disable this feature by clicking the "Disable Smart Filtering" button.</p>
                         </div>
                     </div>
                 </div>
@@ -1981,6 +1974,7 @@
             let favorites = new Set();
             let isShowingFavorites = false;
             let isTieringEnabled = true;
+            let isSmartFilteringEnabled = true;
             let sortState = { column: null, direction: 'none', type: 'string' };
             let currentPage = 1;
             let entriesPerPage = 50;
@@ -2286,35 +2280,47 @@
                         } else {
                             const userRank = parseInt(activeFilters.rank, 10);
 
-                            // Smooth dynamic multiplier: eliminates cliff effects
-                            // Formula: max(1.5, 3 - (log10(rank) * 0.425))
-                            const getDynamicMultiplier = (rank) => {
-                                if (rank <= 0) return 1.5;
-                                const logRank = Math.log10(rank);
-                                const multiplier = 3 - (logRank * 0.425);
-                                return Math.max(1.5, multiplier);
-                            };
+                            if (isSmartFilteringEnabled) {
+                                // Smooth dynamic multiplier: eliminates cliff effects
+                                // Formula: max(1.5, 3 - (log10(rank) * 0.425))
+                                const getDynamicMultiplier = (rank) => {
+                                    if (rank <= 0) return 1.5;
+                                    const logRank = Math.log10(rank);
+                                    const multiplier = 3 - (logRank * 0.425);
+                                    return Math.max(1.5, multiplier);
+                                };
 
-                            const multiplier = getDynamicMultiplier(userRank);
-                            const maxDisplayRank = Math.round(userRank * multiplier);
+                                const multiplier = getDynamicMultiplier(userRank);
+                                const maxDisplayRank = Math.round(userRank * multiplier);
 
-                            filteredData = allData.filter(item => {
-                                // Filter by rank range: show colleges where user has a realistic chance
-                                // User can get into colleges where closing_rank is between user_rank and maxDisplayRank
-                                if (item.closing_rank === null ||
-                                    item.closing_rank < userRank ||
-                                    item.closing_rank > maxDisplayRank) {
-                                    return false;
-                                }
-
-                                // Apply other filters
-                                for (const key of filterKeys) {
-                                    if (activeFilters[key].length > 0 && !activeFilters[key].includes(String(item[key]))) {
+                                filteredData = allData.filter(item => {
+                                    // Filter by rank range: show colleges where user has a realistic chance
+                                    // User can get into colleges where closing_rank is between user_rank and maxDisplayRank
+                                    if (item.closing_rank === null ||
+                                        item.closing_rank < userRank ||
+                                        item.closing_rank > maxDisplayRank) {
                                         return false;
                                     }
-                                }
-                                return true;
-                            });
+
+                                    // Apply other filters
+                                    for (const key of filterKeys) {
+                                        if (activeFilters[key].length > 0 && !activeFilters[key].includes(String(item[key]))) {
+                                            return false;
+                                        }
+                                    }
+                                    return true;
+                                });
+                            } else {
+                                filteredData = allData.filter(item => {
+                                    // Apply other filters
+                                    for (const key of filterKeys) {
+                                        if (activeFilters[key].length > 0 && !activeFilters[key].includes(String(item[key]))) {
+                                            return false;
+                                        }
+                                    }
+                                    return true;
+                                });
+                            }
                         }
 
                         const userRank = parseInt(activeFilters.rank, 10);
@@ -2971,10 +2977,10 @@
                         
                         <div class="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                             <button onclick="shareCollege('${instituteName}')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                ðŸ“¤ Share College
+                                📤 Share College
                             </button>
                             <button onclick="addAllBranchesToFavorites('${instituteName}')" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
-                                â­ Add All to Shortlist
+                                ⭐ Add All to Shortlist
                             </button>
                         </div>
                     </div>
@@ -3033,6 +3039,16 @@
                     localStorage.removeItem('wbjeeFilters');
                     applyFiltersAndRender(false);
                 });
+
+                const toggleSmartFilterBtn = document.getElementById('toggle-smart-filter-btn');
+                if (toggleSmartFilterBtn) {
+                    toggleSmartFilterBtn.addEventListener('click', () => {
+                        isSmartFilteringEnabled = !isSmartFilteringEnabled;
+                        const buttonText = isSmartFilteringEnabled ? 'Disable Smart Filtering' : 'Enable Smart Filtering';
+                        toggleSmartFilterBtn.innerHTML = `<span class="text-gray-700 dark:text-gray-300">${buttonText}</span>`;
+                        applyFiltersAndRender(false);
+                    });
+                }
 
 
 
