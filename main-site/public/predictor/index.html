@@ -1243,6 +1243,7 @@
                 <div id="quota-filter" class="relative filter-dropdown"></div>
                 <div id="seat_type-filter" class="relative filter-dropdown"></div>
             </div>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">After selecting filters or entering rank, please click the "Search Colleges" button to update the table.</p>
             <div class="flex items-center flex-nowrap gap-4 mt-4">
                 <div id="tiering-toggle-container" class="flex items-center gap-2">
                     <button id="tiering-btn" type="button"
@@ -1320,7 +1321,7 @@
                     <button id="toggle-smart-filter-btn" type="button"
                         class="action-button px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                         style="outline: none !important; box-shadow: none !important; border: 1px solid transparent;">
-                        Disable Smart Filtering
+                        Enable Smart Filtering
                     </button>
 
                     <div class="relative">
@@ -1974,7 +1975,7 @@
             let favorites = new Set();
             let isShowingFavorites = false;
             let isTieringEnabled = true;
-            let isSmartFilteringEnabled = true;
+            let isSmartFilteringEnabled = false;
             let sortState = { column: null, direction: 'none', type: 'string' };
             let currentPage = 1;
             let entriesPerPage = 50;
