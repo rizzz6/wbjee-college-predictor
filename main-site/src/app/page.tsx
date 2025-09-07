@@ -8,8 +8,7 @@ import {
   PresentationChartBarIcon,
   CheckBadgeIcon,
 } from "@heroicons/react/24/outline";
-
-
+import FAQAccordionHome from "./components/FAQAccordionHome";
 
 
 function Hero() {
@@ -24,10 +23,10 @@ function Hero() {
           className="max-w-3xl"
         >
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-800 dark:text-white">
-            See Your WBJEE College Options, Instantly.
+            WBJEE College Predictor – Instantly See Your College Options
           </h1>
           <p className="mt-4 text-lg md:text-xl text-gray-500 dark:text-gray-300">
-            Instantly discover the engineering and pharmacy colleges you can get into based on your WBJEE 2025 rank.
+            Instantly discover the engineering and pharmacy colleges you can get into based on your WBJEE 2025 rank using our <a href="/predictor" className="text-red-600 underline hover:text-red-800">College Predictor</a>.
           </p>
           <div className="mt-8">
             <a
@@ -84,7 +83,7 @@ function HowItWorks() {
               <PresentationChartBarIcon className="w-6 h-6" />
             </div>
             <h3 className="mt-4 text-lg font-semibold text-gray-800 dark:text-white">View Predictions</h3>
-            <p className="mt-2 text-gray-500 dark:text-gray-300">Our algorithm instantly shows you a list of colleges based on previous years&#39; data.</p>
+            <p className="mt-2 text-gray-500 dark:text-gray-300">Our algorithm instantly shows you a list of colleges based on previous years&apos; data.</p>
           </motion.div>
 
           <motion.div
@@ -154,7 +153,7 @@ function JoinCommunity() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("https://www.reddit.com/r/wbjee/about.json")
+    fetch("/api/reddit")
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -203,7 +202,7 @@ function JoinCommunity() {
           <div className="relative h-32">
             <Image
               src={subredditData?.banner_background_image.split('?')[0] || "https://styles.redditmedia.com/t5_910ggt/styles/bannerBackgroundImage_87tgbzaljjxe1.png"}
-              alt="Subreddit Banner"
+              alt="r/wbjee subreddit community banner - Join the WBJEE discussion community"
               fill
               className="object-cover"
               priority
@@ -213,7 +212,7 @@ function JoinCommunity() {
             <div className="flex items-center">
               <Image
                 src={subredditData?.icon_img ? subredditData.icon_img.split('?')[0] : "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"}
-                alt="Subreddit Icon"
+                alt="r/wbjee subreddit community icon - WBJEE discussion forum"
                 className="w-16 h-16 rounded-full border-4 border-white dark:border-gray-800"
                 width={64}
                 height={64}
@@ -251,17 +250,93 @@ function JoinCommunity() {
 }
 
 
-
-
-
 export default function Page() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-      
       <Hero />
       <HowItWorks />
       <JoinCommunity />
-      
+      <FAQAccordionHome />
+
+      {/* Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Is this the official WBJEE site?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No, this is not the official WBJEE website. For official information, visit wbjeeb.nic.in."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How accurate is the predictor?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The predictor uses previous years' data to estimate your probable rank or college. Actual results may vary. Use it as a guide, not a guarantee."
+                }
+              }
+            ]
+          })
+        }}
+      />
+
+      {/* Organization structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "WBJEE College Predictor",
+            "url": "https://wbjeesubreddit.wiki",
+            "logo": "https://wbjeesubreddit.wiki/og-image.svg",
+            "description": "Free WBJEE college predictor tool 2025. Find engineering colleges and branches in West Bengal based on your WBJEE rank.",
+            "founder": {
+              "@type": "Person",
+              "name": "rizzz6"
+            },
+            "sameAs": [
+              "https://www.reddit.com/r/wbjee/"
+            ]
+          })
+        }}
+      />
+
+      {/* WebApplication structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "WBJEE College Predictor",
+            "url": "https://wbjeesubreddit.wiki",
+            "description": "Free WBJEE college predictor tool to find colleges and branches based on your rank",
+            "applicationCategory": "EducationalApplication",
+            "operatingSystem": "Web Browser",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "INR"
+            },
+            "featureList": [
+              "College prediction based on WBJEE rank",
+              "Branch-wise cutoff analysis",
+              "Historical trend analysis",
+              "Filter by college, branch, category",
+              "Export results to CSV",
+              "Mobile responsive design"
+            ]
+          })
+        }}
+      />
     </div>
   );
 }

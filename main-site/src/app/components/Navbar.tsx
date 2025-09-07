@@ -36,7 +36,9 @@ export default function Navbar() {
 
           <nav className="hidden md:flex items-center gap-6 text-gray-700 dark:text-gray-200">
             <Link href="/#home" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Home</Link>
-            
+            <Link href="/predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Predictor</Link>
+            <a href="/legacy-predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Legacy Predictor</a>
+            <Link href="/rank-finder" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Rank Finder</Link>
             <ThemeToggle />
           </nav>
 
@@ -55,7 +57,9 @@ export default function Navbar() {
           <div className="md:hidden pb-4">
             <nav className="flex flex-col gap-3 text-gray-700 dark:text-gray-200">
               <Link href="/#home" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Home</Link>
-              
+              <Link href="/predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Predictor</Link>
+              <a href="/legacy-predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Legacy Predictor</a>
+              <Link href="/rank-finder" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Rank Finder</Link>
               <ThemeToggle />
             </nav>
           </div>

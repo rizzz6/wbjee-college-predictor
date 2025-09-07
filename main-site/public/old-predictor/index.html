@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/predictor/output.css" rel="stylesheet" onload="window.cssLoaded = true;">
+    <link href="/legacy-predictor/output.css" rel="stylesheet" onload="window.cssLoaded = true;">
 
     <!-- Critical CSS for dark mode - inline to ensure immediate loading -->
     <style>
@@ -128,7 +128,7 @@
 
     <link rel="canonical" href="https://wbjee-college-predictor.vercel.app/">
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/predictor/sitemap.xml">
-    <link rel="manifest" href="/predictor/manifest.json">
+    <link rel="manifest" href="/legacy-predictor/manifest.json">
     <link rel="icon" type="image/svg+xml"
         href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjNTNBQzVEIi8+Cjx0ZXh0IHg9IjE2IiB5PSIyMiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+V0I8L3RleHQ+Cjwvc3ZnPgo=">
     <link rel="apple-touch-icon"
@@ -1956,7 +1956,7 @@
             });
 
             const CONFIG = {
-                JSON_FILE_PATH: '/predictor/data.json', // Changed to API endpoint
+                JSON_FILE_PATH: 'data.json', // Changed to API endpoint
                 PREDICTIONS: [
                     { name: 'Confirm', threshold: 0.5, color: 'text-green-500', class: 'rank-confirm' },
                     { name: 'Great', threshold: 0.75, color: 'text-blue-500', class: 'rank-great' },

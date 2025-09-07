@@ -3,8 +3,6 @@ export default function DisclaimerPage() {
     <div className="max-w-4xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-4">Disclaimer</h1>
 
-      <p className="mb-4">This is a placeholder for the Disclaimer page.</p>
-
       <h4 className="text-lg font-bold mt-6 mb-2">1. Not Official or Affiliated with WBJEE</h4>
       <p className="mb-6">This Site is an unofficial, student-run community resource. It is not affiliated with, endorsed by, or in any way officially connected with the &quot;West Bengal Joint Entrance Examinations Board (WBJEEB)&quot; or any of its subsidiaries or its affiliates. The official WBJEE website can be found at [wbjeeb.nic.in]. The name &quot;WBJEE&quot; is a trademark of the WBJEEB.</p>
 

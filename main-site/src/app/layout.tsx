@@ -4,7 +4,7 @@ import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Providers from "./providers";
-import Script from "next/script";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,9 +17,85 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "r/wbjee Companion",
+  title: "WBJEE College Predictor 2025 - Free College Finder Tool",
   description:
-    "From WBJEE Rank to Dream College. Find your predicted college and join the discussion with the Reddit community.",
+    "Free WBJEE college predictor tool 2025. Find engineering colleges and branches in West Bengal based on your WBJEE rank. Get detailed analysis, cutoff trends, admission chances, and college comparison for Jadavpur University, Calcutta University, and other top engineering colleges. Instant results, mobile-friendly, and completely free to use.",
+  keywords: [
+    "WBJEE 2025",
+    "WBJEE college finder",
+    "WBJEE rank predictor",
+    "WBJEE college predictor",
+    "WBJEE cutoff 2025",
+    "engineering colleges West Bengal",
+    "WBJEE admission",
+    "WBJEE rank calculator",
+    "WBJEE college list",
+    "WBJEE branch finder",
+    "Jadavpur University",
+    "Calcutta University",
+    "engineering admission West Bengal",
+    "WBJEE counseling",
+    "WBJEE rank analysis",
+    "WBJEE seat allotment",
+    "WBJEE merit list",
+    "engineering colleges Kolkata",
+    "WBJEE 2025 cutoff",
+    "WBJEE admission process"
+  ],
+  authors: [{ name: "rizzz6" }],
+  creator: "rizzz6",
+  publisher: "WBJEE College Predictor",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://wbjeesubreddit.wiki'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: "WBJEE College Predictor 2025 - Free College Finder Tool",
+    description:
+      "Free WBJEE college predictor tool 2025. Find engineering colleges and branches in West Bengal based on your WBJEE rank. Get detailed analysis, cutoff trends, admission chances, and college comparison for Jadavpur University, Calcutta University, and other top engineering colleges.",
+    url: "https://wbjeesubreddit.wiki",
+    siteName: "WBJEE College Predictor",
+    images: [
+      {
+        url: "/og-image.svg",
+        width: 1200,
+        height: 630,
+        alt: "WBJEE College Predictor - Find Your Perfect Engineering College",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "WBJEE College Predictor 2025 - Free College Finder Tool",
+    description:
+      "Free WBJEE college predictor tool 2025. Find engineering colleges and branches in West Bengal based on your WBJEE rank...",
+    images: ["/og-image.svg"],
+    creator: "@rizzz6",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "your-google-site-verification-code",
+  },
+  category: "education",
 };
 
 export default function RootLayout({
@@ -30,23 +106,34 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <Script id="theme-init" strategy="beforeInteractive">
-          {`
-            try {
-              var t = localStorage.getItem('theme') || localStorage.getItem('wbjeeTheme') || 'light';
-              var root = document.documentElement;
-              root.classList.remove('light','dark');
-              document.body && document.body.classList.remove('light','dark');
-              if (t === 'dark') {
-                root.classList.add('dark');
-                document.body && document.body.classList.add('dark');
-              }
-              document.documentElement.style.colorScheme = t;
-            } catch (err) {}
-          `}
-        </Script>
+        {/* Google Analytics */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y5WXZ7Q4Q2"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-Y5WXZ7Q4Q2');
+            `,
+          }}
+        />
+
+        {/* Theme initialization */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                var theme = localStorage.getItem('theme') || localStorage.getItem('wbjeeTheme') || 'light';
+                if (theme === 'dark') {
+                  document.documentElement.classList.add('dark');
+                }
+              })();
+            `,
+          }}
+        />
       </head>
-      <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-white`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-white`}>
         <Providers>
           <Navbar />
           {children}

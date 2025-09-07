@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://wbjee-college-predictor.vercel.app/sitemap.xml
+Sitemap: https://wbjeesubreddit.wiki/sitemap.xml
  
 # Crawl-delay
 Crawl-delay: 1 
