@@ -33,8 +33,7 @@ const nextConfig: NextConfig = {
 
       
 
-      // Keep API proxied to existing backend
-      { source: "/api/:path*", destination: `${PREDICTOR_ORIGIN}/api/:path*` },
+      
     ];
   },
 };
