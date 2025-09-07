@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const response = await fetch("https://www.reddit.com/r/wbjee/about.json", {
+    const response = await fetch("https://old.reddit.com/r/wbjee/about.json", {
+      cache: 'no-store',
       headers: {
         "User-Agent": "wbjee-college-predictor-web:v1.0 (by /u/rizzz6)",
       },
