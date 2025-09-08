@@ -3,7 +3,11 @@ import axios from "axios";
 
 export async function GET() {
   try {
-    const response = await axios.get("https://old.reddit.com/r/wbjee/about.json");
+    const response = await axios.get("https://old.reddit.com/r/wbjee/about.json", {
+      headers: {
+        "User-Agent": "wbjee-college-predictor-web:v1.0 (by /u/rizzz6)",
+      },
+    });
 
     return NextResponse.json(response.data);
   } catch (error) {
