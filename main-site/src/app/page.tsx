@@ -153,7 +153,7 @@ function JoinCommunity() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("https://www.reddit.com/r/wbjee/about.json")
+    fetch("/api/reddit")
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
