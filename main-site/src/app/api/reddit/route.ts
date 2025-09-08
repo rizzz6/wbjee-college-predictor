@@ -1,26 +1,24 @@
 import { NextResponse } from "next/server";
-import axios from "axios";
 
 export async function GET() {
   try {
-    const response = await axios.get("https://old.reddit.com/r/wbjee/about.json", {
+    const response = await fetch("https://old.reddit.com/r/wbjee/about.json", {
+      cache: 'no-store',
       headers: {
         "User-Agent": "wbjee-college-predictor-web:v1.0 (by /u/rizzz6)",
       },
     });
 
-    return NextResponse.json(response.data);
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("Error in Reddit API route (axios):", error.response?.data || error.message);
-      return NextResponse.json(
-        { error: `Failed to fetch from Reddit: ${error.response?.statusText || error.message}` },
-        { status: error.response?.status || 500 }
-      );
+    if (!response.ok) {
+      throw new Error(`Failed to fetch Reddit data: ${response.statusText}`);
     }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
     console.error("Error in Reddit API route:", error);
     return NextResponse.json(
-      { error: "An unknown error occurred while fetching from Reddit." },
+      { error: "Error fetching data from Reddit." },
       { status: 500 }
     );
   }
