@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://wbjeesubreddit.wiki'
+  const baseUrl = 'https://rwbjee.com'
   const sitemap: MetadataRoute.Sitemap = []
 
   // Add home page
