@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "WBJEE College Predictor - React Version with Charts",
     description: "Experience our React-based predictor with advanced filtering, trend analysis, and college comparison tools for precise WBJEE admission planning.",
-    url: "https://wbjeesubreddit.wiki/new-predictor",
+    url: "https://rwbjee.com/new-predictor",
     images: [
       {
         url: "/og-image.svg",
@@ -48,13 +48,13 @@ const breadcrumbSchema = {
       "@type": "ListItem",
       "position": 1,
       "name": "Home",
-      "item": "https://wbjeesubreddit.wiki"
+      "item": "https://rwbjee.com"
     },
     {
       "@type": "ListItem",
       "position": 2,
       "name": "WBJEE College Predictor",
-      "item": "https://wbjeesubreddit.wiki/new-predictor"
+      "item": "https://rwbjee.com/new-predictor"
     }
   ]
 };
