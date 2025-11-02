@@ -1,15 +1,11 @@
-"use client";
-
-import { useState, useEffect, useRef } from "react";
-import { motion, type Variants, useInView, animate } from "framer-motion";
-import Image from "next/image";
+import { motion, type Variants, useInView } from "framer-motion";
 import {
   PencilSquareIcon,
   PresentationChartBarIcon,
   CheckBadgeIcon,
 } from "@heroicons/react/24/outline";
 import FAQAccordionHome from "./components/FAQAccordionHome";
-
+import JoinCommunity from "./components/JoinCommunity";
 
 function Hero() {
   return (
@@ -83,7 +79,7 @@ function HowItWorks() {
               <PresentationChartBarIcon className="w-6 h-6" />
             </div>
             <h3 className="mt-4 text-lg font-semibold text-gray-800 dark:text-white">View Predictions</h3>
-            <p className="mt-2 text-gray-500 dark:text-gray-300">Our algorithm instantly shows you a list of colleges based on previous years&apos; data.</p>
+            <p className="mt-2 text-gray-500 dark:text-gray-300">Our algorithm instantly shows you a list of colleges based on previous years' data.</p>
           </motion.div>
 
           <motion.div
@@ -112,143 +108,6 @@ function HowItWorks() {
     </section>
   );
 }
-
-function AnimatedCounter({ value }: { value: number }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (isInView) {
-      const controls = animate(0, value, {
-        duration: 2,
-        onUpdate: (latest) => {
-          setCount(Math.round(latest));
-        },
-      });
-      return () => controls.stop();
-    }
-  }, [isInView, value]);
-
-  return <span ref={ref}>{count.toLocaleString()}</span>;
-}
-
-interface SubredditData {
-  name: string;
-  icon_img: string;
-  banner: string;
-  banner_background_image: string;
-  header_img: string;
-  subscribers: number;
-  active_user_count: number;
-  public_description: string;
-  display_name: string;
-  display_name_prefixed: string;
-}
-
-
-function JoinCommunity() {
-  const [subredditData, setSubredditData] = useState<SubredditData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetch("https://www.reddit.com/r/wbjee/about.json")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setSubredditData(data.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching Reddit subreddit data:", error);
-        setError(error.message);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) {
-    return (
-      <section className="bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 py-16 md:py-20 text-center">
-          <p className="text-gray-500 dark:text-gray-300">Loading subreddit data...</p>
-        </div>
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section className="bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 py-16 md:py-20 text-center">
-          <p className="text-red-500">Error loading subreddit data: {error}</p>
-        </div>
-      </section>
-    );
-  }
-
-  if (!subredditData) {
-    return null; // Or a message indicating no data
-  }
-
-  return (
-    <section className="bg-white dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 py-16 md:py-20">
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-          <div className="relative h-32">
-            <Image
-              src={subredditData?.banner_background_image.split('?')[0] || "https://styles.redditmedia.com/t5_910ggt/styles/bannerBackgroundImage_87tgbzaljjxe1.png"}
-              alt="r/wbjee subreddit community banner - Join the WBJEE discussion community"
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
-          <div className="p-4 md:p-6 bg-white dark:bg-gray-800">
-            <div className="flex items-center">
-              <Image
-                src={subredditData?.icon_img ? subredditData.icon_img.split('?')[0] : "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"}
-                alt="r/wbjee subreddit community icon - WBJEE discussion forum"
-                className="w-16 h-16 rounded-full border-4 border-white dark:border-gray-800"
-                width={64}
-                height={64}
-              />
-              <div className="ml-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">{subredditData?.display_name_prefixed || 'r/wbjee'}</h2>
-                <p className="text-gray-500 dark:text-gray-400">{subredditData?.public_description || 'Join the discussion!'}</p>
-              </div>
-            </div>
-            <div className="mt-4 flex justify-between items-center">
-              <div className="flex gap-4">
-                <div>
-                  <p className="font-bold text-gray-800 dark:text-white"><AnimatedCounter value={subredditData?.subscribers || 0} /></p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Members</p>
-                </div>
-                <div>
-                  <p className="font-bold text-gray-800 dark:text-white"><AnimatedCounter value={subredditData?.active_user_count || 0} /></p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Online</p>
-                </div>
-              </div>
-              <a
-                href={`https://www.reddit.com/${subredditData?.display_name_prefixed || 'r/wbjee'}`}
-          target="_blank"
-                rel="noreferrer"
-                className="bg-red-500 text-white px-4 py-2 rounded-full font-semibold"
-              >
-                Join
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 
 export default function Page() {
   return (
