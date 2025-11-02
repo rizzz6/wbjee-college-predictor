@@ -1,4 +1,6 @@
-import { motion, type Variants, useInView } from "framer-motion";
+"use client";
+
+import { motion, type Variants } from "framer-motion";
 import {
   PencilSquareIcon,
   PresentationChartBarIcon,
@@ -79,7 +81,7 @@ function HowItWorks() {
               <PresentationChartBarIcon className="w-6 h-6" />
             </div>
             <h3 className="mt-4 text-lg font-semibold text-gray-800 dark:text-white">View Predictions</h3>
-            <p className="mt-2 text-gray-500 dark:text-gray-300">Our algorithm instantly shows you a list of colleges based on previous years' data.</p>
+            <p className="mt-2 text-gray-500 dark:text-gray-300">Our algorithm instantly shows you a list of colleges based on previous years&apos; data.</p>
           </motion.div>
 
           <motion.div
