@@ -13,8 +13,10 @@
     "@vercel/analytics": "^1.5.0",
     "chart.js": "^4.5.0",
     "framer-motion": "^12.23.12",
+    "g": "^2.0.1",
     "next": "15.4.6",
     "next-themes": "^0.4.6",
+    "npm": "^11.6.2",
     "react": "19.1.0",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "19.1.0"
