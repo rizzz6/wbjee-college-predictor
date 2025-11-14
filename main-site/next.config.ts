@@ -17,16 +17,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  async redirects() {
-    return [
-      // Redirect non-www to www (preferred canonical domain)
-      {
-        source: '/(.*)',
-        destination: 'https://www.rwbjee.com/$1',
-        permanent: true,
-      },
-    ];
-  },
+  // Removed problematic redirect rule that caused infinite redirects
+  // Domain redirects should be handled at CDN/load balancer level
+  // to avoid infinite redirect loops
   async rewrites() {
     return [
       // Serve local static predictor
