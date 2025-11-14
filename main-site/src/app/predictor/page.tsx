@@ -17,10 +17,13 @@ export const metadata: Metadata = {
     "smart filtering predictor",
     "WBJEE admission chances"
   ],
+  alternates: {
+    canonical: '/predictor',
+  },
   openGraph: {
     title: "WBJEE College Predictor - React Version with Charts",
     description: "Experience our React-based predictor with advanced filtering, trend analysis, and college comparison tools for precise WBJEE admission planning.",
-    url: "https://rwbjee.com/new-predictor",
+    url: "https://www.rwbjee.com/predictor",
     images: [
       {
         url: "/og-image.svg",
@@ -48,13 +51,13 @@ const breadcrumbSchema = {
       "@type": "ListItem",
       "position": 1,
       "name": "Home",
-      "item": "https://rwbjee.com"
+      "item": "https://www.rwbjee.com"
     },
     {
       "@type": "ListItem",
       "position": 2,
       "name": "WBJEE College Predictor",
-      "item": "https://rwbjee.com/new-predictor"
+      "item": "https://www.rwbjee.com/predictor"
     }
   ]
 };

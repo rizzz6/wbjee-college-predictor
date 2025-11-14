@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://rwbjee.com'
+  const baseUrl = 'https://www.rwbjee.com'
   const sitemap: MetadataRoute.Sitemap = []
 
   // Add home page
@@ -16,7 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Add legacy predictor
   sitemap.push({
-    url: `${baseUrl}/legacy-predictor`,
+    url: `${baseUrl}/old-predictor`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: 0.6,

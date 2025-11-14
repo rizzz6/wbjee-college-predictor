@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://rwbjee.com'),
+  metadataBase: new URL('https://www.rwbjee.com'),
   alternates: {
     canonical: '/',
   },
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     title: "WBJEE College Predictor 2025 - Free College Finder Tool",
     description:
       "Free WBJEE college predictor tool 2025. Find engineering colleges and branches in West Bengal based on your WBJEE rank. Get detailed analysis, cutoff trends, admission chances, and college comparison for Jadavpur University, Calcutta University, and other top engineering colleges.",
-    url: "https://rwbjee.com",
+    url: "https://www.rwbjee.com",
     siteName: "WBJEE College Predictor",
     images: [
       {

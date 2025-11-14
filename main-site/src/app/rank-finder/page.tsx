@@ -1,3 +1,45 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "WBJEE Rank Finder - Find Required Rank for Colleges",
+  description: "Find the required WBJEE rank for admission to specific colleges and programs. Browse historical cutoff data, opening and closing ranks for engineering colleges in West Bengal. Get precise rank requirements for Jadavpur University, Calcutta University, and other institutions.",
+  keywords: [
+    "WBJEE rank finder",
+    "WBJEE cutoff rank",
+    "college rank requirement",
+    "WBJEE opening rank",
+    "WBJEE closing rank",
+    "engineering college cutoff",
+    "WBJEE rank predictor",
+    "college admission rank",
+    "WBJEE 2025 cutoff",
+    "engineering college finder"
+  ],
+  alternates: {
+    canonical: '/rank-finder',
+  },
+  openGraph: {
+    title: "WBJEE Rank Finder - Find Required Rank for Colleges",
+    description: "Find the required WBJEE rank for admission to specific colleges and programs. Browse historical cutoff data and rank requirements.",
+    url: "https://www.rwbjee.com/rank-finder",
+    images: [
+      {
+        url: "/og-image.svg",
+        width: 1200,
+        height: 630,
+        alt: "WBJEE Rank Finder - Find required rank for colleges",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "WBJEE Rank Finder - Find Required Rank for Colleges",
+    description: "Find the required WBJEE rank for admission to specific colleges and programs.",
+    images: ["/og-image.svg"],
+  },
+};
+
 "use client";
 
 import { useState, useEffect } from "react";

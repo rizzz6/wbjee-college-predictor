@@ -1,7 +1,5 @@
 import type { NextConfig } from "next";
 
-const PREDICTOR_ORIGIN = "https://wbjee-college-predictor.vercel.app";
-
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -19,6 +17,16 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      // Redirect non-www to www (preferred canonical domain)
+      {
+        source: '/(.*)',
+        destination: 'https://www.rwbjee.com/$1',
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     return [
       // Serve local static predictor
@@ -30,11 +38,6 @@ const nextConfig: NextConfig = {
         source: "/legacy-predictor/:path*",
         destination: "/old-predictor/:path*",
       },
-
-      
-
-      // Keep API proxied to existing backend
-      { source: "/api/:path*", destination: `${PREDICTOR_ORIGIN}/api/:path*` },
     ];
   },
 };

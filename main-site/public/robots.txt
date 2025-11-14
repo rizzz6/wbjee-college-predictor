@@ -1,8 +1,11 @@
 User-agent: *
 Allow: /
+ 
+# Preferred domain: www.rwbjee.com (www)
+Host: www.rwbjee.com
 
 # Sitemap
-Sitemap: https://rwbjee.com/sitemap.xml
- 
+Sitemap: https://www.rwbjee.com/sitemap.xml
+  
 # Crawl-delay
-Crawl-delay: 1 
+Crawl-delay: 1
