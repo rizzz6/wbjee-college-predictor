@@ -1,3 +1,40 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Disclaimer - WBJEE College Predictor",
+  description: "Read our disclaimer and terms of use for the WBJEE College Predictor tool. Important information about our unofficial college prediction service, data accuracy, and limitations.",
+  keywords: [
+    "WBJEE disclaimer",
+    "WBJEE College Predictor disclaimer",
+    "unofficial WBJEE site",
+    "college predictor disclaimer",
+    "WBJEE terms of use"
+  ],
+  alternates: {
+    canonical: '/disclaimer',
+  },
+  openGraph: {
+    title: "Disclaimer - WBJEE College Predictor",
+    description: "Read our disclaimer and terms of use for the WBJEE College Predictor tool.",
+    url: "https://www.rwbjee.com/disclaimer",
+    images: [
+      {
+        url: "/og-image.svg",
+        width: 1200,
+        height: 630,
+        alt: "Disclaimer - WBJEE College Predictor",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Disclaimer - WBJEE College Predictor",
+    description: "Read our disclaimer and terms of use for the WBJEE College Predictor tool.",
+    images: ["/og-image.svg"],
+  },
+};
+
 export default function DisclaimerPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">

@@ -1,3 +1,40 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy - WBJEE College Predictor",
+  description: "Read our privacy policy for the WBJEE College Predictor tool. Learn how we collect, use, and protect your data when using our college prediction service.",
+  keywords: [
+    "WBJEE privacy policy",
+    "WBJEE College Predictor privacy",
+    "data protection policy",
+    "college predictor privacy",
+    "rwbjee.com privacy"
+  ],
+  alternates: {
+    canonical: '/privacy',
+  },
+  openGraph: {
+    title: "Privacy Policy - WBJEE College Predictor",
+    description: "Read our privacy policy for the WBJEE College Predictor tool. Learn how we collect, use, and protect your data.",
+    url: "https://www.rwbjee.com/privacy",
+    images: [
+      {
+        url: "/og-image.svg",
+        width: 1200,
+        height: 630,
+        alt: "Privacy Policy - WBJEE College Predictor",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Privacy Policy - WBJEE College Predictor",
+    description: "Read our privacy policy for the WBJEE College Predictor tool.",
+    images: ["/og-image.svg"],
+  },
+};
+
 export default function PrivacyPolicyPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
