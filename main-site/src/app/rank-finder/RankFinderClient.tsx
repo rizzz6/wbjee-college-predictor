@@ -151,7 +151,7 @@ export default function RankFinderClient() {
       } else {
         setError(`No rank data found for the selected criteria. Please try a different combination.`);
       }
-    } catch (err) {
+    } catch {
       setError("Failed to process rank data. Please try again.");
     } finally {
       setIsLoading(false);
