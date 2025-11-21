@@ -1,9 +1,6 @@
 const CACHE_NAME = 'wbjee-finder-v5';
 const urlsToCache = [
-  '/',
-  '/predictor/index.html',
-  '/predictor/manifest.json',
-  '/predictor/data.json',
+  '/old-predictor/manifest.json',
 ];
 
 self.addEventListener('install', (event) => {
@@ -11,7 +8,10 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+        return cache.addAll(urlsToCache).catch((error) => {
+          console.warn('Failed to cache some resources:', error);
+          // Continue even if caching fails
+        });
       })
   );
 });

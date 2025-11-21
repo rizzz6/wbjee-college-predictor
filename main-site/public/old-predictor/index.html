@@ -1995,6 +1995,7 @@
             const favHeader = document.getElementById('fav-header');
             const searchButton = document.getElementById('search-button');
             const resetButton = document.getElementById('reset-button');
+            const shareEverythingButton = document.getElementById('share-everything');
 
             const entriesPerPageSelect = document.getElementById('entries-per-page');
             const prevPageButton = document.getElementById('prev-page');
@@ -2155,9 +2156,13 @@
                             throw lastError;
                         }
 
-                        localStorage.setItem('wbjeeData', JSON.stringify(rawData));
-                        localStorage.setItem('wbjeeDataTimestamp', Date.now().toString());
-                        console.log('Cached fresh data');
+                        try {
+                            localStorage.setItem('wbjeeData', JSON.stringify(rawData));
+                            localStorage.setItem('wbjeeDataTimestamp', Date.now().toString());
+                            console.log('Cached fresh data');
+                        } catch (e) {
+                            console.warn('Failed to cache data in localStorage (quota exceeded):', e);
+                        }
                     }
 
                     const getStr = (val) => (val != null ? String(val).trim() : null);

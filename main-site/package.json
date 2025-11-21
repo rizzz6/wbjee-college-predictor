@@ -10,16 +10,24 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@sanity/icons": "^3.7.4",
+    "@sanity/image-url": "^1.2.0",
+    "@sanity/vision": "^4.17.0",
     "@vercel/analytics": "^1.5.0",
+    "@vercel/speed-insights": "^1.2.0",
     "chart.js": "^4.5.0",
     "framer-motion": "^12.23.12",
     "g": "^2.0.1",
-    "next": "15.4.6",
+    "lucide-react": "^0.553.0",
+    "next": "^15.5.6",
+    "next-sanity": "^11.6.8",
     "next-themes": "^0.4.6",
-    "npm": "^11.6.2",
+    "npm": "^11.6.0",
     "react": "19.1.0",
     "react-chartjs-2": "^5.3.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "sanity": "^4.17.0",
+    "styled-components": "^6.1.19"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -39,6 +39,7 @@ export default function Navbar() {
             <Link href="/predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Predictor</Link>
             <a href="/legacy-predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Legacy Predictor</a>
             <Link href="/rank-finder" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Rank Finder</Link>
+            <Link href="/socials" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Socials</Link>
             <ThemeToggle />
           </nav>
 
@@ -60,6 +61,7 @@ export default function Navbar() {
               <Link href="/predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Predictor</Link>
               <a href="/legacy-predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Legacy Predictor</a>
               <Link href="/rank-finder" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Rank Finder</Link>
+              <Link href="/socials" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Socials</Link>
               <ThemeToggle />
             </nav>
           </div>

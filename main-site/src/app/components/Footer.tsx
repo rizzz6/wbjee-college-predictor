@@ -20,6 +20,7 @@ export default function Footer() {
           <div className="flex items-center gap-6 text-gray-700 dark:text-gray-200">
             <a href="/privacy" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Privacy Policy</a>
             <a href="/disclaimer" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Disclaimer</a>
+            <a href="/socials" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Socials</a>
             <a
               href="https://www.reddit.com/u/rizzz6"
             target="_blank"
