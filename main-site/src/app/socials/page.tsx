@@ -1,15 +1,8 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import {
-  ChatBubbleLeftIcon,
-  UserGroupIcon,
-  EnvelopeIcon,
-  GlobeAltIcon,
-  StarIcon,
-  ArrowUpTrayIcon
-} from "@heroicons/react/24/outline";
-import { useState, useEffect } from "react";
+import { EnvelopeIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
 import JoinCommunity from "@/app/components/JoinCommunity";
 
 
