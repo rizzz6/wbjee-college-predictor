@@ -1,13 +1,14 @@
 import { client, urlFor } from '../../../sanity/client'
-import { PortableText } from '@portabletext/react'
+import { PortableText, PortableTextBlock } from '@portabletext/react'
+import { SanityImageSource } from '@sanity/image-url/lib/types/types'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 
 interface Post {
   title: string
-  body: any[]
-  mainImage?: any
+  body: PortableTextBlock[]
+  mainImage?: SanityImageSource
 }
 
 interface SlugPost {
@@ -38,7 +39,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
   }
 
-  const bodyText = (post.body as any[])?.map(block => (block as any).children?.map((child: any) => child.text || '').join('')).join(' ') || ''
+  const bodyText = post.body?.map(block => block.children?.map(child => 'text' in child ? child.text : '').join('')).join(' ') || ''
   const description = bodyText.substring(0, 150) || post.title
 
   return {
