@@ -10,7 +10,6 @@ interface SubredditData {
   banner_background_image: string;
   header_img: string;
   subscribers: number;
-  active_user_count: number;
   public_description: string;
   display_name: string;
   display_name_prefixed: string;
@@ -74,21 +73,17 @@ export default function JoinCommunity() {
 
   if (loading) {
     return (
-      <section className="bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 py-16 md:py-20 text-center">
-          <p className="text-gray-500 dark:text-gray-300">Loading subreddit data...</p>
-        </div>
-      </section>
+      <div className="max-w-7xl mx-auto px-4 py-16 md:py-20 text-center">
+        <p className="text-gray-500 dark:text-gray-300">Loading subreddit data...</p>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <section className="bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 py-16 md:py-20 text-center">
-          <p className="text-red-500">Error loading subreddit data: {error}</p>
-        </div>
-      </section>
+      <div className="max-w-7xl mx-auto px-4 py-16 md:py-20 text-center">
+        <p className="text-red-500">Error loading subreddit data: {error}</p>
+      </div>
     );
   }
 
@@ -97,55 +92,49 @@ export default function JoinCommunity() {
   }
 
   return (
-    <section className="bg-white dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 py-16 md:py-20">
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-          <div className="relative h-32">
+    <div className="max-w-7xl mx-auto px-4 py-16 md:py-20">
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden bg-white dark:bg-gray-800">
+        <div className="relative h-32">
+          <Image
+            src={subredditData?.banner_background_image || "https://styles.redditmedia.com/t5_910ggt/styles/bannerBackgroundImage_87tgbzaljjxe1.png"}
+            alt="r/wbjee subreddit community banner - Join the WBJEE discussion community"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+        <div className="p-4 md:p-6">
+          <div className="flex items-center">
             <Image
-              src={subredditData?.banner_background_image || "https://styles.redditmedia.com/t5_910ggt/styles/bannerBackgroundImage_87tgbzaljjxe1.png"}
-              alt="r/wbjee subreddit community banner - Join the WBJEE discussion community"
-              fill
-              className="object-cover"
-              priority
+              src={subredditData?.icon_img || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"}
+              alt="r/wbjee subreddit community icon - WBJEE discussion forum"
+              className="w-16 h-16 rounded-full border-4 border-white dark:border-gray-800"
+              width={64}
+              height={64}
             />
+            <div className="ml-4">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white">{subredditData?.display_name_prefixed || 'r/wbjee'}</h2>
+              <p className="text-gray-500 dark:text-gray-400">{subredditData?.public_description || 'Join the discussion!'}</p>
+            </div>
           </div>
-          <div className="p-4 md:p-6 bg-white dark:bg-gray-800">
-            <div className="flex items-center">
-              <Image
-                src={subredditData?.icon_img || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"}
-                alt="r/wbjee subreddit community icon - WBJEE discussion forum"
-                className="w-16 h-16 rounded-full border-4 border-white dark:border-gray-800"
-                width={64}
-                height={64}
-              />
-              <div className="ml-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">{subredditData?.display_name_prefixed || 'r/wbjee'}</h2>
-                <p className="text-gray-500 dark:text-gray-400">{subredditData?.public_description || 'Join the discussion!'}</p>
+          <div className="mt-4 flex justify-between items-center">
+            <div className="flex gap-4">
+              <div>
+                <p className="font-bold text-gray-800 dark:text-white"><AnimatedCounter value={subredditData?.subscribers || 0} /></p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Members</p>
               </div>
             </div>
-            <div className="mt-4 flex justify-between items-center">
-              <div className="flex gap-4">
-                <div>
-                  <p className="font-bold text-gray-800 dark:text-white"><AnimatedCounter value={subredditData?.subscribers || 0} /></p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Members</p>
-                </div>
-                <div>
-                  <p className="font-bold text-gray-800 dark:text-white"><AnimatedCounter value={subredditData?.active_user_count || 0} /></p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Online</p>
-                </div>
-              </div>
-              <a
-                href={`https://www.reddit.com/${subredditData?.display_name_prefixed || 'r/wbjee'}`}
-                target="_blank"
-                rel="noreferrer"
-                className="bg-red-500 text-white px-4 py-2 rounded-full font-semibold"
-              >
-                Join
-              </a>
-            </div>
+            <a
+              href={`https://www.reddit.com/${subredditData?.display_name_prefixed || 'r/wbjee'}`}
+              target="_blank"
+              rel="noreferrer"
+              className="bg-red-500 text-white px-4 py-2 rounded-full font-semibold"
+            >
+              Join
+            </a>
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

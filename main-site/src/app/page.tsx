@@ -164,7 +164,9 @@ export default function Page() {
               "name": "rizzz6"
             },
             "sameAs": [
-              "https://www.reddit.com/r/wbjee/"
+              "https://www.reddit.com/r/wbjee/",
+              "https://discord.gg/wbjee-community",
+              "https://reddit.com/u/rizzz6"
             ]
           })
         }}

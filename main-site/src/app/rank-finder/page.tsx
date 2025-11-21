@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import RankFinderClient from "./RankFinderClient";
 
 export const metadata: Metadata = {
   title: "WBJEE Rank Finder - Find Required Rank for Colleges",
@@ -58,31 +59,11 @@ function Hero() {
   );
 }
 
-function RankFinder() {
-  return (
-    <section className="bg-white dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 py-16 md:py-20">
-        <div className="text-center">
-          <p className="text-lg text-gray-600 dark:text-gray-300">
-            Rank Finder functionality is being optimized. Please use the main predictor tool for now.
-          </p>
-          <a 
-            href="/predictor" 
-            className="mt-4 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-          >
-            Go to Predictor
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export default function RankFinderPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
       <Hero />
-      <RankFinder />
+      <RankFinderClient />
     </div>
   );
 }
