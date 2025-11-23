@@ -5,7 +5,7 @@ import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Providers from "./providers";
-import { SpeedInsights } from "@vercel/speed-insights/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 
 const geistSans = Geist({
