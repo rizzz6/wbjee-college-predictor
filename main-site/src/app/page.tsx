@@ -6,8 +6,10 @@ import {
   PresentationChartBarIcon,
   CheckBadgeIcon,
 } from "@heroicons/react/24/outline";
+import Link from "next/link";
 import FAQAccordionHome from "./components/FAQAccordionHome";
 import JoinCommunity from "./components/JoinCommunity";
+import ImportantDates from "./components/ImportantDates";
 
 function Hero() {
   return (
@@ -24,15 +26,15 @@ function Hero() {
             WBJEE College Predictor – Instantly See Your College Options
           </h1>
           <p className="mt-4 text-lg md:text-xl text-gray-500 dark:text-gray-300">
-            Instantly discover the engineering and pharmacy colleges you can get into based on your WBJEE 2025 rank using our <a href="/predictor" className="text-red-600 underline hover:text-red-800">College Predictor</a>.
+            Instantly discover the engineering and pharmacy colleges you can get into based on your WBJEE 2025 rank using our <Link href="/predictor" className="text-red-600 underline hover:text-red-800">College Predictor</Link>.
           </p>
           <div className="mt-8">
-            <a
+            <Link
               href="/predictor"
               className="inline-flex items-center justify-center rounded-lg bg-red-500 px-6 py-3 text-white font-semibold shadow-sm hover:bg-red-600 active:bg-red-700 transition-colors"
             >
               Predict My College Now
-            </a>
+            </Link>
           </div>
         </motion.div>
       </div>
@@ -99,12 +101,12 @@ function HowItWorks() {
           </motion.div>
         </div>
         <div className="mt-12 text-center">
-          <a
+          <Link
             href="/predictor"
             className="inline-flex items-center justify-center rounded-lg bg-red-500 px-6 py-3 text-white font-semibold shadow-sm hover:bg-red-600 active:bg-red-700 transition-colors"
           >
             Go to Predictor
-          </a>
+          </Link>
         </div>
       </div>
     </section>
@@ -117,6 +119,9 @@ export default function Page() {
       <Hero />
       <HowItWorks />
       <JoinCommunity />
+      <div className="w-full max-w-2xl mx-auto my-8">
+        <ImportantDates />
+      </div>
       <FAQAccordionHome />
 
       {/* Structured Data for SEO */}

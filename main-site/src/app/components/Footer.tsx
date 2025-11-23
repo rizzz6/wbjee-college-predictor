@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { UserIcon } from "@heroicons/react/24/outline";
 
 export default function Footer() {
@@ -18,9 +19,9 @@ export default function Footer() {
             .
           </div>
           <div className="flex items-center gap-6 text-gray-700 dark:text-gray-200">
-            <a href="/privacy" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Privacy Policy</a>
-            <a href="/disclaimer" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Disclaimer</a>
-            <a href="/socials" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Socials</a>
+            <Link href="/privacy" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Privacy Policy</Link>
+            <Link href="/disclaimer" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Disclaimer</Link>
+            <Link href="/socials" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Socials</Link>
             <a
               href="https://www.reddit.com/u/rizzz6"
             target="_blank"

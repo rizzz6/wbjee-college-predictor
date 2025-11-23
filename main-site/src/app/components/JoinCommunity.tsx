@@ -2,18 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import useSWR from 'swr'
 
-interface SubredditData {
-  name: string;
-  icon_img: string;
-  banner: string;
-  banner_background_image: string;
-  header_img: string;
-  subscribers: number;
-  public_description: string;
-  display_name: string;
-  display_name_prefixed: string;
-}
 
 function AnimatedCounter({ value }: { value: number }) {
   const ref = useRef(null);
@@ -46,35 +36,37 @@ function AnimatedCounter({ value }: { value: number }) {
   return <span ref={ref}>{count.toLocaleString()}</span>;
 }
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export default function JoinCommunity() {
-  const [subredditData, setSubredditData] = useState<SubredditData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: subredditData, error, isLoading } = useSWR('/api/subreddit', fetcher, {
+    revalidateOnFocus: false,
+    revalidateIfStale: false,
+    dedupingInterval: 600000,
+  });
 
-  useEffect(() => {
-    const fetchSubredditData = async () => {
-      try {
-        const response = await fetch("/api/subreddit");
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setSubredditData(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching subreddit data:", error);
-        setError(error instanceof Error ? error.message : "Unknown error");
-        setLoading(false);
-      }
-    };
-
-    fetchSubredditData();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-16 md:py-20 text-center">
-        <p className="text-gray-500 dark:text-gray-300">Loading subreddit data...</p>
+      <div className="max-w-7xl mx-auto px-4 py-16 md:py-20">
+        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden bg-white dark:bg-gray-800 animate-pulse">
+          <div className="relative h-32 bg-gray-200 dark:bg-gray-700"></div>
+          <div className="p-4 md:p-6">
+            <div className="flex items-center">
+              <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-800"></div>
+              <div className="ml-4 flex-1">
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+              </div>
+            </div>
+            <div className="mt-4 flex justify-between items-center">
+              <div>
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-16 mb-1"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-12"></div>
+              </div>
+              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-full w-20"></div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

@@ -1,29 +1,88 @@
-import { client } from '../../sanity/client'
-import Link from 'next/link'
+import { client } from '../../sanity/client';
+import { urlFor } from '../../sanity/client';
+import Link from 'next/link';
+import { format } from 'date-fns';
+import { SanityImageSource } from '@sanity/image-url/lib/types/types';
+import Image from 'next/image';
+export const revalidate = 60;
 
 interface Post {
-  _id: string
-  title: string
-  slug: { current: string }
-  publishedAt: string
+  _id: string;
+  title: string;
+  slug: { current: string };
+  publishedAt: string;
+  mainImage?: SanityImageSource;
 }
 
-export default async function Page() {
-  const posts: Post[] = await client.fetch(`*[_type == 'post'] | order(publishedAt desc) { _id, title, slug, publishedAt }`)
+export default async function BlogPage() {
+  const posts: Post[] = await client.fetch(`*[_type == 'post'] | order(publishedAt desc) { _id, title, slug, publishedAt, mainImage }`);
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-8">Blog</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {posts.map((post) => (
-          <Link key={post._id} href={`/blog/${post.slug.current}`} className="block">
-            <div className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow">
-              <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-              <p className="text-gray-600">{new Date(post.publishedAt).toLocaleDateString()}</p>
-            </div>
-          </Link>
-        ))}
+    <div className="px-6 md:px-12 py-12">
+      {/* HERO HEADER */}
+      <div className="max-w-7xl mx-auto mb-16 text-center">
+        <div className="inline-block p-2 px-4 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm font-medium mb-4">
+          {`From the Editor's Desk`}
+        </div>
+        <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-6 tracking-tight">
+          Latest <span className="text-red-600">Updates</span>
+        </h1>
+        <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+          Essential guides, exam analysis, and strategy tips for every WBJEE aspirant.
+        </p>
+      </div>
+      {/* POSTS GRID */}
+      <div className="max-w-7xl mx-auto">
+        {posts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {posts.map((post) => (
+              <Link
+                key={post._id}
+                href={`/blog/${post.slug.current}`}
+                className="group flex flex-col h-full bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 hover:border-red-200 dark:hover:border-red-900/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+              >
+                {/* IMAGE SECTION */}
+                <div className="relative h-64 w-full overflow-hidden bg-gray-100 dark:bg-gray-700">
+                  {post.mainImage ? (
+                    <Image
+                      src={urlFor(post.mainImage).width(800).height(500).url()}
+                      alt={post.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-gray-800">
+                      <span className="text-red-300 dark:text-red-800 text-5xl">📰</span>
+                    </div>
+                  )}
+                  {/* Overlay Gradient for Text Contrast if needed */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                {/* CONTENT SECTION */}
+                <div className="flex flex-col flex-1 p-8">
+                  <div className="text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400 mb-3">
+                    {post.publishedAt ? format(new Date(post.publishedAt), 'MMM d, yyyy') : 'Recent'}
+                  </div>
+
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 leading-tight group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                    {post.title}
+                  </h2>
+
+                  <div className="mt-auto pt-6 border-t border-gray-50 dark:border-gray-700 flex items-center justify-between text-sm font-semibold text-gray-500 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                    <span>Read Article</span>
+                    <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-32 bg-gray-50 dark:bg-gray-800/50 rounded-3xl border border-dashed border-gray-200 dark:border-gray-700">
+            <p className="text-gray-500 dark:text-gray-400 text-xl font-medium">No posts published yet.</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm mt-2">Check back soon for updates.</p>
+          </div>
+        )}
       </div>
     </div>
-  )
+  );
 }
