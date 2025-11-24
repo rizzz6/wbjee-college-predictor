@@ -6,7 +6,8 @@ import {postType} from './postType'
 import {authorType} from './authorType'
 import {collegeType} from './college'
 import {timelineType} from './timeline'
+import {collegeCutoffType} from './collegeCutoff'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [blockContentType, categoryType, postType, authorType, collegeType, timelineType],
+  types: [blockContentType, categoryType, postType, authorType, collegeType, timelineType, collegeCutoffType],
 }
