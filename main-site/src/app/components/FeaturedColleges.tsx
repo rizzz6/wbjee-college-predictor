@@ -2,28 +2,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { urlFor } from '../../sanity/lib/image';
 import { MapPinIcon } from '@heroicons/react/24/outline';
-<<<<<<< HEAD
 import { SanityImageSource } from "@sanity/image-url/lib/types/types";
-=======
-<<<<<<< HEAD
-import { SanityImageSource } from "@sanity/image-url/lib/types/types";
-=======
->>>>>>> bf35035ad1ba25850dd9dac4d61da8f1024f556a
->>>>>>> f89ff5305a0a16f5c0f1c2b37080958626b17758
 
 interface College {
   _id: string;
   name: string;
   slug: { current: string };
-<<<<<<< HEAD
   logo?: SanityImageSource;
-=======
-<<<<<<< HEAD
-  logo?: SanityImageSource;
-=======
-  logo?: any;
->>>>>>> bf35035ad1ba25850dd9dac4d61da8f1024f556a
->>>>>>> f89ff5305a0a16f5c0f1c2b37080958626b17758
   location: string;
   shortName?: string;
 }
