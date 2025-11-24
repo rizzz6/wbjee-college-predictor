@@ -1,27 +1,15 @@
-"use client";
-
-import { motion, type Variants } from "framer-motion";
-import {
-  PencilSquareIcon,
-  PresentationChartBarIcon,
-  CheckBadgeIcon,
-} from "@heroicons/react/24/outline";
 import Link from "next/link";
-import FAQAccordionHome from "./components/FAQAccordionHome";
 import JoinCommunity from "./components/JoinCommunity";
 import ImportantDates from "./components/ImportantDates";
+import FeaturedColleges from "./components/FeaturedColleges";
+import { client } from "../sanity/client";
 
 function Hero() {
   return (
     <section id="home" className="relative">
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-red-50 via-white to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-900" />
       <div className="max-w-7xl mx-auto px-4 py-20 md:py-28">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="max-w-3xl"
-        >
+        <div className="max-w-3xl">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-800 dark:text-white">
             WBJEE College Predictor – Instantly See Your College Options
           </h1>
@@ -36,93 +24,26 @@ function Hero() {
               Predict My College Now
             </Link>
           </div>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-function HowItWorks() {
-  const card: Variants = {
-    hidden: { opacity: 0, y: 24 },
-    show: {
-      opacity: 1,
-      y: 0,
-      transition: { type: "spring", stiffness: 220, damping: 24 },
-    },
-  };
-  return (
-    <section id="about" className="bg-white dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 py-16 md:py-20">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">How It Works</h2>
-        <p className="mt-2 text-gray-500 dark:text-gray-300">Three simple steps to get your college predictions.</p>
-
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <motion.div
-            variants={card}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-50px" }}
-            className="rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm hover:shadow transition-shadow bg-white dark:bg-gray-900"
-          >
-            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-orange-50 dark:bg-gray-800 text-red-600">
-              <PencilSquareIcon className="w-6 h-6" />
-            </div>
-            <h3 className="mt-4 text-lg font-semibold text-gray-800 dark:text-white">Enter Your Rank</h3>
-            <p className="mt-2 text-gray-500 dark:text-gray-300">Provide your General Merit Rank (GMR) and category details.</p>
-          </motion.div>
-
-          <motion.div
-            variants={card}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-50px" }}
-            className="rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm hover:shadow transition-shadow bg-white dark:bg-gray-900"
-          >
-            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-orange-50 dark:bg-gray-800 text-red-600">
-              <PresentationChartBarIcon className="w-6 h-6" />
-            </div>
-            <h3 className="mt-4 text-lg font-semibold text-gray-800 dark:text-white">View Predictions</h3>
-            <p className="mt-2 text-gray-500 dark:text-gray-300">Our algorithm instantly shows you a list of colleges based on previous years&apos; data.</p>
-          </motion.div>
-
-          <motion.div
-            variants={card}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-50px" }}
-            className="rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm hover:shadow transition-shadow bg-white dark:bg-gray-900"
-          >
-            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-orange-50 dark:bg-gray-800 text-red-600">
-              <CheckBadgeIcon className="w-6 h-6" />
-            </div>
-            <h3 className="mt-4 text-lg font-semibold text-gray-800 dark:text-white">Make a Decision</h3>
-            <p className="mt-2 text-gray-500 dark:text-gray-300">Explore your options, filter by stream, and plan your counseling choices.</p>
-          </motion.div>
-        </div>
-        <div className="mt-12 text-center">
-          <Link
-            href="/predictor"
-            className="inline-flex items-center justify-center rounded-lg bg-red-500 px-6 py-3 text-white font-semibold shadow-sm hover:bg-red-600 active:bg-red-700 transition-colors"
-          >
-            Go to Predictor
-          </Link>
         </div>
       </div>
     </section>
   );
 }
 
-export default function Page() {
+
+export default async function Page() {
+  const featuredColleges = await client.fetch(`
+    *[_type == "college" && priority == 1 && isVisible == true][0...4] | order(name asc) {
+      _id, name, slug, logo, location, shortName
+    }
+  `);
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
       <Hero />
-      <HowItWorks />
+      <ImportantDates />
+      <FeaturedColleges colleges={featuredColleges} />
       <JoinCommunity />
-      <div className="w-full max-w-2xl mx-auto my-8">
-        <ImportantDates />
-      </div>
-      <FAQAccordionHome />
 
       {/* Structured Data for SEO */}
       <script
