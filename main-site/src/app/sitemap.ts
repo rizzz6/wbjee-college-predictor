@@ -6,7 +6,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 1. Fetch Data from Sanity
   const posts = await client.fetch(`*[_type == "post"] { "slug": slug.current, publishedAt }`)
-  const colleges = await client.fetch(`*[_type == "college"] { "slug": slug.current }`)
+  const colleges = await client.fetch(`*[_type == "college" && isVisible == true] { "slug": slug.current }`)
 
   // 2. Define Static Pages
   const staticRoutes: MetadataRoute.Sitemap = [
