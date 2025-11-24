@@ -1,4 +1,5 @@
 import {defineField, defineType} from 'sanity'
+import CutoffInstituteInput from '../components/CutoffInstituteInput'
 
 export const collegeType = defineType({
   name: 'college',
@@ -9,6 +10,13 @@ export const collegeType = defineType({
       name: 'name',
       type: 'string',
       title: 'College Name',
+    }),
+    defineField({
+      name: 'isVisible',
+      type: 'boolean',
+      title: 'Visible on Website?',
+      description: 'Toggle this ON only when you have added the Logo, Fees, and other details.',
+      initialValue: false,
     }),
     defineField({
       name: 'shortName',
@@ -76,22 +84,41 @@ export const collegeType = defineType({
       description: 'A short summary',
     }),
     defineField({
-      name: 'fees',
+      name: 'body',
       type: 'blockContent',
-      title: 'Fees',
-      description: 'Fee structure table',
+      title: 'About the Institute',
+    }),
+    defineField({
+      name: 'priority',
+      type: 'number',
+      title: 'Display Priority',
+      description: '1 = Highest Priority (Top Colleges), 2 = High, 3 = Standard. Controls sorting order.',
+      initialValue: 3,
+    }),
+    defineField({
+      name: 'fees',
+      type: 'table',
+      title: 'Fee Structure Table',
     }),
     defineField({
       name: 'placements',
-      type: 'blockContent',
-      title: 'Placements',
-      description: 'Placement stats',
+      type: 'table',
+      title: 'Placement Statistics',
     }),
     defineField({
       name: 'cutoffs',
       type: 'blockContent',
       title: 'Cutoffs',
       description: 'Previous year ranks',
+    }),
+    defineField({
+      name: 'cutoffIdentifier',
+      type: 'string',
+      title: 'Official Name in Cutoff Data',
+      description: 'Copy the EXACT name from the cutoff data here (e.g., "Jadavpur University"). This is used to fetch the table.',
+      components: {
+        input: CutoffInstituteInput,
+      },
     }),
   ],
   preview: {
