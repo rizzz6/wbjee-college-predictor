@@ -10,11 +10,12 @@ interface College {
   logo?: SanityImageSource;
   location: string;
   type: string;
+  priority: number;
 }
 
 export default async function CollegesPage() {
   const colleges: College[] = await client.fetch(
-    `*[_type == "college"] | order(name asc) { _id, name, shortName, slug, logo, location, type }`
+    `*[_type == "college" && isVisible == true] | order(priority asc, type asc, name asc) { _id, name, shortName, slug, logo, location, type, priority }`
   );
 
   return (

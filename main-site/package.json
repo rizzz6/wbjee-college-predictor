@@ -12,6 +12,7 @@
     "@heroicons/react": "^2.2.0",
     "@sanity/icons": "^3.7.4",
     "@sanity/image-url": "^1.2.0",
+    "@sanity/table": "^2.0.0",
     "@sanity/vision": "^4.17.0",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
