@@ -59,7 +59,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const college = await client.fetch(`*[_type == "college" && slug.current == $slug && isVisible == true][0]{ name, coverImage }`, { slug });
+  const college = await client.fetch(`*[_type == "college" && slug.current == $slug][0]{ name, coverImage }`, { slug });
   if (!college) return { title: 'College Not Found' };
   return {
     title: `${college.name} - 2026 Fees, Placements & Cutoff`,
