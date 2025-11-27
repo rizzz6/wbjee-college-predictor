@@ -2,7 +2,12 @@ import Link from "next/link";
 import JoinCommunity from "./components/JoinCommunity";
 import ImportantDates from "./components/ImportantDates";
 import FeaturedColleges from "./components/FeaturedColleges";
+import FAQAccordionHome from "./components/FAQAccordionHome";
 import { client } from "../sanity/client";
+import { Users } from 'lucide-react';
+import { motion } from "framer-motion";
+import { Pencil, BarChart3, CheckCircle2 } from "lucide-react";
+import HowItWorks from "./components/HowItWorks";
 
 function Hero() {
   return (
@@ -41,9 +46,39 @@ export default async function Page() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
       <Hero />
-      <ImportantDates />
-      <FeaturedColleges colleges={featuredColleges} />
-      <JoinCommunity />
+      
+      {/* Introduction Section */}
+      <HowItWorks />
+      
+      {/* ✅ SPACER WRAPPER
+         This div adds the gap (space-y-24) and ensures consistent alignment 
+      */}
+      <div className="max-w-7xl mx-auto px-4 py-12 space-y-20 md:space-y-24">
+        <ImportantDates 
+          limit={3} 
+          showViewAll={true} 
+        />
+        
+        <FeaturedColleges colleges={featuredColleges} />
+      </div>
+
+      {/* Combined FAQ + Community Section */}
+      <div className="w-full max-w-7xl mx-auto px-4 py-16">
+        {/* FIX: Increased gap-8 to 'gap-12 md:gap-16' for more breathing room */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-start">
+
+          {/* Left: FAQ */}
+          <div className="w-full">
+            <FAQAccordionHome />
+          </div>
+
+          {/* Right: Reddit Widget */}
+          <div className="w-full sticky top-24">
+            <JoinCommunity showHeader={true} />
+          </div>
+
+        </div>
+      </div>
 
       {/* Structured Data for SEO */}
       <script

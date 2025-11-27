@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import useSWR from 'swr'
-
+import useSWR from 'swr';
+import { Users } from 'lucide-react'; // Import the icon
 
 function AnimatedCounter({ value }: { value: number }) {
   const ref = useRef(null);
@@ -11,12 +11,11 @@ function AnimatedCounter({ value }: { value: number }) {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Simple counter animation
-      const duration = 2000; // 2 seconds
+      const duration = 2000;
       const steps = 60;
       const increment = value / steps;
       let current = 0;
-      
+
       const counter = setInterval(() => {
         current += increment;
         if (current >= value) {
@@ -26,10 +25,10 @@ function AnimatedCounter({ value }: { value: number }) {
           setCount(Math.floor(current));
         }
       }, duration / steps);
-      
+
       return () => clearInterval(counter);
-    }, 500); // Delay before starting animation
-    
+    }, 500);
+
     return () => clearTimeout(timer);
   }, [value]);
 
@@ -38,7 +37,12 @@ function AnimatedCounter({ value }: { value: number }) {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-export default function JoinCommunity() {
+// Add Props Interface
+interface JoinCommunityProps {
+  showHeader?: boolean;
+}
+
+export default function JoinCommunity({ showHeader = false }: JoinCommunityProps) {
   const { data: subredditData, error, isLoading } = useSWR('/api/subreddit', fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
@@ -47,25 +51,29 @@ export default function JoinCommunity() {
 
   if (isLoading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-16 md:py-20">
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden bg-white dark:bg-gray-800 animate-pulse">
-          <div className="relative h-32 bg-gray-200 dark:bg-gray-700"></div>
-          <div className="p-4 md:p-6">
+      <div className="w-full">
+         {/* Skeleton Header if enabled */}
+         {showHeader && (
+            <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-6 animate-pulse"></div>
+         )}
+         <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden bg-white dark:bg-gray-800 animate-pulse">
+            <div className="relative h-32 bg-gray-200 dark:bg-gray-700"></div>
+            <div className="p-4 md:p-6">
             <div className="flex items-center">
-              <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-800"></div>
-              <div className="ml-4 flex-1">
+                <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-800"></div>
+                <div className="ml-4 flex-1">
                 <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-              </div>
+                </div>
             </div>
             <div className="mt-4 flex justify-between items-center">
-              <div>
+                <div>
                 <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-16 mb-1"></div>
                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-12"></div>
-              </div>
-              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-full w-20"></div>
+                </div>
+                <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-full w-20"></div>
             </div>
-          </div>
+            </div>
         </div>
       </div>
     );
@@ -73,7 +81,7 @@ export default function JoinCommunity() {
 
   if (error) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-16 md:py-20 text-center">
+      <div className="text-center">
         <p className="text-red-500">Error loading subreddit data: {error}</p>
       </div>
     );
@@ -84,7 +92,15 @@ export default function JoinCommunity() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-16 md:py-20">
+    <div className="w-full">
+      {/* CONDITIONAL HEADER: Only shows if showHeader={true} is passed */}
+      {showHeader && (
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+          Join the Community <Users className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+        </h2>
+      )}
+
+      {/* The Widget Card */}
       <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden bg-white dark:bg-gray-800">
         <div className="relative h-32">
           <Image
@@ -105,8 +121,12 @@ export default function JoinCommunity() {
               height={64}
             />
             <div className="ml-4">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-white">{subredditData?.display_name_prefixed || 'r/wbjee'}</h2>
-              <p className="text-gray-500 dark:text-gray-400">{subredditData?.public_description || 'Join the discussion!'}</p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+                {subredditData?.display_name_prefixed || 'r/wbjee'}
+              </h2>
+              <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-3 mt-1">
+                {subredditData?.public_description || 'Join the discussion!'}
+              </p>
             </div>
           </div>
           <div className="mt-4 flex justify-between items-center">
@@ -120,7 +140,7 @@ export default function JoinCommunity() {
               href={`https://www.reddit.com/${subredditData?.display_name_prefixed || 'r/wbjee'}`}
               target="_blank"
               rel="noreferrer"
-              className="bg-red-500 text-white px-4 py-2 rounded-full font-semibold"
+              className="bg-red-500 text-white px-4 py-2 rounded-full font-semibold hover:bg-red-600 transition-colors"
             >
               Join
             </a>

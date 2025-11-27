@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { urlFor } from '../../sanity/lib/image';
-import { MapPinIcon } from '@heroicons/react/24/outline';
+// FIX: Removed Heroicons import
+// FIX: Imported MapPin along with GraduationCap from lucide-react
+import { GraduationCap, MapPin } from 'lucide-react';
 import { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
 interface College {
@@ -21,7 +23,6 @@ export default function FeaturedColleges({ colleges }: { colleges: College[] }) 
       <div className="w-full max-w-7xl mx-auto px-4">
         {/* HEADER ROW */}
         <div className="flex items-center justify-between mb-6">
-          {/* Fixed Size: text-2xl to match Important Dates */}
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
             Featured Colleges
           </h2>
@@ -51,7 +52,7 @@ export default function FeaturedColleges({ colleges }: { colleges: College[] }) 
                     className="w-full h-full object-contain"
                   />
                 ) : (
-                  <span className="text-3xl">🎓</span>
+                  <GraduationCap className="w-10 h-10 text-gray-400 dark:text-gray-500" />
                 )}
               </div>
               <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg line-clamp-2 mb-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
@@ -59,7 +60,8 @@ export default function FeaturedColleges({ colleges }: { colleges: College[] }) 
               </h3>
 
               <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mt-auto font-medium">
-                <MapPinIcon className="w-3 h-3" />
+                {/* FIX: Using Lucide MapPin */}
+                <MapPin className="w-3 h-3" />
                 <span className="line-clamp-1">{col.location}</span>
               </div>
             </Link>

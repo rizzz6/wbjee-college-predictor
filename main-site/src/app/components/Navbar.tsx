@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { SunIcon, MoonIcon } from '@heroicons/react/24/outline'
+import { Sun, Moon, Menu } from 'lucide-react'
 import Link from "next/link";
 import { useAppTheme } from "../providers";
 
@@ -17,7 +17,7 @@ function ThemeToggle() {
       onClick={toggleTheme}
       className="inline-flex items-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
     >
-      {isDark ? <SunIcon className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
+      {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
       <span>{isDark ? "Light" : "Dark"}</span>
     </button>
   );
@@ -49,9 +49,7 @@ export default function Navbar() {
             className="md:hidden p-2 rounded border border-gray-200 dark:border-gray-700"
             onClick={() => setOpen(v => !v)}
           >
-            <svg className="w-5 h-5 text-gray-700 dark:text-gray-200" viewBox="0 0 24 24" fill="none">
-              <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
+            <Menu className="w-6 h-6 text-gray-700 dark:text-gray-200" />
           </button>
         </div>
 

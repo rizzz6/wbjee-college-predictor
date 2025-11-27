@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { urlFor } from '../../sanity/client';
 import Link from 'next/link';
-import { MapPinIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
-import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 import Image from 'next/image';
+import { urlFor } from '../../sanity/client';
+// FIX: Imported MapPin and ArrowRight from lucide-react
+import { GraduationCap, MapPin, ArrowRight } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 
 interface College {
   _id: string;
@@ -28,7 +29,7 @@ export default function CollegeSearch({ colleges }: CollegeSearchProps) {
   const filteredColleges = useMemo(() => {
     return colleges.filter((college) => {
       const matchesSearch = college.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           college.shortName.toLowerCase().includes(searchTerm.toLowerCase());
+        college.shortName.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesType = filterType === 'All' || college.type === filterType;
       return matchesSearch && matchesType;
     });
@@ -55,11 +56,10 @@ export default function CollegeSearch({ colleges }: CollegeSearchProps) {
             <button
               key={type}
               onClick={() => setFilterType(type)}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                filterType === type
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${filterType === type
                   ? 'bg-red-600 text-white'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
+                }`}
             >
               {type}
             </button>
@@ -88,18 +88,17 @@ export default function CollegeSearch({ colleges }: CollegeSearchProps) {
                       className="w-full h-full object-contain"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                      <span className="text-gray-400 text-xs">🏫</span>
+                    <div className="w-full h-full bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                      <GraduationCap className="w-6 h-6 text-gray-400 dark:text-gray-500" />
                     </div>
                   )}
                 </div>
-                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                  college.type === 'Government'
+                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${college.type === 'Government'
                     ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400'
                     : college.type === 'Private'
-                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-                    : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400'
-                }`}>
+                      ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
+                      : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400'
+                  }`}>
                   {college.type === 'Government' ? 'Govt' : college.type === 'Private' ? 'Private' : 'Semi-Govt'}
                 </span>
               </div>
@@ -110,7 +109,8 @@ export default function CollegeSearch({ colleges }: CollegeSearchProps) {
                   {college.name}
                 </h3>
                 <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                  <MapPinIcon className="w-4 h-4 mr-1" />
+                  {/* FIX: Replaced MapPinIcon with MapPin */}
+                  <MapPin className="w-4 h-4 mr-1" />
                   {college.location}
                 </div>
               </div>
@@ -118,7 +118,8 @@ export default function CollegeSearch({ colleges }: CollegeSearchProps) {
               {/* Bottom: View Profile Button */}
               <div className="flex items-center justify-between text-sm font-medium text-gray-500 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
                 <span>View Profile</span>
-                <ArrowRightIcon className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                {/* FIX: Replaced ArrowRightIcon with ArrowRight */}
+                <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>
           ))}
