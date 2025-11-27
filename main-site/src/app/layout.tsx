@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -8,7 +7,6 @@ import Providers from "./providers";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleTagManager } from '@next/third-parties/google';
 
-// 1. FIX: Add display: "swap" to prevent invisible text during load
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -21,7 +19,6 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-// 2. FIX: Extract Viewport settings to separate export (Next.js 14+ best practice)
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -117,31 +114,69 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-white`}>
-        
-        {/* 3. FIX: Preconnect to Sanity CDN manually to save ~300ms */}
+      <head>
         <link rel="preconnect" href="https://ytfxpldt.apicdn.sanity.io" crossOrigin="anonymous" />
         
-        <Script
+        {/* FIX: Added inline styles to the script to force the background immediately. 
+            We used backticks (`) correctly here to prevent TypeScript errors. */}
+        <script
           id="theme-init"
-          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                var theme = localStorage.getItem('theme') || localStorage.getItem('wbjeeTheme') || 'light';
-                if (theme === 'dark') {
-                  document.documentElement.classList.add('dark');
-                }
+                try {
+                  var storageKey = 'theme';
+                  var classNameDark = 'dark';
+                  
+                  function setClassOnDocumentBody(darkMode) {
+                    var html = document.documentElement;
+                    if (darkMode) {
+                      html.classList.add(classNameDark);
+                      html.style.backgroundColor = '#111827'; 
+                      html.style.color = '#ffffff';
+                    } else {
+                      html.classList.remove(classNameDark);
+                      html.style.backgroundColor = '#ffffff';
+                      html.style.color = '#111827';
+                    }
+                  }
+                  
+                  var localStorageTheme = null;
+                  try {
+                    localStorageTheme = localStorage.getItem(storageKey) || localStorage.getItem('wbjeeTheme');
+                  } catch (err) {}
+                  
+                  var localStorageExists = localStorageTheme !== null;
+                  if (localStorageExists) {
+                    localStorageTheme = JSON.parse(localStorageTheme);
+                  }
+
+                  if (localStorageExists) {
+                    setClassOnDocumentBody(localStorageTheme === 'dark');
+                  } else {
+                    var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    setClassOnDocumentBody(isDarkMode);
+                  }
+                } catch (err) {}
               })();
             `,
           }}
         />
-       
+        
+        {/* FIX: Added a CSS fallback that runs BEFORE the script as a safety net */}
+        <style dangerouslySetInnerHTML={{__html: `
+          @media (prefers-color-scheme: dark) {
+            html { background-color: #111827; color: white; }
+          }
+        `}} />
+      </head>
+      
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-white`}>
         <Providers>
           <Navbar />
           {children}
           <Footer />
-          <SpeedInsights />
+          {process.env.NODE_ENV === 'production' && <SpeedInsights />}
         </Providers>
         <GoogleTagManager gtmId="GTM-5789Z287" />
       </body>

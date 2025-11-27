@@ -1,6 +1,14 @@
 @config "../../tailwind.config.ts";
 @import "tailwindcss";
 
+/* FIX: Force dark background immediately based on system settings */
+@media (prefers-color-scheme: dark) {
+  html {
+    background-color: #111827; /* Tailwind gray-900 */
+    color: white;
+  }
+}
+
 /* --- 1. Define the Animation Keyframes --- */
 @keyframes fadeInUp {
   from {
