@@ -1,13 +1,15 @@
 import Link from "next/link";
-import JoinCommunity from "./components/JoinCommunity";
 import ImportantDates from "./components/ImportantDates";
 import FeaturedColleges from "./components/FeaturedColleges";
-import FAQAccordionHome from "./components/FAQAccordionHome";
 import { client } from "../sanity/client";
 import { Users } from 'lucide-react';
 import { motion } from "framer-motion";
 import { Pencil, BarChart3, CheckCircle2 } from "lucide-react";
-import HowItWorks from "./components/HowItWorks";
+import dynamic from 'next/dynamic';
+
+const HowItWorks = dynamic(() => import('./components/HowItWorks'));
+const JoinCommunity = dynamic(() => import('./components/JoinCommunity'));
+const FAQAccordionHome = dynamic(() => import('./components/FAQAccordionHome'));
 
 function Hero() {
   return (
