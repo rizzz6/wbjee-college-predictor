@@ -1,4 +1,34 @@
 @config "../../tailwind.config.ts";
 @import "tailwindcss";
 
-/* Global light/dark background defaults can be controlled via classes; keep minimal base styles */
+/* --- 1. Define the Animation Keyframes --- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- 2. Create the Utility Class --- */
+/* We wrap this in @layer utilities so Tailwind handles the cascade order correctly */
+@layer utilities {
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 0.2s;
+    opacity: 0; /* Hidden initially */
+    animation-fill-mode: forwards;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 0.4s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+  }
+}
