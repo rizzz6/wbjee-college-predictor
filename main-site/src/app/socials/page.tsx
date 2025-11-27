@@ -1,9 +1,11 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { EnvelopeIcon } from "@heroicons/react/24/outline";
+// FIX: Removed Heroicons, added Lucide Mail
+import { Mail } from "lucide-react"; 
 import { useState } from "react";
 import JoinCommunity from "@/app/components/JoinCommunity";
+// KEEP: React Icons is correct for Brand Logos (Discord/Reddit)
 import { FaDiscord, FaReddit } from "react-icons/fa";
 
 interface SocialPlatform {
@@ -77,33 +79,35 @@ function SocialCard({ platform }: { platform: SocialPlatform }) {
       transition={{ duration: 0.5, ease: "easeOut" }}
       className={styles.container}
     >
-      <div className="p-3">
-        <div className="flex items-center gap-3">
-          <div className="flex-shrink-0">
-            <div className={`rounded-lg`}>
-              {platform.icon}
+      <div className="p-3 h-full">
+        <div className="flex items-center justify-between gap-4 h-full">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            <div className="flex-shrink-0">
+              <div className={`rounded-lg`}>
+                {platform.icon}
+              </div>
             </div>
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className={`text-sm font-medium ${styles.title} truncate`}>
-              {platform.name}
-            </h3>
-            {platform.url.startsWith('mailto:') ? (
-              <p className={`text-xs ${styles.description} truncate`}>
-                {platform.url.replace('mailto:', '')}
-              </p>
-            ) : platform.username ? (
-              <span className={`text-xs ${styles.description}`}>
-                u/{platform.username}
-              </span>
-            ) : null}
+            <div className="flex-1 min-w-0">
+              <h3 className={`text-sm font-medium ${styles.title} truncate`}>
+                {platform.name}
+              </h3>
+              {platform.url.startsWith('mailto:') ? (
+                <p className={`text-xs ${styles.description} truncate`}>
+                  {platform.url.replace('mailto:', '')}
+                </p>
+              ) : platform.username ? (
+                <span className={`text-xs ${styles.description}`}>
+                  u/{platform.username}
+                </span>
+              ) : null}
+            </div>
           </div>
           {platform.url.startsWith('mailto:') ? (
             <button
               onClick={handleCopyEmail}
               className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-colors flex-shrink-0 ${
-                copied 
-                  ? 'bg-green-500 text-white' 
+                copied
+                  ? 'bg-green-500 text-white'
                   : styles.button
               }`}
             >
@@ -213,7 +217,8 @@ export default function SocialsPage() {
               <SocialCard
                 platform={{
                   name: "Email",
-                  icon: <EnvelopeIcon className="w-6 h-6" />,
+                  // FIX: Replaced EnvelopeIcon with Lucide Mail
+                  icon: <Mail className="w-6 h-6" />,
                   url: "mailto:rizzz6v@gmail.com",
                   description: "For formal inquiries, collaborations, and detailed feedback.",
                   platformType: "email",

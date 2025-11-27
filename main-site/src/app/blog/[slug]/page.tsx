@@ -1,34 +1,35 @@
-import { client, urlFor } from '../../../sanity/client'
-import { PortableText, PortableTextBlock } from '@portabletext/react'
-import { SanityImageSource } from '@sanity/image-url/lib/types/types'
-import Image from 'next/image'
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import { Metadata } from 'next'
-import { format } from 'date-fns'
-import { ArrowLeftIcon } from '@heroicons/react/24/outline'
+import { client, urlFor } from '../../../sanity/client';
+import { PortableText, PortableTextBlock } from '@portabletext/react';
+import { SanityImageSource } from '@sanity/image-url/lib/types/types';
+import Image from 'next/image';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
+import { format } from 'date-fns';
+// FIX: Replace Heroicon with Lucide Icon
+import { ArrowLeft } from 'lucide-react';
 
 interface Post {
-  title: string
-  body: PortableTextBlock[]
-  mainImage?: SanityImageSource
-  publishedAt: string
-  author?: { name: string }
+  title: string;
+  body: PortableTextBlock[];
+  mainImage?: SanityImageSource;
+  publishedAt: string;
+  author?: { name: string };
 }
 
 interface SlugPost {
-  slug: { current: string }
+  slug: { current: string };
 }
 
 export async function generateStaticParams() {
-  const posts: SlugPost[] = await client.fetch(`*[_type == 'post'] { slug }`)
+  const posts: SlugPost[] = await client.fetch(`*[_type == 'post'] { slug }`);
   return posts.map((post) => ({
     slug: post.slug.current,
-  }))
+  }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params
+  const { slug } = await params;
   const post = await client.fetch<Post | null>(
     `*[_type == "post" && slug.current == $slug][0]{
       title,
@@ -36,16 +37,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       mainImage
     }`,
     { slug }
-  )
+  );
 
   if (!post) {
     return {
       title: 'Post Not Found',
-    }
+    };
   }
 
-  const bodyText = post.body?.map(block => block.children?.map(child => 'text' in child ? child.text : '').join('')).join(' ') || ''
-  const description = bodyText.substring(0, 150) || post.title
+  const bodyText = post.body?.map(block => block.children?.map(child => 'text' in child ? child.text : '').join('')).join(' ') || '';
+  const description = bodyText.substring(0, 150) || post.title;
 
   return {
     title: post.title,
@@ -56,11 +57,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       type: 'article',
       images: post.mainImage ? [{ url: urlFor(post.mainImage).width(1200).height(630).url() }] : [],
     },
-  }
+  };
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
+  const { slug } = await params;
   const post = await client.fetch<Post | null>(
     `*[_type == "post" && slug.current == $slug][0]{
       title,
@@ -70,9 +71,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       author->{name}
     }`,
     { slug }
-  )
+  );
 
-  if (!post) notFound()
+  if (!post) notFound();
 
   return (
     <div className="px-6 md:px-12 py-12">
@@ -82,7 +83,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           href="/blog"
           className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
         >
-          <ArrowLeftIcon className="w-4 h-4 mr-2" />
+          {/* FIX: Using Lucide ArrowLeft */}
+          <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Blog
         </Link>
       </div>
@@ -111,7 +113,6 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </div>
         )}
         {/* CONTENT BODY */}
-        {/* prose-red makes links red. prose-lg makes text larger/readable. */}
         <div className="max-w-3xl mx-auto prose prose-lg prose-red dark:prose-invert
           prose-headings:font-bold prose-a:font-semibold
           prose-img:rounded-xl prose-img:shadow-lg">
@@ -125,5 +126,5 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </div>
       </article>
     </div>
-  )
+  );
 }

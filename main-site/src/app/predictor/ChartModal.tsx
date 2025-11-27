@@ -1,5 +1,6 @@
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { X } from 'lucide-react'; // Import X icon
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -51,9 +52,10 @@ export default function ChartModal({ isOpen, onClose, college, allData }: ChartM
             </h3>
             <button
               onClick={onClose}
-              className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 text-2xl"
+              className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
             >
-              ×
+              {/* FIX: Replaced text "×" with Lucide Icon */}
+              <X className="w-6 h-6" />
             </button>
           </div>
           <div className="p-6">
@@ -104,9 +106,10 @@ export default function ChartModal({ isOpen, onClose, college, allData }: ChartM
           </h3>
           <button
             onClick={onClose}
-            className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 text-2xl"
+            className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
           >
-            ×
+            {/* FIX: Replaced text "×" with Lucide Icon */}
+            <X className="w-6 h-6" />
           </button>
         </div>
         <div className="p-6 overflow-y-auto">

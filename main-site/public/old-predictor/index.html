@@ -122,7 +122,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="WBJEE College Finder">
     <meta name="application-name" content="WBJEE College Finder">
-    
+
     <meta name="format-detection" content="telephone=no">
     <meta name="mobile-web-app-capable" content="yes">
 
@@ -1101,7 +1101,7 @@
         ]
     }
     </script>
-    
+
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <script type="application/ld+json">
     {
@@ -1136,7 +1136,12 @@
                 <h3 id="chart-title" class="text-lg font-semibold text-gray-900 dark:text-white">Rank Trend</h3>
                 <button id="close-chart-modal"
                     class="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 text-2xl"
-                    aria-label="Close modal">&times;</button>
+                    aria-label="Close modal"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
+                    </svg></button>
             </div>
             <div class="p-6 overflow-y-auto modal-body">
                 <canvas id="rank-trend-chart"></canvas>
@@ -1152,7 +1157,12 @@
                     Details</h3>
                 <button id="close-college-details-modal"
                     class="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 text-2xl"
-                    aria-label="Close modal">&times;</button>
+                    aria-label="Close modal"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
+                    </svg></button>
             </div>
             <div id="college-details-body" class="p-6 overflow-y-auto modal-body">
             </div>
@@ -1166,7 +1176,12 @@
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Shortlist Comparison</h3>
                 <button id="close-comparison-modal"
                     class="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 text-2xl"
-                    aria-label="Close modal">&times;</button>
+                    aria-label="Close modal"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
+                    </svg></button>
             </div>
             <div id="comparison-body"
                 class="p-6 overflow-y-auto modal-body grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -1213,7 +1228,14 @@
                 </button>
                 <button id="open-help-modal"
                     class="w-8 h-8 bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:border dark:border-gray-600 dark:hover:bg-gray-600 rounded-full flex items-center justify-center text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100 transition-colors"
-                    style="outline: none !important; box-shadow: none !important;" aria-label="Help">?</button>
+                    style="outline: none !important; box-shadow: none !important;" aria-label="Help">
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                        <path d="M12 17h.01" />
+                    </svg>
+                </button>
             </div>
         </header>
 
@@ -1243,7 +1265,8 @@
                 <div id="quota-filter" class="relative filter-dropdown"></div>
                 <div id="seat_type-filter" class="relative filter-dropdown"></div>
             </div>
-            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">After selecting filters or entering rank, please click the "Search Colleges" button to update the table.</p>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">After selecting filters or entering rank, please
+                click the "Search Colleges" button to update the table.</p>
             <div class="flex items-center flex-nowrap gap-4 mt-4">
                 <div id="tiering-toggle-container" class="flex items-center gap-2">
                     <button id="tiering-btn" type="button"
@@ -1279,7 +1302,12 @@
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-11/12 max-w-xs relative">
                     <button id="close-legend-modal"
                         class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 text-2xl"
-                        aria-label="Close legend">&times;</button>
+                        aria-label="Close legend"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M18 6 6 18" />
+                            <path d="m6 6 12 12" />
+                        </svg></button>
                     <div class="flex flex-col gap-2 text-sm">
                         <span class="font-semibold mb-2">Legend:</span>
                         <span
@@ -1485,7 +1513,7 @@
                 </div>
             </div>
             <div class="table-container overflow-x-auto">
-                
+
 
                 <table id="results-table" class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -1535,7 +1563,13 @@
         class="fixed inset-0 z-50 bg-black bg-opacity-30 flex items-center justify-center hidden">
         <div class="bg-white rounded-lg shadow-xl p-6 w-11/12 max-w-xs relative text-center">
             <div class="mb-4">
-                <span class="text-red-600 text-2xl font-bold">!</span>
+                <svg class="w-12 h-12 text-red-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" x2="12" y1="8" y2="12" />
+                    <line x1="12" x2="12.01" y1="16" y2="16" />
+                </svg>
             </div>
             <div id="input-error-message" class="text-gray-800 dark:text-gray-200 text-base mb-6">Please enter your
                 WBJEE rank.</div>
@@ -1549,7 +1583,18 @@
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-4 shadow-xl transform transition-all duration-300 scale-95 opacity-0"
             id="modal-content">
             <div class="flex items-center justify-between mb-4">
-                <h3 id="modal-title" class="text-lg font-semibold text-gray-900 dark:text-white">ℹ️ Information</h3>
+                <h3 id="modal-title" class="text-lg font-semibold text-gray-900 dark:text-white">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-6 h-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 16v-4" />
+                            <path d="M12 8h.01" />
+                        </svg>
+                        <span>Information</span>
+                    </div>
+                </h3>
                 <button id="close-general-modal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
@@ -1573,7 +1618,12 @@
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Help & Guide</h3>
                 <button id="close-help-modal"
                     class="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 text-2xl"
-                    aria-label="Close modal">&times;</button>
+                    aria-label="Close modal"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
+                    </svg></button>
             </div>
             <div class="p-6 overflow-y-auto">
                 <div class="space-y-6">
@@ -1583,7 +1633,13 @@
                             <li>Enter your WBJEE rank in the input field</li>
                             <li>Click "Search" to find matching colleges</li>
                             <li>Use filters to narrow down results</li>
-                            <li>Click the star (★) to add colleges to your shortlist</li>
+                            <li>Click the star (<svg class="w-4 h-4 inline-block text-yellow-500 mb-0.5"
+                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polygon
+                                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                </svg>) to add colleges to your shortlist</li>
                             <li>Click on any row to view rank trends</li>
                             <li>Click on college names to see detailed information</li>
 
@@ -1629,8 +1685,15 @@
                         <h4 class="font-semibold text-lg mb-2 text-gray-900 dark:text-white">Pro Tips</h4>
                         <div
                             class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
-                            <p class="text-sm text-yellow-800 dark:text-yellow-200 mb-3"><strong>🎯 Recommended
-                                    Sorting:</strong></p>
+                            <p class="text-sm text-yellow-800 dark:text-yellow-200 mb-3"><strong><svg
+                                        class="w-4 h-4 inline-block mb-0.5 mr-1" xmlns="http://www.w3.org/2000/svg"
+                                        width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <circle cx="12" cy="12" r="6" />
+                                        <circle cx="12" cy="12" r="2" />
+                                    </svg>
+                                    Recommended Sorting:</strong></p>
                             <ul class="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
                                 <li>• <strong>Sort by Prediction</strong> (No Chance → Confirm) to see your best
                                     chances first</li>
@@ -1673,7 +1736,8 @@
                             <p class="text-sm text-blue-700 dark:text-blue-300">Our intelligent filtering adapts
                                 smoothly to your rank. Top ranks (1-100) get wider ranges (up to 3x), mid ranks
                                 (100-3000) get moderate ranges (1.5-2.2x), and higher ranks get focused ranges (minimum
-                                1.5x). This provides personalized, realistic options without sudden jumps. You can disable this feature by clicking the "Disable Smart Filtering" button.</p>
+                                1.5x). This provides personalized, realistic options without sudden jumps. You can
+                                disable this feature by clicking the "Disable Smart Filtering" button.</p>
                         </div>
                     </div>
                 </div>
@@ -1681,7 +1745,7 @@
         </div>
     </div>
 
-    
+
 
 
 
@@ -1691,7 +1755,13 @@
         class="fixed inset-0 z-50 bg-black bg-opacity-30 flex items-center justify-center hidden">
         <div class="bg-white rounded-lg shadow-xl p-6 w-11/12 max-w-md relative text-center slide-in">
             <div class="mb-4">
-                <span class="text-red-600 text-4xl">⚠️</span>
+                <svg class="w-16 h-16 text-red-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                    <path d="M12 9v4" />
+                    <path d="M12 17h.01" />
+                </svg>
             </div>
             <div class="text-gray-800 dark:text-gray-200 text-base mb-6">
                 <p class="font-semibold mb-2 text-lg">Unable to Load Data</p>
@@ -1980,7 +2050,7 @@
             let currentPage = 1;
             let entriesPerPage = 50;
 
-            
+
 
             let activeFilters = {};
             const initializeFilters = () => {
@@ -2500,7 +2570,7 @@
                         <button id="${key}-filter-btn" class="filter-btn relative flex items-center justify-between w-full sm:w-48 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-4 py-3 sm:py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 active:bg-gray-100 dark:active:bg-gray-500 transition-colors" style="outline: none !important; box-shadow: none !important;">
                             <span class="filter-btn-label truncate pr-10">${title} (All)</span>
                             <span class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
-                                <span data-key="${key}" class="clear-single-filter hidden text-gray-400 hover:text-gray-800 text-lg mr-1">&times;</span>
+                                <span data-key="${key}" class="clear-single-filter hidden text-gray-400 hover:text-gray-800 text-lg mr-1"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
                                 <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                             </span>
                         </button>
@@ -2563,7 +2633,7 @@
             function renderTable() {
                 tableBody.innerHTML = '';
 
-                
+
 
                 const totalItems = filteredData.length;
                 const totalPages = entriesPerPage === 'all' ? 1 : Math.ceil(totalItems / entriesPerPage);
@@ -2613,17 +2683,19 @@
 
                                         const favAriaLabel = isFavorited ? `Remove ${item.institute} - ${item.branch} from shortlist` : `Add ${item.institute} - ${item.branch} to shortlist`;
 
+                                        const starSvg = `<svg class="w-5 h-5 transition-colors duration-200" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="${isFavorited ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+
                                         let favCell;
                                         if (isShowingFavorites) {
                                             favCell = `
-                                <td class="px-4 py-3 align-middle text-center">
-                                    <div class="flex items-center justify-center gap-x-4">
-                                        <button type="button" class="favorite-btn favorited" data-id="${item.id}" aria-label="${favAriaLabel}" title="Remove from shortlist">★</button>
-                                                        <input type="checkbox" id="compare-${item.id}" class="compare-checkbox h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600" data-id="${item.id}" title="Select for comparison" style="outline: none !important; box-shadow: none !important;">
-                                    </div>
-                                </td>`;
+        <td class="px-4 py-3 align-middle text-center">
+            <div class="flex items-center justify-center gap-x-4">
+                <button type="button" class="favorite-btn favorited text-yellow-500" data-id="${item.id}" aria-label="${favAriaLabel}" title="Remove from shortlist">${starSvg}</button>
+                <input type="checkbox" id="compare-${item.id}" class="compare-checkbox h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600" data-id="${item.id}" title="Select for comparison" style="outline: none !important; box-shadow: none !important;">
+            </div>
+        </td>`;
                                         } else {
-                                            favCell = `<td class="px-4 py-3 align-middle text-center"><button type="button" class="favorite-btn${isFavorited ? ' favorited' : ''}" data-id="${item.id}" aria-label="${favAriaLabel}" title="${isFavorited ? 'Remove from shortlist' : 'Add to shortlist'}"><svg viewBox='0 0 24 24'><polygon points='12,17.27 18.18,21 16.54,13.97 22,9.24 14.81,8.63 12,2 9.19,8.63 2,9.24 7.46,13.97 5.82,21'/></svg></button></td>`;
+                                            favCell = `<td class="px-4 py-3 align-middle text-center"><button type="button" class="favorite-btn${isFavorited ? ' favorited text-yellow-500' : ' text-gray-400 hover:text-yellow-500'}" data-id="${item.id}" aria-label="${favAriaLabel}" title="${isFavorited ? 'Remove from shortlist' : 'Add to shortlist'}">${starSvg}</button></td>`;
                                         }
 
                                         row.innerHTML = `
@@ -2684,17 +2756,19 @@
 
                                 const favAriaLabel = isFavorited ? `Remove ${item.institute} - ${item.branch} from shortlist` : `Add ${item.institute} - ${item.branch} to shortlist`;
 
+                                const starSvg = `<svg class="w-5 h-5 transition-colors duration-200" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="${isFavorited ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+
                                 let favCell;
                                 if (isShowingFavorites) {
                                     favCell = `
-                                        <td class="px-4 py-3 align-middle text-center">
-                                            <div class="flex items-center justify-center gap-x-4">
-                                                <button type="button" class="favorite-btn favorited" data-id="${item.id}" aria-label="${favAriaLabel}" title="Remove from shortlist">★</button>
-                                                <input type="checkbox" id="compare-${item.id}" class="compare-checkbox h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600" data-id="${item.id}" title="Select for comparison" style="outline: none !important; box-shadow: none !important;">
-                                            </div>
-                                        </td>`;
+        <td class="px-4 py-3 align-middle text-center">
+            <div class="flex items-center justify-center gap-x-4">
+                <button type="button" class="favorite-btn favorited text-yellow-500" data-id="${item.id}" aria-label="${favAriaLabel}" title="Remove from shortlist">${starSvg}</button>
+                <input type="checkbox" id="compare-${item.id}" class="compare-checkbox h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600" data-id="${item.id}" title="Select for comparison" style="outline: none !important; box-shadow: none !important;">
+            </div>
+        </td>`;
                                 } else {
-                                    favCell = `<td class="px-4 py-3 align-middle text-center"><button type="button" class="favorite-btn${isFavorited ? ' favorited' : ''}" data-id="${item.id}" aria-label="${favAriaLabel}" title="${isFavorited ? 'Remove from shortlist' : 'Add to shortlist'}"><svg viewBox='0 0 24 24'><polygon points='12,17.27 18.18,21 16.54,13.97 22,9.24 14.81,8.63 12,2 9.19,8.63 2,9.24 7.46,13.97 5.82,21'/></svg></button></td>`;
+                                    favCell = `<td class="px-4 py-3 align-middle text-center"><button type="button" class="favorite-btn${isFavorited ? ' favorited text-yellow-500' : ' text-gray-400 hover:text-yellow-500'}" data-id="${item.id}" aria-label="${favAriaLabel}" title="${isFavorited ? 'Remove from shortlist' : 'Add to shortlist'}">${starSvg}</button></td>`;
                                 }
 
                                 row.innerHTML = `
@@ -3190,7 +3264,9 @@
 
                     row.innerHTML = `
                 <td class="text-center">
-                    <button onclick="toggleFavorite('${item.id}')" class="text-2xl transition-colors ${isFavorited ? 'text-yellow-500' : 'text-gray-300 hover:text-yellow-400'}" aria-label="${favAriaLabel}" title="${isFavorited ? 'Remove from shortlist' : 'Add to shortlist'}">★</button>
+                    <button onclick="toggleFavorite('${item.id}')" class="favorite-btn transition-colors ${isFavorited ? 'favorited text-yellow-500' : 'text-gray-300 hover:text-yellow-400'}" aria-label="${favAriaLabel}" title="${isFavorited ? 'Remove from shortlist' : 'Add to shortlist'}">
+    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="${isFavorited ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+</button>
                 </td>
                 <td>
                     ${predictionBadge}
@@ -3218,7 +3294,7 @@
                     return row;
                 }
 
-                
+
 
                 function updateVirtualScrollButtonStyle() {
                     const isDark = document.documentElement.classList.contains('dark');
@@ -4000,18 +4076,27 @@
                 });
             }
 
+            // Find the existing showModal function and replace it with this:
             function showModal(title, message, type = 'info') {
                 const modal = document.getElementById('general-modal');
                 const modalContent = document.getElementById('modal-content');
                 const modalTitle = document.getElementById('modal-title');
                 const modalMessage = document.getElementById('modal-message');
 
-                let icon = 'ℹ️';
-                if (type === 'error') icon = '⚠️';
-                if (type === 'warning') icon = '⚠️';
-                if (type === 'success') icon = '✅';
+                // Lucide SVG strings
+                const icons = {
+                    info: '<svg class="w-6 h-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>',
+                    error: '<svg class="w-6 h-6 text-red-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+                    warning: '<svg class="w-6 h-6 text-amber-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+                    success: '<svg class="w-6 h-6 text-green-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+                };
 
-                modalTitle.innerHTML = `${icon} ${title}`;
+                let icon = icons.info;
+                if (type === 'error') icon = icons.error;
+                if (type === 'warning') icon = icons.warning;
+                if (type === 'success') icon = icons.success;
+
+                modalTitle.innerHTML = `<div class="flex items-center gap-2">${icon} <span>${title}</span></div>`;
                 modalMessage.textContent = message;
 
                 modal.classList.remove('hidden');
@@ -4105,7 +4190,12 @@
                         <button class="w-full text-left p-3 font-medium text-gray-900 flex justify-between items-center"
                             style="outline: none !important; box-shadow: none !important;" onclick="toggleFaq(0)">
                             <span>How to use WBJEE College Finder?</span>
-                            <span id="faq-arrow-0">▼</span>
+                            <svg class="w-5 h-5 text-gray-500 transition-transform duration-200"
+                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="m6 9 6 6 6-6" />
+                            </svg>
                         </button>
                         <div class="faq-answer px-4 pb-3 text-gray-700 hidden">
                             Enter your WBJEE rank in the input field and click search. The tool will show you colleges
@@ -4117,7 +4207,12 @@
                         <button class="w-full text-left p-3 font-medium text-gray-900 flex justify-between items-center"
                             style="outline: none !important; box-shadow: none !important;" onclick="toggleFaq(1)">
                             <span>Is this WBJEE college predictor free?</span>
-                            <span id="faq-arrow-1">▼</span>
+                            <svg class="w-5 h-5 text-gray-500 transition-transform duration-200"
+                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="m6 9 6 6 6-6" />
+                            </svg>
                         </button>
                         <div class="faq-answer px-4 pb-3 text-gray-700 hidden">
                             Yes, this WBJEE college finder tool is completely free to use. No registration, payment, or
@@ -4129,7 +4224,12 @@
                         <button class="w-full text-left p-3 font-medium text-gray-900 flex justify-between items-center"
                             style="outline: none !important; box-shadow: none !important;" onclick="toggleFaq(2)">
                             <span>How accurate is the WBJEE college prediction?</span>
-                            <span id="faq-arrow-2">▼</span>
+                            <svg class="w-5 h-5 text-gray-500 transition-transform duration-200"
+                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="m6 9 6 6 6-6" />
+                            </svg>
                         </button>
                         <div class="faq-answer px-4 pb-3 text-gray-700 hidden">
                             The predictions are based on historical WBJEE cutoff data from official sources. While we
@@ -4141,7 +4241,12 @@
                         <button class="w-full text-left p-3 font-medium text-gray-900 flex justify-between items-center"
                             style="outline: none !important; box-shadow: none !important;" onclick="toggleFaq(3)">
                             <span>Which colleges are included in WBJEE College Finder?</span>
-                            <span id="faq-arrow-3">▼</span>
+                            <svg class="w-5 h-5 text-gray-500 transition-transform duration-200"
+                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="m6 9 6 6 6-6" />
+                            </svg>
                         </button>
                         <div class="faq-answer px-4 pb-3 text-gray-700 hidden">
                             The tool includes all engineering colleges in West Bengal that participate in WBJEE
@@ -4153,7 +4258,12 @@
                         <button class="w-full text-left p-3 font-medium text-gray-900 flex justify-between items-center"
                             style="outline: none !important; box-shadow: none !important;" onclick="toggleFaq(4)">
                             <span>What do the prediction colors mean?</span>
-                            <span id="faq-arrow-4">▼</span>
+                            <svg class="w-5 h-5 text-gray-500 transition-transform duration-200"
+                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="m6 9 6 6 6-6" />
+                            </svg>
                         </button>
                         <div class="faq-answer px-4 pb-3 text-gray-700 hidden">
                             Green (Confirm): High chance of admission. Blue (Great): Very good chance. Cyan (Good): Good
@@ -4164,7 +4274,12 @@
                         <button class="w-full text-left p-3 font-medium text-gray-900 flex justify-between items-center"
                             style="outline: none !important; box-shadow: none !important;" onclick="toggleFaq(5)">
                             <span>Can I export my results?</span>
-                            <span id="faq-arrow-5">▼</span>
+                            <svg class="w-5 h-5 text-gray-500 transition-transform duration-200"
+                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="m6 9 6 6 6-6" />
+                            </svg>
                         </button>
                         <div class="faq-answer px-4 pb-3 text-gray-700 hidden">
                             Yes! You can export your filtered results or shortlist to CSV format for offline reference.
@@ -4179,14 +4294,27 @@
         function toggleFaq(idx) {
             const answers = document.querySelectorAll('#faq-accordion .faq-answer');
             const arrows = document.querySelectorAll('#faq-accordion [id^="faq-arrow-"]');
+
+            // SVG Strings
+            const downIcon = '<svg class="w-5 h-5 text-gray-500 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+
+            const upIcon = '<svg class="w-5 h-5 text-red-600 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>';
+
             answers.forEach((ans, i) => {
                 if (i === idx) {
-                    const isOpen = !ans.classList.contains('hidden');
+                    // Check if it is currently visible
+                    const isVisible = !ans.classList.contains('hidden');
+
+                    // Toggle visibility
                     ans.classList.toggle('hidden');
-                    arrows[i].textContent = isOpen ? '▼' : '▲';
+
+                    // If it WAS visible, it is now hidden -> Show Down Icon
+                    // If it WAS hidden, it is now visible -> Show Up Icon
+                    arrows[i].innerHTML = isVisible ? downIcon : upIcon;
                 } else {
+                    // Close all others
                     ans.classList.add('hidden');
-                    arrows[i].textContent = '▼';
+                    arrows[i].innerHTML = downIcon;
                 }
             });
         }
@@ -4204,8 +4332,11 @@
         class="back-to-top bg-[#53AC5D] hover:bg-[#4a9c52] text-white p-3 rounded-full shadow-lg transition-all duration-300"
         style="background-color: #53AC5D !important; outline: none !important; box-shadow: none !important;"
         aria-label="Back to top">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="m5 12 7-7 7 7" />
+            <path d="M12 19V5" />
         </svg>
     </button>
 
@@ -4239,9 +4370,11 @@
 
                 <div class="flex flex-wrap justify-center items-center gap-6 text-sm">
                     <div class="flex items-center gap-1">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                clip-rule="evenodd"></path>
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
                         </svg>
                         <span class="text-gray-700 dark:text-gray-300">Created by</span>
                         <a href="https://www.reddit.com/user/rizzz6"
@@ -4250,11 +4383,13 @@
                     </div>
 
                     <div class="flex items-center gap-1">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"></path>
-                            <path
-                                d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c-.28.28-.732.28-1.012 0L5 13.828V12a4 4 0 014-4h6z">
-                            </path>
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                         </svg>
                         <span class="text-gray-700 dark:text-gray-300">Join our community,</span>
                         <a href="https://www.reddit.com/r/wbjee"
@@ -4263,10 +4398,12 @@
                     </div>
 
                     <div class="flex items-center gap-1">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
-                                clip-rule="evenodd"></path>
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <ellipse cx="12" cy="5" rx="9" ry="3" />
+                            <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+                            <path d="M3 12A9 3 0 0 0 21 12" />
                         </svg>
                         <span class="text-gray-700 dark:text-gray-300">Data source:</span>
                         <a href="https://wbjeeb.nic.in"
@@ -4275,31 +4412,38 @@
                     </div>
 
                     <div class="flex items-center gap-1">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"
-                                clip-rule="evenodd"></path>
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                            <path d="M12 17h.01" />
                         </svg>
-                        <a href="#" onclick="showModal('help-modal'); return false;"
+                        <a href="#"
+                            onclick="document.getElementById('help-modal').classList.remove('hidden'); return false;"
                             class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline font-medium transition-colors">Help
                             & FAQ</a>
                     </div>
 
                     <div class="flex items-center gap-1">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                clip-rule="evenodd"></path>
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6" />
+                            <line x1="9" x2="9" y1="3" y2="18" />
+                            <line x1="15" x2="15" y1="6" y2="21" />
                         </svg>
-                        <a href="#" onclick="showModal('legend-modal'); return false;"
+                        <a href="#"
+                            onclick="document.getElementById('legend-modal').classList.remove('hidden'); return false;"
                             class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline font-medium transition-colors">Legend</a>
                     </div>
 
                     <div class="flex items-center gap-1">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
-                                clip-rule="evenodd"></path>
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m5 12 7-7 7 7" />
+                            <path d="M12 19V5" />
                         </svg>
                         <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;"
                             class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline font-medium transition-colors">Back
@@ -4335,12 +4479,12 @@
     </script>
 
     <script>
-      function navigateToHome() {
-        history.pushState(null, '', '/');
-        window.dispatchEvent(new PopStateEvent('popstate'));
-      }
+        function navigateToHome() {
+            history.pushState(null, '', '/');
+            window.dispatchEvent(new PopStateEvent('popstate'));
+        }
     </script>
 
-  </body>
+</body>
 
 </html>

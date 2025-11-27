@@ -5,7 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { MapPinIcon, BuildingLibraryIcon, CalendarDaysIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
+// FIX: Switched to Lucide Icons
+import { MapPin, Building2, Calendar, Globe, Landmark, IndianRupee, TrendingUp, BarChart3, ArrowRight } from 'lucide-react';
 import SanityTable from '../../components/SanityTable';
 import CutoffTable from '../../components/CutoffTable';
 
@@ -137,7 +138,7 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
                 {college.name}
               </h1>
               <div className="flex items-center text-gray-300 gap-2">
-                <MapPinIcon className="w-5 h-5" />
+                <MapPin className="w-5 h-5" />
                 {college.location}
               </div>
             </div>
@@ -148,7 +149,7 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
                 rel="noopener noreferrer"
                 className="hidden md:inline-flex items-center gap-2 bg-white text-gray-900 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors"
               >
-                <GlobeAltIcon className="w-5 h-5" />
+                <Globe className="w-5 h-5" />
                 Official Website
               </a>
             )}
@@ -168,7 +169,7 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
              {college.body && (
                <section className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                   <span className="text-red-600">🏛️</span> About the Institute
+                   <span className="text-red-600"><Landmark className="w-6 h-6" /></span> About the Institute
                  </h2>
                  <div className="prose prose-red dark:prose-invert max-w-none">
                    <PortableText value={college.body} />
@@ -179,7 +180,7 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
              {college.fees && (
                <section className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                   <span className="text-red-600">₹</span> Fee Structure
+                   <span className="text-red-600"><IndianRupee className="w-6 h-6" /></span> Fee Structure
                  </h2>
                  <SanityTable data={college.fees} />
                </section>
@@ -188,7 +189,7 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
              {college.placements && (
                <section className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                   <span className="text-red-600">📈</span> Placements & Stats
+                   <span className="text-red-600"><TrendingUp className="w-6 h-6" /></span> Placements & Stats
                  </h2>
                  <SanityTable data={college.placements} />
                </section>
@@ -205,7 +206,7 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
 
                <div className="space-y-4">
                  <div className="flex items-start gap-3">
-                   <BuildingLibraryIcon className="w-5 h-5 text-gray-400 mt-0.5" />
+                   <Building2 className="w-5 h-5 text-gray-400 mt-0.5" />
                    <div>
                      <p className="text-xs text-gray-500 uppercase font-semibold">Type</p>
                      <p className="text-gray-900 dark:text-gray-200 font-medium">{college.type}</p>
@@ -213,14 +214,14 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
                  </div>
 
                  <div className="flex items-start gap-3">
-                   <CalendarDaysIcon className="w-5 h-5 text-gray-400 mt-0.5" />
+                   <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
                    <div>
                      <p className="text-xs text-gray-500 uppercase font-semibold">Established</p>
                      <p className="text-gray-900 dark:text-gray-200 font-medium">{college.estYear || 'N/A'}</p>
                    </div>
                  </div>
                  <div className="flex items-start gap-3">
-                   <MapPinIcon className="w-5 h-5 text-gray-400 mt-0.5" />
+                   <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
                    <div>
                      <p className="text-xs text-gray-500 uppercase font-semibold">Location</p>
                      <p className="text-gray-900 dark:text-gray-200 font-medium">{college.location}</p>
@@ -232,18 +233,16 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
                    href={college.website}
                    target="_blank"
                    rel="noopener noreferrer"
-                   className="mt-6 w-full block text-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-bold py-3 rounded-xl transition-colors"
+                   className="mt-6 w-full flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-bold py-3 rounded-xl transition-colors"
                  >
-                   Visit Website ↗
+                   Visit Website <ArrowRight className="w-4 h-4" />
                  </a>
                )}
                <Link
                  href="/predictor"
                  className="mt-4 w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1"
                >
-                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
-                 </svg>
+                 <BarChart3 className="w-5 h-5" />
                  Check Admission Probability
                </Link>
              </div>
@@ -255,7 +254,7 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
         {college.cutoffGroup?.cutoffs && college.cutoffGroup.cutoffs.length > 0 && (
           <section className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-              <span className="text-red-600">📊</span> Cutoff Trends (WBJEE)
+              <span className="text-red-600"><BarChart3 className="w-6 h-6" /></span> Cutoff Trends (WBJEE)
             </h2>
 
             {/* Pass raw data to Client Component */}

@@ -1,3 +1,5 @@
+import { X } from 'lucide-react'; // Import X icon
+
 interface CollegeData {
   id: string;
   round: string;
@@ -34,9 +36,10 @@ export default function ComparisonModal({ isOpen, onClose, favorites, allData }:
           <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">College Comparison</h3>
           <button
             onClick={onClose}
-            className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 text-2xl"
+            className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
           >
-            ×
+            {/* FIX: Replaced text "×" with Lucide Icon */}
+            <X className="w-6 h-6" />
           </button>
         </div>
         <div className="p-6 overflow-y-auto">

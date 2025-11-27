@@ -1,9 +1,11 @@
-import { client } from '../../sanity/client';
-import { urlFor } from '../../sanity/client';
+import { client, urlFor } from '../../sanity/client'; // Combined imports
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 import Image from 'next/image';
+// FIX: Import Lucide icons
+import { FileText, ArrowRight } from 'lucide-react';
+
 export const revalidate = 60;
 
 interface Post {
@@ -51,8 +53,9 @@ export default async function BlogPage() {
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                   ) : (
+                    // FIX: Replaced 📰 emoji with FileText icon
                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-gray-800">
-                      <span className="text-red-300 dark:text-red-800 text-5xl">📰</span>
+                      <FileText className="w-20 h-20 text-red-300 dark:text-red-800" />
                     </div>
                   )}
                   {/* Overlay Gradient for Text Contrast if needed */}
@@ -70,7 +73,8 @@ export default async function BlogPage() {
 
                   <div className="mt-auto pt-6 border-t border-gray-50 dark:border-gray-700 flex items-center justify-between text-sm font-semibold text-gray-500 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
                     <span>Read Article</span>
-                    <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+                    {/* FIX: Replaced text arrow with Lucide ArrowRight */}
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               </Link>
