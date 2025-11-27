@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Providers from "./providers";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { GoogleTagManager } from '@next/third-parties/google';
 
 
 const geistSans = Geist({
@@ -122,28 +123,14 @@ export default function RootLayout({
             `,
           }}
         />
-        <Script
-          strategy="afterInteractive"
-          src="https://www.googletagmanager.com/gtag/js?id=G-Y5WXZ7Q4Q2"
-        />
-        <Script
-          id="gtag-init"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-Y5WXZ7Q4Q2');
-            `,
-          }}
-        />
+       
         <Providers>
           <Navbar />
           {children}
           <Footer />
           <SpeedInsights />
         </Providers>
+        <GoogleTagManager gtmId="GTM-5789Z287" />
       </body>
     </html>
   );
