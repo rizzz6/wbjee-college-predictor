@@ -59,7 +59,14 @@ export default function Navbar() {
               <Link href="/#home" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Home</Link>
               <Link href="/colleges" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Colleges</Link>
               <Link href="/predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Predictor</Link>
-              <Link href="/legacy-predictor" target="_blank" rel="noopener noreferrer" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Legacy Predictor ↗</Link>
+              <a
+                href="/old-predictor/index.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-red-600 dark:hover:text-red-400 transition-colors"
+              >
+                Legacy Predictor ↗
+              </a>
               <Link href="/rank-finder" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Rank Finder</Link>
               <Link href="/blog" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Blog</Link>
               <ThemeToggle />

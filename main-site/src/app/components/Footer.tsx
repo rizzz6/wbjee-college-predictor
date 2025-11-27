@@ -22,7 +22,12 @@ export default function Footer() {
             <div className="flex flex-col items-start gap-2 text-gray-700 dark:text-gray-200">
               <Link href="/predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Rank Predictor</Link>
               <Link href="/rank-finder" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Cutoff Finder</Link>
-              <Link href="/old-predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Legacy Predictor</Link>
+              <a
+                href="/old-predictor/index.html"
+                className="hover:text-red-600 dark:hover:text-red-400 transition-colors"
+              >
+                Legacy Predictor
+              </a>
             </div>
           </div>
 
