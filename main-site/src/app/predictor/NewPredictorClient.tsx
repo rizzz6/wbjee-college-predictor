@@ -38,9 +38,18 @@ interface SortState {
   type: 'string' | 'number';
 }
 
+import dynamic from 'next/dynamic';
+
 // Import modal components
-import ChartModal from './ChartModal';
-import ComparisonModal from './ComparisonModal';
+const ChartModal = dynamic(() => import('./ChartModal'), { 
+  loading: () => <div className="p-4 text-center">Loading Chart...</div>,
+  ssr: false 
+});
+
+const ComparisonModal = dynamic(() => import('./ComparisonModal'), { 
+  loading: () => <div className="p-4 text-center">Loading Comparison...</div>,
+  ssr: false 
+});
 
 // Import floating scrollbar component
 import FloatingScrollbar from '../components/FloatingScrollbar';
