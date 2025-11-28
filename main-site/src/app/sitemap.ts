@@ -47,7 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     {
-      url: `${baseUrl}/legacy-predictor`,
+      url: `${baseUrl}/old-predictor/index.html`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.6,
