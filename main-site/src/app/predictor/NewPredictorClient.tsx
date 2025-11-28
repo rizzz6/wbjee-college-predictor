@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef, Component, ReactNode } from "react";
-
+import dynamic from 'next/dynamic';
+import FloatingScrollbar from '../components/FloatingScrollbar';
+import {
+  AlertCircle, HelpCircle, Check, X, ChevronDown, Download,
+  Share2, Copy, Star, ArrowUp, ArrowDown
+} from 'lucide-react';
 
 // Define types based on the data structure
 interface CollegeData {
@@ -38,26 +43,16 @@ interface SortState {
   type: 'string' | 'number';
 }
 
-import dynamic from 'next/dynamic';
-
 // Import modal components
-const ChartModal = dynamic(() => import('./ChartModal'), { 
+const ChartModal = dynamic(() => import('./ChartModal'), {
   loading: () => <div className="p-4 text-center">Loading Chart...</div>,
-  ssr: false 
+  ssr: false
 });
 
-const ComparisonModal = dynamic(() => import('./ComparisonModal'), { 
+const ComparisonModal = dynamic(() => import('./ComparisonModal'), {
   loading: () => <div className="p-4 text-center">Loading Comparison...</div>,
-  ssr: false 
+  ssr: false
 });
-
-// Import floating scrollbar component
-import FloatingScrollbar from '../components/FloatingScrollbar';
-
-import {
-  AlertCircle, HelpCircle, Check, X, ChevronDown, Download,
-  Share2, Copy, Star, ArrowUp, ArrowDown
-} from 'lucide-react';
 
 // Error Boundary Component
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error?: Error }> {
@@ -79,7 +74,6 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
       return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center font-['Inter',sans-serif]">
           <div className="text-center max-w-md p-6">
-            {/* NEW ICON */}
             <AlertCircle className="mx-auto h-16 w-16 text-red-500 mb-6" />
             <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-2">Something went wrong</h2>
             <p className="text-slate-600 dark:text-slate-400 mb-6">
@@ -768,7 +762,7 @@ export default function NewPredictorClient() {
                 onClick={() => setShowFilters(!showFilters)}
                 className="px-6 py-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-medium transition-colors focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 aria-expanded={showFilters}
-                aria-controls="filter-section"
+                aria-controls="filters"
                 aria-label={showFilters ? 'Hide filter options' : 'Show filter options'}
               >
                 {showFilters ? 'Hide Filters' : 'Show Filters'}
@@ -776,8 +770,8 @@ export default function NewPredictorClient() {
               <button
                 onClick={() => setIsSmartFilteringEnabled(!isSmartFilteringEnabled)}
                 className={`px-6 py-3 rounded-lg text-sm font-medium transition-colors shadow-sm ${isSmartFilteringEnabled
-                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                    : 'bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200'
+                  ? 'bg-emerald-800 hover:bg-emerald-900 text-white'
+                  : 'bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200'
                   }`}
                 title={isSmartFilteringEnabled ? 'Disable result filtering' : 'Enable result filtering'}
               >
@@ -916,16 +910,18 @@ export default function NewPredictorClient() {
           </section>
 
           {/* Results Table */}
-          <section id="results" className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
+          <h2 className="sr-only">Results</h2><section id="results" className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
             {/* Top Controls */}
             <div className="mb-6 space-y-4">
               {/* Pagination and Results Info */}
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-3">
-                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Show:</label>
+                    <label htmlFor="entries-per-page" className="text-sm font-medium text-slate-700 dark:text-slate-300">Show:</label>
                     <select
+                      id="entries-per-page"
                       value={entriesPerPage}
+                      aria-label="Select number of rows per page"
                       onChange={(e) => {
                         setEntriesPerPage(e.target.value === 'all' ? 'all' : Number(e.target.value));
                         setCurrentPage(1);
@@ -972,14 +968,14 @@ export default function NewPredictorClient() {
                 <div className="flex flex-wrap gap-3">
                   <button
                     onClick={() => setIsShowingFavorites(!isShowingFavorites)}
-                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors shadow-sm"
+                    className="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white rounded-lg font-medium transition-colors shadow-sm"
                   >
                     {isShowingFavorites ? 'Show All' : `Favorites (${favorites.size})`}
                   </button>
                   {favorites.size >= 2 && favorites.size <= 4 && (
                     <button
                       onClick={showComparison}
-                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors shadow-sm"
+                      className="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white rounded-lg font-medium transition-colors shadow-sm"
                     >
                       Compare ({favorites.size})
                     </button>
@@ -1087,7 +1083,7 @@ export default function NewPredictorClient() {
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-lg">{item.institute}</h3>
+                      <h2 className="font-semibold text-slate-900 dark:text-slate-100 text-lg">{item.institute}</h2>
                       <p className="text-slate-600 dark:text-slate-400">{item.branch}</p>
                     </div>
                     <button
@@ -1104,10 +1100,10 @@ export default function NewPredictorClient() {
 
                   <div className="flex items-center justify-between mb-3">
                     <span className={`px-3 py-1 rounded-full text-sm font-semibold ${item.prediction.text === 'Confirm' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-100' :
-                        item.prediction.text === 'Great' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-100' :
-                          item.prediction.text === 'Good' ? 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-100' :
-                            item.prediction.text === 'Low' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-100' :
-                              'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-100'
+                      item.prediction.text === 'Great' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-100' :
+                        item.prediction.text === 'Good' ? 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-100' :
+                          item.prediction.text === 'Low' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-100' :
+                            'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-100'
                       }`}>
                       {item.prediction.text}
                     </span>
@@ -1270,10 +1266,10 @@ export default function NewPredictorClient() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <span className={`px-2 py-1 rounded text-xs font-semibold ${item.prediction.text === 'Confirm' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-100' :
-                            item.prediction.text === 'Great' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-100' :
-                              item.prediction.text === 'Good' ? 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-100' :
-                                item.prediction.text === 'Low' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-100' :
-                                  'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-100'
+                          item.prediction.text === 'Great' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-100' :
+                            item.prediction.text === 'Good' ? 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-100' :
+                              item.prediction.text === 'Low' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-100' :
+                                'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-100'
                           }`}>
                           {item.prediction.text}
                         </span>

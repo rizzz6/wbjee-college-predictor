@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { urlFor } from '../../sanity/client';
-// FIX: Imported MapPin and ArrowRight from lucide-react
 import { GraduationCap, MapPin, ArrowRight } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { SanityImageSource } from '@sanity/image-url/lib/types/types';
@@ -38,27 +37,24 @@ export default function CollegeSearch({ colleges }: CollegeSearchProps) {
   return (
     <div className="max-w-7xl mx-auto">
       {/* Search and Filter Controls */}
-      <div className="mb-8 space-y-4">
-        {/* Search Bar */}
-        <div className="max-w-md">
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <div className="relative flex-grow">
           <input
             type="text"
-            placeholder="Search colleges..."
+            placeholder="Search colleges by name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:outline-none transition-all"
           />
         </div>
-
-        {/* Filter Buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
           {['All', 'Government', 'Private'].map((type) => (
             <button
               key={type}
               onClick={() => setFilterType(type)}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${filterType === type
-                  ? 'bg-red-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${filterType === type
+                ? 'bg-red-600 text-white'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                 }`}
             >
               {type}
@@ -67,37 +63,33 @@ export default function CollegeSearch({ colleges }: CollegeSearchProps) {
         </div>
       </div>
 
-      {/* Colleges Grid */}
+      {/* College Grid */}
       {filteredColleges.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredColleges.map((college) => (
             <Link
               key={college._id}
               href={`/colleges/${college.slug.current}`}
-              className="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+              className="group bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:border-red-100 dark:hover:border-red-900/30 block"
             >
-              {/* Top Row: Logo and Type Badge */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 flex-shrink-0">
+              {/* Top: Logo & Type */}
+              <div className="flex justify-between items-start mb-4">
+                <div className="w-12 h-12 relative bg-gray-50 dark:bg-gray-700/50 rounded-lg p-2 flex items-center justify-center">
                   {college.logo ? (
                     <Image
-                      src={urlFor(college.logo).width(48).height(48).url()}
+                      src={urlFor(college.logo).width(64).height(64).url()}
                       alt={`${college.name} logo`}
                       width={48}
                       height={48}
-                      className="w-full h-full object-contain"
+                      className="object-contain"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                      <GraduationCap className="w-6 h-6 text-gray-400 dark:text-gray-500" />
-                    </div>
+                    <GraduationCap className="w-6 h-6 text-gray-400" />
                   )}
                 </div>
-                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${college.type === 'Government'
-                    ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400'
-                    : college.type === 'Private'
-                      ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-                      : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400'
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${college.type === 'Government'
+                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                  : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
                   }`}>
                   {college.type === 'Government' ? 'Govt' : college.type === 'Private' ? 'Private' : 'Semi-Govt'}
                 </span>
@@ -105,20 +97,20 @@ export default function CollegeSearch({ colleges }: CollegeSearchProps) {
 
               {/* Middle: Name and Location */}
               <div className="mb-4">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                {/* FIX: Changed h3 to h2 to fix heading order hierarchy (h1 -> h2) */}
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
                   {college.name}
-                </h3>
+                </h2>
                 <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                  {/* FIX: Replaced MapPinIcon with MapPin */}
                   <MapPin className="w-4 h-4 mr-1" />
                   {college.location}
                 </div>
               </div>
 
               {/* Bottom: View Profile Button */}
-              <div className="flex items-center justify-between text-sm font-medium text-gray-500 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+              {/* FIX: Changed text-gray-500 to text-gray-600 for better contrast */}
+              <div className="flex items-center justify-between text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
                 <span>View Profile</span>
-                {/* FIX: Replaced ArrowRightIcon with ArrowRight */}
                 <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>
@@ -126,7 +118,14 @@ export default function CollegeSearch({ colleges }: CollegeSearchProps) {
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-gray-500 dark:text-gray-400 text-lg">No colleges found matching your criteria.</p>
+          <div className="bg-gray-50 dark:bg-gray-800/50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <GraduationCap className="w-8 h-8 text-gray-400" />
+          </div>
+          {/* FIX: Changed h3 to h2 for consistency */}
+          <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No colleges found</h2>
+          <p className="text-gray-500 dark:text-gray-400">
+            Try adjusting your search or filter criteria
+          </p>
         </div>
       )}
     </div>

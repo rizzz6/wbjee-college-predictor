@@ -4,7 +4,16 @@ import { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'WBJEE 2025 Important Dates & Schedule | Official Timeline',
   description: 'Track all important dates for WBJEE 2025 including application, admit card, exam date, result, and counseling schedule.',
-};
+  alternates: {
+    canonical: '/timeline',
+  },
+  openGraph: {
+    title: 'WBJEE 2025 Schedule & Important Dates',
+    description: 'Complete timeline for WBJEE 2025: Application, Exam, Result, and Counseling dates.',
+    url: 'https://www.rwbjee.com/timeline',
+    type: 'website',
+  }
+}; // <--- MAKE SURE THIS CLOSING BRACE AND SEMICOLON ARE HERE
 
 export default function TimelinePage() {
   return (
@@ -19,10 +28,10 @@ export default function TimelinePage() {
             Stay updated with the complete schedule of events. Dates marked as &ldquo;Tentative&rdquo; are subject to change by the official board.
           </p>
         </div>
-        
+
         {/* Render Full List without internal Header */}
         <div className="flex justify-center">
-            <ImportantDates hideTitle={true} />
+          <ImportantDates hideTitle={true} />
         </div>
       </div>
     </div>
