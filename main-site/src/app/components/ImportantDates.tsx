@@ -15,19 +15,19 @@ interface TimelineEvent {
 }
 
 interface ImportantDatesProps {
-  limit?: number;        
-  showViewAll?: boolean; 
-  compact?: boolean;     
-  hideTitle?: boolean;   
+  limit?: number;
+  showViewAll?: boolean;
+  compact?: boolean;
+  hideTitle?: boolean;
 }
 
-export default function ImportantDates({ 
-  limit, 
+export default function ImportantDates({
+  limit,
   showViewAll = false,
   compact = false,
   hideTitle = false
 }: ImportantDatesProps) {
-  
+
   const { data: allEvents, isLoading } = useSWR<TimelineEvent[]>(
     `*[_type == "timeline"] | order(date asc)`,
     fetcher
@@ -44,7 +44,7 @@ export default function ImportantDates({
 
     if (upcomingEvents.length > 0) {
       return upcomingEvents.slice(0, limit);
-    } 
+    }
     return allEvents.slice(-limit);
   })() : [];
 
@@ -53,26 +53,26 @@ export default function ImportantDates({
   if (isLoading) return (
     <section className={`w-full ${!compact ? 'py-8' : ''}`}>
       <div className={`w-full ${!compact ? 'max-w-7xl mx-auto px-4' : ''}`}>
-         {!hideTitle && (
-           <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                Important Dates
-              </h2>
-           </div>
-         )}
-         <div className="flex flex-col gap-0 relative max-w-3xl">
-            {Array.from({ length: limit || 5 }).map((_, i) => (
-              <div key={i} className="flex pb-8 relative">
-                 <div className="relative flex-shrink-0 w-12 flex flex-col items-center">
-                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-0.5 bg-gray-200 dark:bg-gray-800 h-full"></div>
-                    <div className="relative z-10 w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-700 mt-1"></div>
-                 </div>
-                 <div className="flex-1 pl-4 pt-0.5">
-                    <div className="h-16 bg-gray-100 dark:bg-gray-800/50 rounded-lg animate-pulse"></div>
-                 </div>
+        {!hideTitle && (
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              Important Dates
+            </h2>
+          </div>
+        )}
+        <div className="flex flex-col gap-0 relative max-w-3xl">
+          {Array.from({ length: limit || 5 }).map((_, i) => (
+            <div key={i} className="flex pb-8 relative">
+              <div className="relative flex-shrink-0 w-12 flex flex-col items-center">
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 w-0.5 bg-gray-200 dark:bg-gray-800 h-full"></div>
+                <div className="relative z-10 w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-700 mt-1"></div>
               </div>
-            ))}
-         </div>
+              <div className="flex-1 pl-4 pt-0.5">
+                <div className="h-16 bg-gray-100 dark:bg-gray-800/50 rounded-lg animate-pulse"></div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -83,14 +83,14 @@ export default function ImportantDates({
     // FIX: Using <section> and matching FeaturedColleges structure exactly (max-w-7xl mx-auto px-4)
     <section className={`w-full ${!compact ? 'py-8' : ''}`}>
       <div className={`w-full ${!compact ? 'max-w-7xl mx-auto px-4' : ''}`}>
-        
+
         {/* HEADER: Full width, no max-w constraint */}
         {!hideTitle && (
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               Important Dates
             </h2>
-            
+
             {showViewAll && (
               <Link
                 href="/timeline"
@@ -101,25 +101,25 @@ export default function ImportantDates({
             )}
           </div>
         )}
-        
+
         {/* LIST: We keep the list max-w-3xl so lines aren't too long, but Header stays wide */}
-        <div className="max-w-3xl"> 
+        <div className="max-w-3xl">
           <div className="flex flex-col gap-0 relative">
             {displayedEvents.map((event, index) => {
               const eventDate = new Date(event.date);
               const isEventPast = isPast(eventDate) && !isToday(eventDate);
               const isEventToday = isToday(eventDate);
               const daysLeft = differenceInCalendarDays(eventDate, new Date());
-              
+
               const isActive = !isEventPast && index === 0;
 
               return (
                 <div key={event._id} className="flex group relative pb-8 last:pb-0">
-                  
+
                   {/* LEFT COLUMN: GRAPHICS */}
                   <div className="relative flex-shrink-0 w-12 flex flex-col items-center">
                     {index !== displayedEvents.length - 1 && (
-                      <div 
+                      <div
                         className="absolute w-0.5 bg-gray-200 dark:bg-gray-700 left-1/2 -translate-x-1/2 z-0"
                         style={{ top: '12px', height: 'calc(100% + 20px)' }}
                       ></div>
@@ -140,26 +140,25 @@ export default function ImportantDates({
 
                   {/* RIGHT COLUMN: CONTENT */}
                   <div className="flex-1 pt-0.5 pl-4">
-                    <div className={`p-4 rounded-lg border transition-all duration-300 ${
-                      isActive 
-                        ? 'bg-red-50/50 dark:bg-red-900/10 border-red-200 dark:border-red-900/30 border-l-4 border-l-red-600 shadow-md' 
+                    <div className={`p-4 rounded-lg border transition-all duration-300 ${isActive
+                        ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-900/30 border-l-4 border-l-red-600 shadow-md'
                         : isEventPast
-                          ? 'bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 opacity-70 grayscale' 
+                          ? 'bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 opacity-70 grayscale'
                           : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 shadow-sm'
-                    }`}>
+                      }`}>
                       <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                        <span className={`text-sm font-bold ${isActive ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                        <span className={`text-sm font-bold ${isActive ? 'text-red-700 dark:text-red-300' : 'text-gray-500 dark:text-gray-400'}`}>
                           {format(eventDate, 'MMMM d, yyyy')}
                         </span>
                         {isEventToday ? (
-                           <span className="text-xs bg-red-600 text-white px-2 py-0.5 rounded font-medium animate-pulse">Today</span>
+                          <span className="text-xs bg-red-700 text-white px-2 py-0.5 rounded font-medium">Today</span>
                         ) : isEventPast ? (
-                           <span className="text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded font-medium">Done</span>
+                          <span className="text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded font-medium">Done</span>
                         ) : (
-                           <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-0.5 rounded font-medium">{daysLeft} Days left</span>
+                          <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-0.5 rounded font-medium">{daysLeft} Days left</span>
                         )}
                         {event.isTentative && !isEventPast && (
-                           <span className="text-xs bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-500 px-2 py-0.5 rounded font-medium">Tentative</span>
+                          <span className="text-xs bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-500 px-2 py-0.5 rounded font-medium">Tentative</span>
                         )}
                       </div>
                       <h3 className={`text-base font-medium ${isEventPast ? 'text-gray-400 dark:text-gray-500 line-through' : 'text-gray-800 dark:text-gray-200'}`}>

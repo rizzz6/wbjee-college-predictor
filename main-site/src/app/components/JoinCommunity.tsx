@@ -52,28 +52,28 @@ export default function JoinCommunity({ showHeader = false }: JoinCommunityProps
   if (isLoading) {
     return (
       <div className="w-full">
-         {/* Skeleton Header if enabled */}
-         {showHeader && (
-            <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-6 animate-pulse"></div>
-         )}
-         <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden bg-white dark:bg-gray-800 animate-pulse">
-            <div className="relative h-32 bg-gray-200 dark:bg-gray-700"></div>
-            <div className="p-4 md:p-6">
+        {/* Skeleton Header if enabled */}
+        {showHeader && (
+          <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-6 animate-pulse"></div>
+        )}
+        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden bg-white dark:bg-gray-800 animate-pulse">
+          <div className="relative h-32 bg-gray-200 dark:bg-gray-700"></div>
+          <div className="p-4 md:p-6">
             <div className="flex items-center">
-                <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-800"></div>
-                <div className="ml-4 flex-1">
+              <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-800"></div>
+              <div className="ml-4 flex-1">
                 <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                </div>
+              </div>
             </div>
             <div className="mt-4 flex justify-between items-center">
-                <div>
+              <div>
                 <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-16 mb-1"></div>
                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-12"></div>
-                </div>
-                <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-full w-20"></div>
+              </div>
+              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-full w-20"></div>
             </div>
-            </div>
+          </div>
         </div>
       </div>
     );
@@ -140,7 +140,7 @@ export default function JoinCommunity({ showHeader = false }: JoinCommunityProps
               href={`https://www.reddit.com/${subredditData?.display_name_prefixed || 'r/wbjee'}`}
               target="_blank"
               rel="noreferrer"
-              className="bg-red-500 text-white px-4 py-2 rounded-full font-semibold hover:bg-red-600 transition-colors"
+              className="bg-red-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-red-700 transition-colors"
             >
               Join
             </a>
