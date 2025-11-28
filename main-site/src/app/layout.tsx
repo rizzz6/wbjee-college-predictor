@@ -6,6 +6,7 @@ import Footer from "./components/Footer";
 import Providers from "./providers";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleTagManager } from '@next/third-parties/google';
+import EasterEggManager from './components/eastereggs/EasterEggManager';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -178,6 +179,8 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <EasterEggManager />
+
           {process.env.NODE_ENV === 'production' && <SpeedInsights />}
         </Providers>
         <GoogleTagManager gtmId="GTM-5789Z287" />
