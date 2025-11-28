@@ -10,7 +10,7 @@ import { GoogleTagManager } from '@next/third-parties/google';
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  display: "swap", 
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -101,7 +101,7 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  
+
   category: "education",
 };
 
@@ -114,7 +114,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://ytfxpldt.apicdn.sanity.io" crossOrigin="anonymous" />
-        
+
         {/* FIX: Added inline styles to the script to force the background immediately. 
             We used backticks (`) correctly here to prevent TypeScript errors. */}
         <script
@@ -160,19 +160,22 @@ export default function RootLayout({
             `,
           }}
         />
-        
+
         {/* FIX: Added a CSS fallback that runs BEFORE the script as a safety net */}
-        <style dangerouslySetInnerHTML={{__html: `
+        <style dangerouslySetInnerHTML={{
+          __html: `
           @media (prefers-color-scheme: dark) {
             html { background-color: #111827; color: white; }
           }
         `}} />
       </head>
-      
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-white`}>
+
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased text-gray-900 dark:text-white`}>
         <Providers>
           <Navbar />
-          {children}
+          <main className="flex-grow">
+            {children}
+          </main>
           <Footer />
           {process.env.NODE_ENV === 'production' && <SpeedInsights />}
         </Providers>
