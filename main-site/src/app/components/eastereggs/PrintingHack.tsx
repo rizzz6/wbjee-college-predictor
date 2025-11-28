@@ -3,24 +3,12 @@
 import { useEffect, useState } from 'react';
 import { X, Printer } from 'lucide-react';
 
-<<<<<<< HEAD
-// FIX: Moved outside component to avoid re-creation on every render
 const SECRET_CODE = ['p', 'r', 'i', 'n', 't'];
 
-export default function PrintingHack() {
-    // FIX: Removed unused 'keySequence' variable (replaced with empty comma)
-    const [, setKeySequence] = useState<string[]>([]);
-    const [isOpen, setIsOpen] = useState(false);
-
-=======
 export default function PrintingHack() {
     const [keySequence, setKeySequence] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState(false);
 
-    // The secret code: "print"
-    const SECRET_CODE = ['p', 'r', 'i', 'n', 't'];
-
->>>>>>> 9b0c705ca8527d7c1c913786290add0fd7c8e8cc
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             // Safety Check: Don't trigger if user is typing in a search box/input
@@ -36,16 +24,10 @@ export default function PrintingHack() {
 
             setKeySequence((prev) => {
                 const updated = [...prev, key].slice(-SECRET_CODE.length);
-<<<<<<< HEAD
 
                 if (JSON.stringify(updated) === JSON.stringify(SECRET_CODE)) {
                     setIsOpen(true);
                     return []; // Reset history
-=======
-                if (JSON.stringify(updated) === JSON.stringify(SECRET_CODE)) {
-                    setIsOpen(true);
-                    return [];
->>>>>>> 9b0c705ca8527d7c1c913786290add0fd7c8e8cc
                 }
                 return updated;
             });
@@ -67,14 +49,10 @@ export default function PrintingHack() {
                         <Printer className="w-6 h-6" />
                         <h3 className="font-bold text-lg tracking-wide uppercase">Seat Allotment Letter</h3>
                     </div>
-<<<<<<< HEAD
                     <button
                         onClick={() => setIsOpen(false)}
                         className="text-white/80 hover:text-white transition-colors"
                     >
-=======
-                    <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white">
->>>>>>> 9b0c705ca8527d7c1c913786290add0fd7c8e8cc
                         <X className="w-6 h-6" />
                     </button>
                 </div>
@@ -108,14 +86,8 @@ export default function PrintingHack() {
                         </div>
                     </div>
 
-<<<<<<< HEAD
-                    {/* FIX: Escaped double quotes */}
                     <p className="text-xs text-slate-400 dark:text-slate-500 italic pt-2">
                         &quot;Printing is the CSE of the soul.&quot;
-=======
-                    <p className="text-xs text-slate-400 dark:text-slate-500 italic pt-2">
-                        "Printing is the CSE of the soul."
->>>>>>> 9b0c705ca8527d7c1c913786290add0fd7c8e8cc
                     </p>
 
                     <button
