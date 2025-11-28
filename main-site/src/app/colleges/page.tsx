@@ -1,6 +1,7 @@
 import { client } from '../../sanity/lib/client';
 import CollegeSearch from '@/app/components/CollegeSearch';
 import { SanityImageSource } from '@sanity/image-url/lib/types/types';
+import { Metadata } from 'next'; // <--- THIS WAS MISSING
 
 interface College {
   _id: string;
@@ -12,6 +13,19 @@ interface College {
   type: string;
   priority: number;
 }
+
+export const metadata: Metadata = {
+  title: "List of Engineering Colleges in West Bengal | WBJEE Predictor",
+  description: "Explore detailed profiles of engineering colleges in West Bengal. Filter by location, type, and cutoffs to find the perfect fit for your WBJEE journey.",
+  alternates: {
+    canonical: '/colleges',
+  },
+  openGraph: {
+    title: "West Bengal Engineering Colleges List",
+    description: "Complete list of engineering colleges participating in WBJEE.",
+    url: "https://www.rwbjee.com/colleges",
+  }
+};
 
 export default async function CollegesPage() {
   const colleges: College[] = await client.fetch(

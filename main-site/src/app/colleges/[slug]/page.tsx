@@ -65,6 +65,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${college.name} - 2026 Fees, Placements & Cutoff`,
     description: `Complete details for ${college.name}. Check fees, admission process, and placement statistics.`,
+    alternates: {
+      canonical: `/colleges/${slug}`,
+    },
     openGraph: {
       images: college.coverImage ? [{ url: urlFor(college.coverImage).width(1200).height(630).url() }] : [],
     },
@@ -128,9 +131,8 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
                     {college.shortName}
                   </span>
                 )}
-                <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                  college.type === 'Government' ? 'bg-green-600' : 'bg-gray-600'
-                }`}>
+                <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${college.type === 'Government' ? 'bg-green-700' : 'bg-gray-600'
+                  }`}>
                   {college.type}
                 </span>
               </div>
@@ -165,87 +167,87 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
 
           {/* LEFT COLUMN */}
           <div className="lg:col-span-2 space-y-10">
-             {/* About Section */}
-             {college.body && (
-               <section className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                   <span className="text-red-600"><Landmark className="w-6 h-6" /></span> About the Institute
-                 </h2>
-                 <div className="prose prose-red dark:prose-invert max-w-none">
-                   <PortableText value={college.body} />
-                 </div>
-               </section>
-             )}
-             {/* Fees Section */}
-             {college.fees && (
-               <section className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                   <span className="text-red-600"><IndianRupee className="w-6 h-6" /></span> Fee Structure
-                 </h2>
-                 <SanityTable data={college.fees} />
-               </section>
-             )}
-             {/* Placements Section */}
-             {college.placements && (
-               <section className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                   <span className="text-red-600"><TrendingUp className="w-6 h-6" /></span> Placements & Stats
-                 </h2>
-                 <SanityTable data={college.placements} />
-               </section>
-             )}
+            {/* About Section */}
+            {college.body && (
+              <section className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <span className="text-red-600"><Landmark className="w-6 h-6" /></span> About the Institute
+                </h2>
+                <div className="prose prose-red dark:prose-invert max-w-none">
+                  <PortableText value={college.body} />
+                </div>
+              </section>
+            )}
+            {/* Fees Section */}
+            {college.fees && (
+              <section className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                  <span className="text-red-600"><IndianRupee className="w-6 h-6" /></span> Fee Structure
+                </h2>
+                <SanityTable data={college.fees} />
+              </section>
+            )}
+            {/* Placements Section */}
+            {college.placements && (
+              <section className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                  <span className="text-red-600"><TrendingUp className="w-6 h-6" /></span> Placements & Stats
+                </h2>
+                <SanityTable data={college.placements} />
+              </section>
+            )}
           </div>
 
           {/* RIGHT COLUMN (Sidebar) */}
           <div className="space-y-6">
-             {/* Quick Info Card */}
-             <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 sticky top-24">
-               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
-                 Quick Information
-               </h3>
+            {/* Quick Info Card */}
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 sticky top-24">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                Quick Information
+              </h3>
 
-               <div className="space-y-4">
-                 <div className="flex items-start gap-3">
-                   <Building2 className="w-5 h-5 text-gray-400 mt-0.5" />
-                   <div>
-                     <p className="text-xs text-gray-500 uppercase font-semibold">Type</p>
-                     <p className="text-gray-900 dark:text-gray-200 font-medium">{college.type}</p>
-                   </div>
-                 </div>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <Building2 className="w-5 h-5 text-gray-400 mt-0.5" />
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase font-semibold">Type</p>
+                    <p className="text-gray-900 dark:text-gray-200 font-medium">{college.type}</p>
+                  </div>
+                </div>
 
-                 <div className="flex items-start gap-3">
-                   <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
-                   <div>
-                     <p className="text-xs text-gray-500 uppercase font-semibold">Established</p>
-                     <p className="text-gray-900 dark:text-gray-200 font-medium">{college.estYear || 'N/A'}</p>
-                   </div>
-                 </div>
-                 <div className="flex items-start gap-3">
-                   <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
-                   <div>
-                     <p className="text-xs text-gray-500 uppercase font-semibold">Location</p>
-                     <p className="text-gray-900 dark:text-gray-200 font-medium">{college.location}</p>
-                   </div>
-                 </div>
-               </div>
-               {college.website && (
-                 <a
-                   href={college.website}
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   className="mt-6 w-full flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-bold py-3 rounded-xl transition-colors"
-                 >
-                   Visit Website <ArrowRight className="w-4 h-4" />
-                 </a>
-               )}
-               <Link
-                 href="/predictor"
-                 className="mt-4 w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1"
-               >
-                 <BarChart3 className="w-5 h-5" />
-                 Check Admission Probability
-               </Link>
-             </div>
+                <div className="flex items-start gap-3">
+                  <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase font-semibold">Established</p>
+                    <p className="text-gray-900 dark:text-gray-200 font-medium">{college.estYear || 'N/A'}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase font-semibold">Location</p>
+                    <p className="text-gray-900 dark:text-gray-200 font-medium">{college.location}</p>
+                  </div>
+                </div>
+              </div>
+              {college.website && (
+                <a
+                  href={college.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-6 w-full flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-bold py-3 rounded-xl transition-colors"
+                >
+                  Visit Website <ArrowRight className="w-4 h-4" />
+                </a>
+              )}
+              <Link
+                href="/predictor"
+                className="mt-4 w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1"
+              >
+                <BarChart3 className="w-5 h-5" />
+                Check Admission Probability
+              </Link>
+            </div>
           </div>
         </div>
 

@@ -41,7 +41,7 @@ export default function HowItWorks() {
             <div className="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 mr-4 md:mr-0 md:mb-6">
               <Pencil className="w-6 h-6 md:w-7 md:h-7" />
             </div>
-            
+
             {/* CONTENT WRAPPER */}
             <div>
               <h3 className="text-lg md:text-xl font-bold text-slate-900 dark:text-white mb-1 md:mb-3">

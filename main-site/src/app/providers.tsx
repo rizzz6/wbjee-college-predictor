@@ -47,7 +47,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     try {
       localStorage.setItem("theme", t);
       localStorage.setItem("wbjeeTheme", t);
-    } catch {}
+    } catch { }
     applyThemeClass(t);
   };
 

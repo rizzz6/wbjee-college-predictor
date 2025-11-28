@@ -1,233 +1,28 @@
-"use client";
+import type { Metadata } from "next";
+import SocialsClient from "./SocialsClient";
 
-import { motion, type Variants } from "framer-motion";
-// FIX: Removed Heroicons, added Lucide Mail
-import { Mail } from "lucide-react"; 
-import { useState } from "react";
-import JoinCommunity from "@/app/components/JoinCommunity";
-// KEEP: React Icons is correct for Brand Logos (Discord/Reddit)
-import { FaDiscord, FaReddit } from "react-icons/fa";
-
-interface SocialPlatform {
-  name: string;
-  icon: React.ReactNode | React.ReactElement;
-  url: string;
-  description: string;
-  username?: string;
-  followers?: number;
-  isPrimary?: boolean;
-  platformType?: 'discord' | 'reddit' | 'email' | 'generic';
-}
-
-function SocialCard({ platform }: { platform: SocialPlatform }) {
-  const [copied, setCopied] = useState(false);
-  
-  const getPlatformStyles = () => {
-    switch (platform.platformType) {
-      case 'discord':
-        return {
-          container: 'rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 bg-white dark:bg-gray-800 overflow-hidden',
-          title: 'text-gray-800 dark:text-white',
-          description: 'text-gray-500 dark:text-gray-400',
-          button: 'bg-indigo-500 text-white hover:bg-indigo-600'
-        };
-      case 'reddit':
-        return {
-          container: 'rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 bg-white dark:bg-gray-800 overflow-hidden',
-          title: 'text-gray-800 dark:text-white',
-          description: 'text-gray-500 dark:text-gray-400',
-          button: 'bg-orange-500 text-white hover:bg-orange-600'
-        };
-      case 'email':
-        return {
-          container: 'rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 bg-white dark:bg-gray-800 overflow-hidden',
-          iconBg: 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300',
-          title: 'text-gray-800 dark:text-white',
-          description: 'text-gray-500 dark:text-gray-400',
-          button: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-        };
-      default:
-        return {
-          container: 'rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 bg-white dark:bg-gray-800 overflow-hidden',
-          iconBg: 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300',
-          title: 'text-gray-800 dark:text-white',
-          description: 'text-gray-500 dark:text-gray-400',
-          button: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-        };
+export const metadata: Metadata = {
+    title: "Join the WBJEE Community | Discord & Reddit",
+    description: "Connect with the largest community of WBJEE aspirants on Reddit and Discord. Get real-time help, share study resources, and find support from seniors.",
+    alternates: {
+        canonical: '/socials', // <--- THIS FIXES THE ERROR
+    },
+    openGraph: {
+        title: "Join the r/wbjee Community",
+        description: "Connect with WBJEE aspirants on Reddit and Discord.",
+        url: "https://www.rwbjee.com/socials",
+        type: "website",
+        images: [
+            {
+                url: "/og-image.svg", // Ensure this image exists or change to a valid path
+                width: 1200,
+                height: 630,
+                alt: "r/wbjee Community",
+            },
+        ],
     }
-  };
-
-  const handleCopyEmail = async () => {
-    if (platform.url.startsWith('mailto:')) {
-      const email = platform.url.replace('mailto:', '');
-      try {
-        await navigator.clipboard.writeText(email);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      } catch (err) {
-        console.error('Failed to copy email:', err);
-      }
-    }
-  };
-
-  const styles = getPlatformStyles();
-  
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className={styles.container}
-    >
-      <div className="p-3 h-full">
-        <div className="flex items-center justify-between gap-4 h-full">
-          <div className="flex items-center gap-4 flex-1 min-w-0">
-            <div className="flex-shrink-0">
-              <div className={`rounded-lg`}>
-                {platform.icon}
-              </div>
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className={`text-sm font-medium ${styles.title} truncate`}>
-                {platform.name}
-              </h3>
-              {platform.url.startsWith('mailto:') ? (
-                <p className={`text-xs ${styles.description} truncate`}>
-                  {platform.url.replace('mailto:', '')}
-                </p>
-              ) : platform.username ? (
-                <span className={`text-xs ${styles.description}`}>
-                  u/{platform.username}
-                </span>
-              ) : null}
-            </div>
-          </div>
-          {platform.url.startsWith('mailto:') ? (
-            <button
-              onClick={handleCopyEmail}
-              className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-colors flex-shrink-0 ${
-                copied
-                  ? 'bg-green-500 text-white'
-                  : styles.button
-              }`}
-            >
-              {copied ? 'Copied!' : 'Copy Email'}
-            </button>
-          ) : (
-            <a
-              href={platform.url}
-              target="_blank"
-              rel="noreferrer"
-              className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-colors ${styles.button} flex-shrink-0`}
-            >
-              {platform.platformType === 'discord' ? 'Join Server' : 'Visit'}
-            </a>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
+};
 
 export default function SocialsPage() {
-  const container: Variants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 },
-    },
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Hero Section */}
-      <section className="bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 py-16 md:py-24 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6">
-              Connect With Our Community
-            </h1>
-            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
-              Connect with WBJEE aspirants on Reddit and Discord. Get updates,
-              share experiences, and find support throughout your journey to engineering college.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="https://www.reddit.com/r/wbjee/"
-                target="_blank"
-                rel="noreferrer"
-                className="bg-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-600 transition-colors"
-              >
-                Join r/wbjee
-              </a>
-              <a
-                href="/predictor"
-                className="border border-red-500 text-red-500 px-6 py-3 rounded-lg font-semibold hover:bg-red-500 hover:text-white transition-colors"
-              >
-                Try College Predictor
-              </a>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Dynamic Social Platforms */}
-      <section className="py-16 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4">
-          <motion.div
-            variants={container}
-            initial="hidden"
-            animate="show"
-            className="space-y-8"
-          >
-            {/* Primary Community Card */}
-            <div className="w-full">
-              <JoinCommunity />
-            </div>
-
-            {/* Other Social Links */}
-            <div className="flex flex-wrap gap-8 justify-center">
-              <SocialCard
-                platform={{
-                  name: "r/wbjee Discord Server",
-                  icon: <FaDiscord className="w-8 h-8 text-[#5865F2]" />,
-                  url: "https://discord.gg/pTTKPYryDp",
-                  description: "Real-time chat with fellow aspirants, study groups, and live Q&A sessions.",
-                  username: "",
-                  platformType: "discord",
-                }}
-              />
-
-              <SocialCard
-                platform={{
-                  name: "rizzz6 on Reddit!",
-                  icon: <FaReddit className="w-8 h-8 text-[#FF4500]" />,
-                  url: "https://reddit.com/u/rizzz6",
-                  description: "Connect with the creator for direct feedback and suggestions.",
-                  username: "rizzz6",
-                  platformType: "reddit",
-                }}
-              />
-
-              <SocialCard
-                platform={{
-                  name: "Email",
-                  // FIX: Replaced EnvelopeIcon with Lucide Mail
-                  icon: <Mail className="w-6 h-6" />,
-                  url: "mailto:rizzz6v@gmail.com",
-                  description: "For formal inquiries, collaborations, and detailed feedback.",
-                  platformType: "email",
-                }}
-              />
-            </div>
-          </motion.div>
-        </div>
-      </section>
-    </div>
-  );
+    return <SocialsClient />;
 }

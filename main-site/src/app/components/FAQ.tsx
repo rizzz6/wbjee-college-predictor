@@ -90,9 +90,8 @@ export default function FAQ() {
                     </span>
                   </button>
                   <div
-                    className={`grid transition-all duration-300 ease-in-out ${
-                      isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                    }`}
+                    className={`grid transition-all duration-300 ease-in-out ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                      }`}
                   >
                     <div className="overflow-hidden">
                       <div className="py-4 text-gray-600 dark:text-gray-300">{item.a}</div>

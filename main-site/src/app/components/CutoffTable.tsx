@@ -67,8 +67,9 @@ export default function CutoffTable({ cutoffs }: CutoffTableProps) {
       {/* Filters */}
       <div className="flex flex-wrap gap-4">
         <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Year</label>
+          <label htmlFor="year-select" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Year</label>
           <select
+            id="year-select"
             value={selectedYear}
             onChange={(e) => setSelectedYear(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-red-500"
@@ -81,8 +82,9 @@ export default function CutoffTable({ cutoffs }: CutoffTableProps) {
         </div>
 
         <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Round</label>
+          <label htmlFor="round-select" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Round</label>
           <select
+            id="round-select"
             value={selectedRound}
             onChange={(e) => setSelectedRound(e.target.value)}
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-red-500"
@@ -95,8 +97,9 @@ export default function CutoffTable({ cutoffs }: CutoffTableProps) {
         </div>
 
         <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
+          <label htmlFor="category-select" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
           <select
+            id="category-select"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-red-500"
