@@ -1,4 +1,4 @@
-import { client, urlFor } from '../../sanity/client';
+import { client, urlFor } from '../../../sanity/client';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { SanityImageSource } from '@sanity/image-url/lib/types/types';
