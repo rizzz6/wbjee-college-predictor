@@ -8,6 +8,7 @@ import { useAppTheme } from "../providers";
 function ThemeToggle() {
   const { theme, toggleTheme } = useAppTheme();
   const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
   if (!mounted) return null;
   const isDark = theme === "dark";
