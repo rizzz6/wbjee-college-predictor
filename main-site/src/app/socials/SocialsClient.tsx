@@ -26,22 +26,26 @@ function SocialCard({ platform }: { platform: SocialPlatform }) {
         return {
           container: 'rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 bg-white dark:bg-gray-800 overflow-hidden',
           title: 'text-gray-800 dark:text-white',
-          description: 'text-gray-500 dark:text-gray-400',
-          button: 'bg-indigo-500 text-white hover:bg-indigo-600'
+          // FIX: Darkened text for accessibility
+          description: 'text-gray-600 dark:text-gray-400',
+          button: 'bg-indigo-600 text-white hover:bg-indigo-700'
         };
       case 'reddit':
         return {
           container: 'rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 bg-white dark:bg-gray-800 overflow-hidden',
           title: 'text-gray-800 dark:text-white',
-          description: 'text-gray-500 dark:text-gray-400',
-          button: 'bg-orange-500 text-white hover:bg-orange-600'
+          // FIX: Darkened text for accessibility
+          description: 'text-gray-600 dark:text-gray-400',
+          // FIX: Changed orange-500 to orange-600 for better contrast
+          button: 'bg-orange-600 text-white hover:bg-orange-700'
         };
       case 'email':
         return {
           container: 'rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 bg-white dark:bg-gray-800 overflow-hidden',
           iconBg: 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300',
           title: 'text-gray-800 dark:text-white',
-          description: 'text-gray-500 dark:text-gray-400',
+          // FIX: Darkened text for accessibility
+          description: 'text-gray-600 dark:text-gray-400',
           button: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
         };
       default:
@@ -49,7 +53,7 @@ function SocialCard({ platform }: { platform: SocialPlatform }) {
           container: 'rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 bg-white dark:bg-gray-800 overflow-hidden',
           iconBg: 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300',
           title: 'text-gray-800 dark:text-white',
-          description: 'text-gray-500 dark:text-gray-400',
+          description: 'text-gray-600 dark:text-gray-400',
           button: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
         };
     }
@@ -104,8 +108,8 @@ function SocialCard({ platform }: { platform: SocialPlatform }) {
             <button
               onClick={handleCopyEmail}
               className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-colors flex-shrink-0 ${copied
-                ? 'bg-green-500 text-white'
-                : styles.button
+                  ? 'bg-green-600 text-white' // Darkened green for consistency
+                  : styles.button
                 }`}
             >
               {copied ? 'Copied!' : 'Copy Email'}
@@ -157,13 +161,15 @@ export default function SocialsClient() {
                 href="https://www.reddit.com/r/wbjee/"
                 target="_blank"
                 rel="noreferrer"
-                className="bg-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-600 transition-colors"
+                /* FIX: Changed red-500 to red-600 for contrast */
+                className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"
               >
                 Join r/wbjee
               </a>
               <a
                 href="/predictor"
-                className="border border-red-500 text-red-500 px-6 py-3 rounded-lg font-semibold hover:bg-red-500 hover:text-white transition-colors"
+                /* FIX: Changed red-500 to red-600 for contrast */
+                className="border border-red-600 text-red-600 px-6 py-3 rounded-lg font-semibold hover:bg-red-600 hover:text-white transition-colors"
               >
                 Try College Predictor
               </a>

@@ -1,7 +1,7 @@
 import { client } from '../../sanity/lib/client';
 import CollegeSearch from '@/app/components/CollegeSearch';
 import { SanityImageSource } from '@sanity/image-url/lib/types/types';
-import { Metadata } from 'next'; // <--- THIS WAS MISSING
+import { Metadata } from 'next';
 
 interface College {
   _id: string;
@@ -33,7 +33,9 @@ export default async function CollegesPage() {
   );
 
   return (
-    <div className="px-6 md:px-12 py-12">
+    /* FIX: Added 'min-h-screen' and explicit 'bg-white dark:bg-gray-900' to force correct theme background */
+    <div className="min-h-screen bg-white dark:bg-gray-900 px-6 md:px-12 py-12">
+
       {/* Hero Section */}
       <div className="max-w-4xl mx-auto text-center mb-12">
         <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-4">

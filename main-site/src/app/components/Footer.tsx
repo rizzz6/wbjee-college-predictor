@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { User, Github, Twitter, Linkedin } from 'lucide-react';
+import { User } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -34,7 +34,7 @@ export default function Footer() {
 
             {/* Resources */}
             <div className="flex flex-col items-start gap-4">
-              <h3 className="font-bold text-gray-900 dark:text-white">Resources</h3>
+              <h2 className="font-bold text-gray-900 dark:text-white">Resources</h2>
               <div className="flex flex-col items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <Link href="/blog" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Blog</Link>
                 <Link href="/colleges" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">College List</Link>
@@ -44,7 +44,7 @@ export default function Footer() {
 
             {/* Tools */}
             <div className="flex flex-col items-start gap-4">
-              <h3 className="font-bold text-gray-900 dark:text-white">Tools</h3>
+              <h2 className="font-bold text-gray-900 dark:text-white">Tools</h2>
               <div className="flex flex-col items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <Link href="/predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Rank Predictor</Link>
                 <Link href="/rank-finder" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Cutoff Finder</Link>
@@ -54,7 +54,7 @@ export default function Footer() {
 
             {/* Connect */}
             <div className="flex flex-col items-start gap-4">
-              <h3 className="font-bold text-gray-900 dark:text-white">Connect</h3>
+              <h2 className="font-bold text-gray-900 dark:text-white">Connect</h2>
               <div className="flex flex-col items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <Link href="/socials" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Socials</Link>
                 <a href="https://www.reddit.com/u/rizzz6" target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-red-600 dark:hover:text-red-400 transition-colors">
@@ -66,7 +66,7 @@ export default function Footer() {
 
             {/* Legal */}
             <div className="flex flex-col items-start gap-4">
-              <h3 className="font-bold text-gray-900 dark:text-white">Legal</h3>
+              <h2 className="font-bold text-gray-900 dark:text-white">Legal</h2>
               <div className="flex flex-col items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <Link href="/faq" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">FAQ</Link>
                 <Link href="/privacy" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Privacy Policy</Link>
