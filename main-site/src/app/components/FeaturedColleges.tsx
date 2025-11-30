@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
+// FIX: Corrected import path to match your project structure
 import { urlFor } from '../../sanity/lib/image';
-// FIX: Removed Heroicons import
-// FIX: Imported MapPin along with GraduationCap from lucide-react
 import { GraduationCap, MapPin } from 'lucide-react';
 import { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
@@ -34,7 +33,7 @@ export default function FeaturedColleges({ colleges }: { colleges: College[] }) 
           </Link>
         </div>
 
-        {/* GRID */}
+        {/* CARDS GRID */}
         <div className="flex flex-wrap justify-center gap-4">
           {colleges.map((col) => (
             <Link
@@ -42,25 +41,28 @@ export default function FeaturedColleges({ colleges }: { colleges: College[] }) 
               href={`/colleges/${col.slug.current}`}
               className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 flex flex-col items-center text-center shadow-sm hover:shadow-xl hover:border-red-100 dark:hover:border-red-900/30 transition-all duration-300 w-full sm:w-[calc(50%-8px)] md:w-[calc(25%-12px)]"
             >
-              <div className="w-20 h-20 mb-4 relative flex items-center justify-center bg-gray-50 dark:bg-gray-700/50 rounded-full p-3 group-hover:scale-110 transition-transform duration-300">
+              {/* LOGO CONTAINER */}
+              <div className="w-20 h-20 mb-4 relative flex items-center justify-center bg-white rounded-2xl p-2 shadow-sm border border-gray-100 dark:border-gray-700 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                 {col.logo ? (
-                  <Image
-                    src={urlFor(col.logo).width(150).url()}
-                    alt={col.shortName || col.name}
-                    width={80}
-                    height={80}
-                    className="w-full h-full object-contain"
-                  />
+                  <div className="absolute inset-0 p-2">
+                    <Image
+                      src={urlFor(col.logo).width(150).url()}
+                      alt={col.shortName || col.name}
+                      fill
+                      sizes="80px"
+                      className="object-contain"
+                    />
+                  </div>
                 ) : (
-                  <GraduationCap className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+                  <GraduationCap className="w-10 h-10 text-gray-400" />
                 )}
               </div>
+
               <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg line-clamp-2 mb-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
                 {col.shortName || col.name}
               </h3>
 
               <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mt-auto font-medium">
-                {/* FIX: Using Lucide MapPin */}
                 <MapPin className="w-3 h-3" />
                 <span className="line-clamp-1">{col.location}</span>
               </div>

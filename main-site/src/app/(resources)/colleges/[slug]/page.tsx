@@ -1,4 +1,4 @@
-import { client, urlFor } from '../../../../sanity/client';
+import { client, urlFor } from '../../../..//sanity/client';
 import { PortableText } from '@portabletext/react';
 import { PortableTextBlock } from 'sanity';
 import Image from 'next/image';
@@ -8,6 +8,8 @@ import { Metadata } from 'next';
 import { MapPin, Building2, Calendar, Globe, Landmark, IndianRupee, TrendingUp, BarChart3, ArrowRight } from 'lucide-react';
 import SanityTable from '../../../components/SanityTable';
 import CutoffTable from '../../../components/CutoffTable';
+
+export const revalidate = 60;
 
 interface SanityImage {
   asset: { _ref: string; _type: string; };
@@ -88,47 +90,50 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
 
       {/* HERO HEADER */}
-      {/* FIX: Changed bg-gray-900 to adapt to theme (gray-50 in light, gray-900 in dark) */}
-      <div className="relative h-[300px] md:h-[400px] bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <div className="relative h-[300px] md:h-[400px] bg-white dark:bg-gray-900 transition-colors duration-300">
 
         {college.coverImage ? (
-          <div className="absolute inset-0 opacity-60">
+          <div className="absolute inset-0 opacity-30 dark:opacity-60 transition-opacity duration-300">
             <Image
-              src={urlFor(college.coverImage).width(1200).height(600).url()}
+              /* FIX 1: Removed .height(600) so Sanity doesn't crop it. */
+              src={urlFor(college.coverImage).width(1920).url()}
               fill
-              className="object-cover"
+              /* FIX 2: Changed object-cover to object-contain so the whole image fits */
+              className="object-contain blur-[2px]"
               alt="Campus"
             />
           </div>
         ) : (
-          /* FIX: Gradient now adapts to light mode (light gray) and dark mode (dark gray) */
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-100 dark:from-gray-900 dark:to-gray-800 opacity-90"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-100 dark:from-gray-900 dark:to-gray-800"></div>
         )}
 
-        {/* FIX: Bottom fade gradient matches the page background (gray-50 or gray-900) */}
         <div className="absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-transparent dark:from-gray-900 dark:via-transparent dark:to-transparent"></div>
 
-        <div className="container mx-auto px-6 h-full flex flex-col justify-end pb-4 relative z-10">
-          <div className="flex flex-col md:flex-row md:items-end gap-6">
-            {/* LOGO */}
-            <div className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-2xl p-2 shadow-xl shrink-0">
+        <div className="container mx-auto px-6 h-full flex flex-col justify-end pb-6 relative z-10">
+
+          <div className="flex flex-col md:flex-row md:items-end gap-6 text-left">
+
+            {/* LOGO BOX */}
+            {/* FIX: Reduced size to w-20 (mobile) and w-32 (desktop) */}
+            <div className="w-20 h-20 md:w-32 md:h-32 bg-white rounded-2xl shadow-xl shrink-0 relative overflow-hidden border border-gray-100 dark:border-gray-800">
               {college.logo ? (
-                <Image
-                  src={urlFor(college.logo).width(200).url()}
-                  alt={college.name}
-                  fill
-                  className="object-contain"
-                />
+                <div className="absolute inset-0 p-2 flex items-center justify-center">
+                  <Image
+                    src={urlFor(college.logo).width(400).url()}
+                    alt={college.name}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
               ) : (
-                <div className="w-full h-full bg-gray-100 flex items-center justify-center rounded-xl text-2xl font-bold text-gray-400">
+                <div className="w-full h-full flex items-center justify-center text-xl md:text-3xl font-bold text-gray-400 bg-gray-50">
                   {college.shortName?.[0]}
                 </div>
               )}
             </div>
 
-            {/* FIX: Text color adapts to theme (Dark text on light, White text on dark) */}
-            <div className="flex-1 text-gray-900 dark:text-white">
-              <div className="flex items-center gap-3 mb-2">
+            <div className="flex-1 text-gray-900 dark:text-white w-full">
+              <div className="flex flex-wrap justify-start gap-3 mb-3">
                 {college.shortName && (
                   <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                     {college.shortName}
@@ -139,11 +144,12 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
                   {college.type}
                 </span>
               </div>
-              <h1 className="text-3xl md:text-5xl font-extrabold leading-tight mb-2">
+
+              <h1 className="text-3xl md:text-5xl font-extrabold leading-tight mb-3">
                 {college.name}
               </h1>
-              {/* FIX: Location text color */}
-              <div className="flex items-center text-gray-600 dark:text-gray-300 gap-2">
+
+              <div className="flex items-center justify-start text-gray-600 dark:text-gray-300 gap-2 font-medium">
                 <MapPin className="w-5 h-5" />
                 {college.location}
               </div>
@@ -154,8 +160,7 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
                 href={college.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                /* FIX: Button colors inverted for better contrast in Light Mode */
-                className="hidden md:inline-flex items-center gap-2 bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 px-6 py-3 rounded-full font-bold transition-colors"
+                className="hidden md:inline-flex items-center gap-2 bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 px-6 py-3 rounded-full font-bold transition-colors mb-2"
               >
                 <Globe className="w-5 h-5" />
                 Official Website
@@ -168,7 +173,6 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
       {/* MAIN CONTENT CONTAINER */}
       <div className="container mx-auto px-6 py-6 max-w-7xl">
 
-        {/* TOP SECTION: GRID (Content + Sidebar) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mb-12">
 
           {/* LEFT COLUMN */}
@@ -236,16 +240,19 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
                   </div>
                 </div>
               </div>
+
+              {/* SIDEBAR BUTTON: Visible on Mobile Only */}
               {college.website && (
                 <a
                   href={college.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="md:hidden mt-6 w-full flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-bold py-3 rounded-xl transition-colors"
+                  className="mt-6 w-full flex md:hidden items-center justify-center gap-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-bold py-3 rounded-xl transition-colors"
                 >
                   Visit Website <ArrowRight className="w-4 h-4" />
                 </a>
               )}
+
               <Link
                 href="/predictor"
                 className="mt-4 w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1"
@@ -257,7 +264,7 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
           </div>
         </div>
 
-        {/* BOTTOM SECTION: CUTOFFS (Full Width of Container) */}
+        {/* BOTTOM SECTION: CUTOFFS */}
         {college.cutoffGroup?.cutoffs && college.cutoffGroup.cutoffs.length > 0 && (
           <section className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">

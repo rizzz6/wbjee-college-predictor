@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "b.thumbs.redditmedia.com",
       },
+      // FIX: Added Sanity CDN to allow loading college logos
+      {
+        protocol: "https",
+        hostname: "cdn.sanity.io",
+      },
     ],
   },
   // Removed problematic redirect rule that caused infinite redirects
