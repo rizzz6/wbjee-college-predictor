@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef, Component, ReactNode } from "react";
 import dynamic from 'next/dynamic';
-import FloatingScrollbar from '../components/FloatingScrollbar';
+import FloatingScrollbar from '../../components/FloatingScrollbar';
 import {
   AlertCircle, HelpCircle, Check, X, ChevronDown, Download,
   Share2, Copy, Star, ArrowUp, ArrowDown

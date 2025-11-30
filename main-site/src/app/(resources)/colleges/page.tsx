@@ -1,4 +1,4 @@
-import { client } from '../../sanity/lib/client';
+import { client } from '../../../sanity/lib/client';
 import CollegeSearch from '@/app/components/CollegeSearch';
 import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 import { Metadata } from 'next';

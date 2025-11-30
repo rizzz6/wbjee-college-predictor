@@ -1,4 +1,4 @@
-import { client, urlFor } from '../../../sanity/client';
+import { client, urlFor } from '../../../../sanity/client';
 import { PortableText, PortableTextComponents } from '@portabletext/react';
 import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 import { PortableTextBlock } from 'sanity';
