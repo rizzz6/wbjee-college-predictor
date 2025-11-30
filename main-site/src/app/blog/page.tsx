@@ -4,7 +4,6 @@ import { format } from 'date-fns';
 import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 import Image from 'next/image';
 import { FileText, ArrowRight } from 'lucide-react';
-// 1. Import Metadata type
 import type { Metadata } from 'next';
 
 export const revalidate = 60;
@@ -17,12 +16,11 @@ interface Post {
   mainImage?: SanityImageSource;
 }
 
-// 2. Add Page-Specific Metadata
 export const metadata: Metadata = {
   title: "WBJEE Prep Blog | Latest Updates & Strategies",
   description: "Essential guides, exam analysis, and strategy tips for every WBJEE aspirant. Stay updated with the latest news and expert advice.",
   alternates: {
-    canonical: '/blog', // <--- THIS FIXES THE ERROR
+    canonical: '/blog',
   },
   openGraph: {
     title: "WBJEE Prep Blog - r/wbjee Companion",
@@ -36,12 +34,15 @@ export default async function BlogPage() {
   const posts: Post[] = await client.fetch(`*[_type == 'post'] | order(publishedAt desc) { _id, title, slug, publishedAt, mainImage }`);
 
   return (
-    <div className="px-6 md:px-12 py-12">
-      {/* ... rest of your existing JSX ... */}
+    /* FIX: Added 'min-h-screen' and explicit 'bg-white dark:bg-gray-900' to force correct theme background */
+    <div className="min-h-screen bg-white dark:bg-gray-900 px-6 md:px-12 py-12">
+
       <div className="max-w-7xl mx-auto mb-16 text-center">
-        <div className="inline-block p-2 px-4 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm font-medium mb-4">
+        {/* FIX: Updated colors for Accessibility (Contrast Ratio) */}
+        <div className="inline-block p-2 px-4 rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 text-sm font-medium mb-4">
           {`From the Editor's Desk`}
         </div>
+
         <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-6 tracking-tight">
           Latest <span className="text-red-600">Updates</span>
         </h1>

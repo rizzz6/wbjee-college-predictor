@@ -1,28 +1,29 @@
 @config "../../tailwind.config.ts";
 @import "tailwindcss";
 
-/* FIX: Force dark background immediately based on system settings */
+/* --- 1. WHITE FLASH FIX --- */
+/* Forces dark background immediately based on system settings */
 @media (prefers-color-scheme: dark) {
   html {
-    background-color: #111827; /* Tailwind gray-900 */
+    background-color: #111827;
+    /* Tailwind gray-900 */
     color: white;
   }
 }
 
-/* --- 1. Define the Animation Keyframes --- */
+/* --- 2. ANIMATIONS --- */
 @keyframes fadeInUp {
   from {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* --- 2. Create the Utility Class --- */
-/* We wrap this in @layer utilities so Tailwind handles the cascade order correctly */
 @layer utilities {
   .animate-fade-in-up {
     animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
@@ -30,7 +31,7 @@
 
   .animation-delay-200 {
     animation-delay: 0.2s;
-    opacity: 0; /* Hidden initially */
+    opacity: 0;
     animation-fill-mode: forwards;
   }
 
@@ -38,5 +39,19 @@
     animation-delay: 0.4s;
     opacity: 0;
     animation-fill-mode: forwards;
+  }
+
+  /* --- 3. GRID BACKGROUND PATTERN --- */
+  .bg-grid-pattern {
+    background-size: 40px 40px;
+    background-image:
+      linear-gradient(to right, rgba(0, 0, 0, 0.01) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.01) 1px, transparent 1px);
+  }
+
+  .dark .bg-grid-pattern {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
   }
 }
