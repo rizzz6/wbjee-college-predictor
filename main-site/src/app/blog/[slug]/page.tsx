@@ -1,25 +1,25 @@
 import { client, urlFor } from '../../../sanity/client';
 import { PortableText, PortableTextComponents } from '@portabletext/react';
 import { SanityImageSource } from '@sanity/image-url/lib/types/types';
+import { PortableTextBlock } from 'sanity';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { format } from 'date-fns';
-// FIX: Added extra icons for the new design
-import { ArrowLeft, Calendar, User, Clock, Share2 } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Share2 } from 'lucide-react';
 
 export const revalidate = 60;
 
 interface Post {
   title: string;
-  body: any[];
+  // FIX: Replaced any[] with proper PortableTextBlock[]
+  body: PortableTextBlock[];
   mainImage?: SanityImageSource;
   publishedAt: string;
   author?: { name: string };
 }
 
-// Styled Components for Rich Text
 const ptComponents: PortableTextComponents = {
   block: {
     h2: ({ children }) => (
@@ -85,9 +85,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     return { title: 'Post Not Found', robots: { index: false } };
   }
 
+  // FIX: Removed 'any' and added proper checks for block structure
   const bodyText = post.body
-    ?.filter(block => block._type === 'block' && block.children)
-    .map(block => block.children.map((child: any) => child.text).join(''))
+    ?.filter((block) => block._type === 'block' && Array.isArray(block.children))
+    .map((block) => {
+      // Cast children to a shape with optional text property
+      const children = block.children as { text?: string }[];
+      return children.map((child) => child.text || '').join('');
+    })
     .join(' ') || '';
 
   const description = bodyText.substring(0, 155) + (bodyText.length > 155 ? '...' : '') || post.title;
@@ -123,13 +128,10 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   return (
     <article className="bg-white dark:bg-gray-900 pb-8 relative selection:bg-red-100 selection:text-red-900 dark:selection:bg-red-900/30 dark:selection:text-red-100">
 
-      {/* --- BACKGROUND DECORATION (Adds depth) --- */}
+      {/* --- BACKGROUND DECORATION --- */}
       <div className="absolute inset-x-0 top-0 h-[600px] -z-10 overflow-hidden pointer-events-none">
-        {/* Gradient Base */}
         <div className="absolute inset-0 bg-gradient-to-b from-red-50/60 via-white to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-900" />
-        {/* Grid Pattern */}
         <div className="absolute inset-0 bg-grid-pattern opacity-[0.3]" />
-        {/* Bottom Fade */}
         <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-gray-900 via-transparent to-transparent" />
       </div>
 
@@ -150,8 +152,6 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
         {/* --- HEADER SECTION --- */}
         <header className="mb-10 text-center">
-
-          {/* Meta Badges */}
           <div className="flex flex-wrap items-center justify-center gap-3 text-sm mb-6">
             {post.publishedAt && (
               <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 shadow-sm">
