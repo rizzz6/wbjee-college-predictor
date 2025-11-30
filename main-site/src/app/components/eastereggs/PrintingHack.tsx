@@ -6,12 +6,12 @@ import { X, Printer } from 'lucide-react';
 const SECRET_CODE = ['p', 'r', 'i', 'n', 't'];
 
 export default function PrintingHack() {
-    const [keySequence, setKeySequence] = useState<string[]>([]);
+    // FIX: Replaced unused 'keySequence' with empty comma
+    const [, setKeySequence] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            // Safety Check: Don't trigger if user is typing in a search box/input
             if (
                 document.activeElement?.tagName === 'INPUT' ||
                 document.activeElement?.tagName === 'TEXTAREA' ||
@@ -27,7 +27,7 @@ export default function PrintingHack() {
 
                 if (JSON.stringify(updated) === JSON.stringify(SECRET_CODE)) {
                     setIsOpen(true);
-                    return []; // Reset history
+                    return [];
                 }
                 return updated;
             });
@@ -42,8 +42,6 @@ export default function PrintingHack() {
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
             <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-xl shadow-2xl border-2 border-red-600 overflow-hidden animate-in zoom-in-95 duration-300">
-
-                {/* Header */}
                 <div className="bg-red-600 p-4 flex items-center justify-between">
                     <div className="flex items-center gap-2 text-white">
                         <Printer className="w-6 h-6" />
@@ -57,7 +55,6 @@ export default function PrintingHack() {
                     </button>
                 </div>
 
-                {/* Content */}
                 <div className="p-6 text-center space-y-4">
                     <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-2">
                         <span className="text-3xl">🎉</span>

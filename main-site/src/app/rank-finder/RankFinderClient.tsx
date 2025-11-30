@@ -119,7 +119,7 @@ export default function RankFinderClient() {
       } else {
         setError("No data found for the selected criteria.");
       }
-    } catch (err) {
+    } catch {
       setError("An error occurred while fetching data.");
     } finally {
       setLoading(false);
