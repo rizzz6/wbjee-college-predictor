@@ -3,6 +3,8 @@ import CollegeSearch from '@/app/components/CollegeSearch';
 import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 import { Metadata } from 'next';
 
+export const revalidate = 60;
+
 interface College {
   _id: string;
   name: string;
