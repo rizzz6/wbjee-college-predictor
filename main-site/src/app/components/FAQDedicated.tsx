@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 
+
+
 const faqData = [
   {
     category: "General Questions",
@@ -53,22 +55,17 @@ const faqData = [
   },
 ];
 
-export default function FAQ() {
-  const [open, setOpen] = useState<{ [key: string]: boolean }>({});
+export default function FAQDedicated() {
+  const [open, setOpen] = useState<Record<string, boolean>>({});
 
   const handleToggle = (catIdx: number, qIdx: number) => {
-    setOpen((prev) => {
-      const key = `${catIdx}-${qIdx}`;
-      return { ...prev, [key]: !prev[key] };
-    });
+    const key = `${catIdx}-${qIdx}`;
+    setOpen((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 py-16 md:py-20">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white text-center mb-12">
-          Frequently Asked Questions
-        </h1>
+    <div className="w-full max-w-3xl mx-auto">
+      <div className="space-y-12">
         {faqData.map((cat, catIdx) => (
           <div key={cat.category}>
             <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white mt-12 mb-6">

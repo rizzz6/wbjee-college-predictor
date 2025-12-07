@@ -1,17 +1,39 @@
 export const revalidate = 60;
 
 import Link from "next/link";
-import { Suspense } from "react"; // 1. Added Suspense for streaming
+import { Suspense } from "react";
 import ImportantDates from "./components/ImportantDates";
 import FeaturedColleges from "./components/FeaturedColleges";
 import { client } from "../sanity/client";
 import dynamic from 'next/dynamic';
-
-// 2. Removed unused imports (framer-motion, lucide icons) to reduce bundle size
-
 const HowItWorks = dynamic(() => import('./components/HowItWorks'));
 const JoinCommunity = dynamic(() => import('./components/JoinCommunity'));
-const FAQAccordionHome = dynamic(() => import('./components/FAQAccordionHome'));
+const FAQWidget = dynamic(() => import('./components/FAQWidget'));
+
+// Define Homepage FAQ Data
+const homeFAQData = [
+  {
+    q: "Is this the official WBJEE site?",
+    a: (
+      <>
+        No, this is a free community resource. For official updates, always visit{" "}
+        <a href="https://wbjeeb.nic.in/" target="_blank" rel="noopener noreferrer" className="text-red-600 underline hover:text-red-800">wbjeeb.nic.in</a>.
+      </>
+    ),
+  },
+  {
+    q: "How accurate is the predictor?",
+    a: "It uses previous years' cutoff data (2023-2024) to estimate chances. While highly accurate for trends, actual cutoffs vary every year.",
+  },
+  {
+    q: "Is the college data up to date?",
+    a: "Yes, we have updated the fees and placement stats for the 2024-2025 session based on the latest available reports.",
+  },
+];
+
+
+{/* ... Hero, HowItWorks, ImportantDates, FeaturedColleges ... */ }
+
 
 // --- Components ---
 
@@ -54,10 +76,10 @@ function Hero() {
 // 3. New Async Component: Handles data fetching separately
 async function FeaturedCollegesSection() {
   const featuredColleges = await client.fetch(`
-    *[_type == "college" && priority == 1 && isVisible == true][0...4] | order(name asc) {
-      _id, name, slug, logo, location, shortName
-    }
-  `);
+          *[_type == "college" && priority == 1 && isVisible == true][0...4] | order(name asc) {
+            _id, name, slug, logo, location, shortName
+          }
+          `);
 
   return <FeaturedColleges colleges={featuredColleges} />;
 }
@@ -76,7 +98,6 @@ function FeaturedCollegesSkeleton() {
 // --- Main Page ---
 
 export default function Page() {
-  // Note: We removed 'async' from the main Page component to allow instant rendering
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
 
@@ -100,7 +121,17 @@ export default function Page() {
       <div className="w-full max-w-7xl mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-start">
           <div className="w-full">
-            <FAQAccordionHome />
+            <FAQWidget
+              data={homeFAQData}
+              footer={
+                <Link
+                  href="/faq"
+                  className="inline-flex items-center gap-1 text-sm font-bold text-red-600 hover:text-red-700 dark:text-red-400 transition-colors"
+                >
+                  View All FAQs <span aria-hidden="true">→</span>
+                </Link>
+              }
+            />
           </div>
           <div className="w-full sticky top-24">
             <JoinCommunity showHeader={true} />
