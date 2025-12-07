@@ -8,15 +8,28 @@ import { useAppTheme } from "../providers";
 function ThemeToggle() {
   const { theme, toggleTheme } = useAppTheme();
   const [mounted, setMounted] = useState(false);
+
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
-  if (!mounted) return null;
+
+  // 1. Exact Size Skeleton (34px height, 84px width)
+  if (!mounted) {
+    return (
+      <div
+        className="h-[34px] w-[84px] rounded-md border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 animate-pulse"
+        aria-hidden="true"
+      />
+    );
+  }
+
   const isDark = theme === "dark";
+
   return (
     <button
       aria-label="Toggle theme"
       onClick={toggleTheme}
-      className="inline-flex items-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+      // 2. Force the button to match the skeleton exactly
+      className="inline-flex h-[34px] w-[84px] items-center justify-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 bg-transparent text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
     >
       {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
       <span>{isDark ? "Light" : "Dark"}</span>

@@ -43,19 +43,14 @@ export const metadata: Metadata = {
 
 function Hero() {
   return (
-    <section className="relative">
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-red-50 via-white to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-900" />
-      <div className="max-w-7xl mx-auto px-4 py-20 md:py-28">
-        <div className="max-w-3xl">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-800 dark:text-white">
-            Find the Rank You Need
-          </h1>
-          <p className="mt-4 text-lg md:text-xl text-gray-500 dark:text-gray-300">
-            Select a college and program to see the required rank to get in.
-          </p>
-        </div>
-      </div>
-    </section>
+    <div className="max-w-4xl mx-auto text-center mb-12 px-6 md:px-12 py-12">
+      <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-4">
+        Find the <span className="text-red-600">Rank You Need</span>
+      </h1>
+      <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400">
+        Select a college and program to see the required rank to get in. Browse historical cutoff data for engineering colleges in West Bengal.
+      </p>
+    </div>
   );
 }
 

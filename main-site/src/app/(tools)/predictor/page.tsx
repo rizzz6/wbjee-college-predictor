@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import NewPredictorClient from "./NewPredictorClient";
+import { ChevronDown } from "lucide-react";
+import FAQWidget from "../../components/FAQWidget";
 
 // Page-specific metadata for SEO
 export const metadata: Metadata = {
-  title: "WBJEE College Predictor - React Version with Charts & Filters",
-  description: "Use our React-based WBJEE college predictor with real-time filtering, trend charts, comparison tools, and detailed admission analysis. Find the best engineering colleges in West Bengal for your rank with interactive visualizations and smart recommendations.",
+  title: "WBJEE College Predictor 2025 | Find Your Best Engineering College",
+  description: "Enter your WBJEE rank and instantly find your admission chances. Compare Jadavpur, CU, and top engineering colleges with detailed cutoff trends and branch analysis.",
   keywords: [
     "WBJEE college predictor",
     "WBJEE React predictor",
@@ -21,8 +23,8 @@ export const metadata: Metadata = {
     canonical: '/predictor',
   },
   openGraph: {
-    title: "WBJEE College Predictor - React Version with Charts",
-    description: "Experience our React-based predictor with advanced filtering, trend analysis, and college comparison tools for precise WBJEE admission planning.",
+    title: "WBJEE College Predictor 2025 |   Find Your Best Engineering College",
+    description: "Enter your WBJEE rank and instantly find your admission chances. Compare Jadavpur, CU, and top engineering colleges with detailed cutoff trends and branch analysis.",
     url: "https://www.rwbjee.com/predictor",
     images: [
       {
@@ -36,8 +38,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "WBJEE College Predictor - React Version",
-    description: "React-based WBJEE predictor with charts, filters, and trend analysis for admissions.",
+    title: "WBJEE College Predictor 2025 | Find Your Best Engineering College",
+    description: "Enter your WBJEE rank and instantly find your admission chances. Compare Jadavpur, CU, and top engineering colleges with detailed cutoff trends and branch analysis.",
     images: ["/og-image.svg"],
   },
 };
@@ -62,60 +64,45 @@ const breadcrumbSchema = {
   ]
 };
 
-// FAQ Schema for Rich Snippets
+const predictorFAQData = [
+  {
+    q: "How to use WBJEE College Predictor 2025?",
+    a: "Enter your WBJEE rank in the input field and get instant college predictions for engineering admission in West Bengal. Use advanced filtering options to find specific engineering branches at Jadavpur University, Calcutta University, or other top colleges."
+  },
+  {
+    q: "What is the difference between this React predictor and the original version?",
+    a: "This React version offers enhanced features including advanced filtering, real-time search, chart visualizations, comparison tools, auto-save preferences, keyboard shortcuts, and improved mobile experience."
+  },
+  {
+    q: "How accurate is the WBJEE college prediction?",
+    a: "The predictions are based on historical WBJEE cutoff data from official sources. While we strive for accuracy, actual cutoffs may vary each year depending on factors like exam difficulty, number of applicants, and seat availability."
+  },
+  {
+    q: "What does the result filtering feature do?",
+    a: "Result filtering automatically shows only colleges where you have a realistic chance of admission based on your rank. It uses advanced algorithms to filter colleges based on historical cutoff trends and your specific rank range."
+  },
+  {
+    q: "Can I export my results and share them?",
+    a: "Yes! You can export your filtered results or shortlist to CSV format, share results via link, copy results as text, or copy college codes. All export options are available in the Export & Share dropdown."
+  },
+  {
+    q: "What are the keyboard shortcuts available?",
+    a: "Available shortcuts: Ctrl+Shift+D (toggle theme), Ctrl+K (focus rank input), Ctrl+F (show favorites), Escape (close modals). Use Tab to navigate through interactive elements."
+  }
+];
+
+// 2. Generate Schema dynamically from the data above
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "How to use WBJEE College Predictor 2025?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Enter your WBJEE rank in the input field and get instant college predictions for engineering admission in West Bengal. Use advanced filtering options to find specific engineering branches at Jadavpur University, Calcutta University, or other top colleges."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What is the difference between this React predictor and the original version?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "This React version offers enhanced features including advanced filtering, real-time search, chart visualizations, comparison tools, auto-save preferences, keyboard shortcuts, and improved mobile experience."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How accurate is the WBJEE college prediction?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "The predictions are based on historical WBJEE cutoff data from official sources. While we strive for accuracy, actual cutoffs may vary each year depending on factors like exam difficulty, number of applicants, and seat availability."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What does the result filtering feature do?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Result filtering automatically shows only colleges where you have a realistic chance of admission based on your rank. It uses advanced algorithms to filter colleges based on historical cutoff trends and your specific rank range."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can I export my results and share them?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes! You can export your filtered results or shortlist to CSV format, share results via link, copy results as text, or copy college codes. All export options are available in the Export & Share dropdown."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What are the keyboard shortcuts available?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Available shortcuts: Ctrl+Shift+D (toggle theme), Ctrl+K (focus rank input), Ctrl+F (show favorites), Escape (close modals). Use Tab to navigate through interactive elements."
-      }
+  "mainEntity": predictorFAQData.map(item => ({
+    "@type": "Question",
+    "name": item.q,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": item.a
     }
-  ]
+  }))
 };
 
 // Server component that exports metadata and renders client component
@@ -139,6 +126,12 @@ export default function NewPredictorPage() {
       />
 
       <NewPredictorClient />
+
+      <section className="bg-white dark:bg-gray-900 py-12 border-t border-gray-200 dark:border-gray-800">
+        <div className="max-w-4xl mx-auto px-4">
+          <FAQWidget data={predictorFAQData} title="Frequently Asked Questions" />
+        </div>
+      </section>
     </>
   );
 }
