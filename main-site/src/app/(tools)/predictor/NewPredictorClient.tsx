@@ -7,9 +7,6 @@ import {
   AlertCircle, HelpCircle, Check, X, ChevronDown, Download,
   Share2, Copy, Star, ArrowUp, ArrowDown
 } from 'lucide-react';
-import { useFavorites } from '../../../hooks/useFavorites';
-import { usePredictorFilters } from '../../../hooks/usePredictorFilters';
-import { usePredictorPagination } from '../../../hooks/usePredictorPagination';
 
 // Define types based on the data structure
 interface CollegeData {
@@ -102,11 +99,27 @@ export default function NewPredictorClient() {
   const [filteredData, setFilteredData] = useState<CollegeData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeFilters, setActiveFilters] = useState<Filters>({
+    rank: '',
+    institute: [],
+    branch: [],
+    category: [],
+    year: [],
+    round: [],
+    quota: [],
+    seat_type: []
+  });
   const [sortState, setSortState] = useState<SortState>({
     column: null,
     direction: 'none',
     type: 'string'
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [entriesPerPage, setEntriesPerPage] = useState<number | 'all'>(50);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [isShowingFavorites, setIsShowingFavorites] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
+  const [isSmartFilteringEnabled, setIsSmartFilteringEnabled] = useState(true);
 
   // New features state
   const [showChartModal, setShowChartModal] = useState(false);
@@ -114,8 +127,11 @@ export default function NewPredictorClient() {
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [selectedCollegeForChart, setSelectedCollegeForChart] = useState<CollegeData | null>(null);
   const [showShareDropdown, setShowShareDropdown] = useState(false);
-  const [showMobileFilters, setShowMobileFilters] = useState(false); // Mobile filter drawer
-  const [searchHistory, setSearchHistory] = useState<number[]>([]); // Recent searches
+  const [filterSearchTerms, setFilterSearchTerms] = useState<Record<string, string>>({});
+
+  // Form validation state
+  const [rankError, setRankError] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
 
   // Ref for table container (for floating scrollbar)
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -126,45 +142,21 @@ export default function NewPredictorClient() {
   const [startY, setStartY] = useState(0);
   const [canRefresh, setCanRefresh] = useState(false);
 
-  // Custom hooks for state management
-  const { favorites, isShowingFavorites, toggleFavorite, setIsShowingFavorites, setFavorites } = useFavorites();
-
-  // Pagination hook needs to be initialized first to get setCurrentPage
-  const [tempCurrentPage, setTempCurrentPage] = useState(1);
-
-  const {
-    activeFilters,
-    setActiveFilters,
-    showFilters,
-    setShowFilters,
-    isSmartFilteringEnabled,
-    setIsSmartFilteringEnabled,
-    rankError,
-    setRankError,
-    hasSearched,
-    setHasSearched,
-    filterSearchTerms,
-    setFilterSearchTerms,
-    validateRank,
-    handleRankChange,
-    filteredResults,
-    resetFilters,
-  } = usePredictorFilters(filteredData, favorites, isShowingFavorites, setTempCurrentPage);
-
   // Auto-save user preferences
   const saveUserPreferences = useCallback(() => {
     const preferences = {
       activeFilters,
       sortState,
-      currentPage: tempCurrentPage,
-      entriesPerPage: 50,
+      currentPage,
+      entriesPerPage,
+      favorites: Array.from(favorites),
       isSmartFilteringEnabled,
       showFilters,
       filterSearchTerms,
       lastSaved: new Date().toISOString()
     };
     localStorage.setItem('wbjeePredictorPreferences', JSON.stringify(preferences));
-  }, [activeFilters, sortState, tempCurrentPage, isSmartFilteringEnabled, showFilters, filterSearchTerms]);
+  }, [activeFilters, sortState, currentPage, entriesPerPage, favorites, isSmartFilteringEnabled, showFilters, filterSearchTerms]);
 
   // Load user preferences on mount
   useEffect(() => {
@@ -174,7 +166,9 @@ export default function NewPredictorClient() {
         const preferences = JSON.parse(savedPreferences);
         if (preferences.activeFilters) setActiveFilters(preferences.activeFilters);
         if (preferences.sortState) setSortState(preferences.sortState);
-        if (preferences.currentPage) setTempCurrentPage(preferences.currentPage);
+        if (preferences.currentPage) setCurrentPage(preferences.currentPage);
+        if (preferences.entriesPerPage) setEntriesPerPage(preferences.entriesPerPage);
+        if (preferences.favorites) setFavorites(new Set(preferences.favorites));
         if (preferences.isSmartFilteringEnabled !== undefined) setIsSmartFilteringEnabled(preferences.isSmartFilteringEnabled);
         if (preferences.showFilters !== undefined) setShowFilters(preferences.showFilters);
         if (preferences.filterSearchTerms) setFilterSearchTerms(preferences.filterSearchTerms);
@@ -182,22 +176,11 @@ export default function NewPredictorClient() {
         console.warn('Failed to load user preferences:', error);
       }
     }
-
-    // Load search history
-    const savedHistory = localStorage.getItem('wbjeeSearchHistory');
-    if (savedHistory) {
-      try {
-        const history = JSON.parse(savedHistory);
-        setSearchHistory(history);
-      } catch (error) {
-        console.warn('Failed to load search history:', error);
-      }
-    }
-  }, [setActiveFilters, setIsSmartFilteringEnabled, setShowFilters, setFilterSearchTerms]);
+  }, []);
 
   // Auto-save preferences when they change
   useEffect(() => {
-    const timeoutId = setTimeout(saveUserPreferences, 3000); // Debounce saves (reduced frequency)
+    const timeoutId = setTimeout(saveUserPreferences, 1000); // Debounce saves
     return () => clearTimeout(timeoutId);
   }, [saveUserPreferences]);
 
@@ -381,7 +364,58 @@ export default function NewPredictorClient() {
     };
   }, [allData, activeFilters]);
 
-  // Apply sorting (filteredResults comes from usePredictorFilters hook)
+  // Apply filters
+  const filteredResults = useMemo(() => {
+    let results = filteredData;
+
+    if (isShowingFavorites) {
+      results = results.filter(item => favorites.has(item.id));
+    }
+
+    // Apply smart filtering if enabled
+    if (isSmartFilteringEnabled && activeFilters.rank && !isNaN(parseInt(activeFilters.rank))) {
+      const userRank = parseInt(activeFilters.rank);
+      // Smooth dynamic multiplier: eliminates cliff effects
+      // Formula: max(1.5, 3 - (log10(rank) * 0.425))
+      const getDynamicMultiplier = (rank: number) => {
+        if (rank <= 0) return 1.5;
+        const logRank = Math.log10(rank);
+        const multiplier = 3 - (logRank * 0.425);
+        return Math.max(1.5, multiplier);
+      };
+
+      const multiplier = getDynamicMultiplier(userRank);
+      const maxDisplayRank = Math.round(userRank * multiplier);
+
+      results = results.filter(item => {
+        // Filter by rank range: show colleges where user has a realistic chance
+        // User can get into colleges where closing_rank is between user_rank and maxDisplayRank
+        if (item.closing_rank === null ||
+          item.closing_rank < userRank ||
+          item.closing_rank > maxDisplayRank) {
+          return false;
+        }
+
+        // Apply other filters
+        for (const key of ['institute', 'branch', 'category', 'year', 'round', 'quota', 'seat_type']) {
+          if (activeFilters[key as keyof Filters].length > 0 && !activeFilters[key as keyof Filters].includes(String(item[key as keyof CollegeData]))) {
+            return false;
+          }
+        }
+        return true;
+      });
+    } else {
+      // Apply other filters normally
+      Object.entries(activeFilters).forEach(([key, values]) => {
+        if (key === 'rank' || values.length === 0) return;
+        results = results.filter(item => values.includes(item[key as keyof CollegeData] as string));
+      });
+    }
+
+    return results;
+  }, [filteredData, activeFilters, favorites, isShowingFavorites, isSmartFilteringEnabled]);
+
+  // Apply sorting
   const sortedResults = useMemo(() => {
     if (sortState.direction === 'none' || !sortState.column) return filteredResults;
 
@@ -409,48 +443,51 @@ export default function NewPredictorClient() {
     });
   }, [filteredResults, sortState]);
 
-  // Use pagination hook
-  const { currentPage, setCurrentPage, entriesPerPage, setEntriesPerPage, paginatedResults } = usePredictorPagination(sortedResults, 50);
+  // Pagination
+  const paginatedResults = useMemo(() => {
+    if (entriesPerPage === 'all') return sortedResults;
+    const startIndex = (currentPage - 1) * entriesPerPage;
+    const endIndex = startIndex + entriesPerPage;
+    return sortedResults.slice(startIndex, endIndex);
+  }, [sortedResults, currentPage, entriesPerPage]);
 
-  // Sync pagination with temp state
-  useEffect(() => {
-    setCurrentPage(tempCurrentPage);
-  }, [tempCurrentPage, setCurrentPage]);
+  // Form validation function
+  const validateRank = (rank: string) => {
+    if (!rank.trim()) return "Please enter your WBJEE rank";
+    if (isNaN(Number(rank))) return "Please enter a valid number";
+    if (Number(rank) < 1) return "Rank must be greater than 0";
+    if (Number(rank) > 50000) return "Please enter a realistic rank (under 50,000)";
+    return "";
+  };
 
-  // Add to search history when user successfully searches
-  useEffect(() => {
-    if (hasSearched && activeFilters.rank && !rankError) {
-      const rank = parseInt(activeFilters.rank);
-      if (!isNaN(rank)) {
-        setSearchHistory(prev => {
-          // Remove duplicates and add new rank at the beginning
-          const filtered = prev.filter(r => r !== rank);
-          const newHistory = [rank, ...filtered].slice(0, 5); // Keep max 5 items
+  const handleRankChange = (rank: string) => {
+    setActiveFilters(prev => ({ ...prev, rank }));
+    setCurrentPage(1);
 
-          // Save to localStorage
-          try {
-            localStorage.setItem('wbjeeSearchHistory', JSON.stringify(newHistory));
-          } catch (error) {
-            console.warn('Failed to save search history:', error);
-          }
+    // Clear error when user starts typing
+    if (rankError) setRankError('');
 
-          return newHistory;
-        });
-      }
+    // Validate rank in real-time
+    const error = validateRank(rank);
+    if (error) {
+      setRankError(error);
+    } else {
+      setRankError('');
+      setHasSearched(true);
     }
-  }, [hasSearched, activeFilters.rank, rankError]);
+  };
 
-  // validateRank, handleRankChange, and toggleFavorite are now provided by custom hooks
-
-  // Handler to apply a rank from search history
-  const applyHistoryRank = useCallback((rank: number) => {
-    handleRankChange(rank.toString());
-  }, [handleRankChange]);
-
-  // Handler to clear rank input
-  const clearRank = useCallback(() => {
-    handleRankChange('');
-  }, [handleRankChange]);
+  const toggleFavorite = (id: string) => {
+    setFavorites(prev => {
+      const newFavorites = new Set(prev);
+      if (newFavorites.has(id)) {
+        newFavorites.delete(id);
+      } else {
+        newFavorites.add(id);
+      }
+      return newFavorites;
+    });
+  };
 
   const handleSort = (column: string) => {
     setSortState(prev => {
@@ -623,7 +660,7 @@ export default function NewPredictorClient() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-white dark:bg-gray-900 font-['Inter',sans-serif]">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-['Inter',sans-serif]">
         {/* Skip Links for Keyboard Users */}
         <a
           href="#main-content"
@@ -660,25 +697,23 @@ export default function NewPredictorClient() {
             transition: isRefreshing ? 'none' : 'transform 0.3s ease-out'
           }}
         >
-          {/* Hero Section */}
-          <div className="max-w-7xl mx-auto px-6 mb-12 relative">
+          <header id="main-content" className="relative text-center mb-12">
             <button
               onClick={() => setShowHelpModal(true)}
-              className="absolute top-0 right-6 w-10 h-10 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-lg flex items-center justify-center transition-colors shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              className="absolute top-0 right-0 w-10 h-10 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-lg flex items-center justify-center transition-colors shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               title="Help & Guide"
               aria-label="Open help and guide modal"
             >
+              {/* NEW ICON */}
               <HelpCircle className="w-5 h-5" />
             </button>
-            <header id="main-content" className="max-w-4xl mx-auto text-center">
-              <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-4">
-                WBJEE <span className="text-red-600">College Predictor</span>
-              </h1>
-              <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400">
-                Find your perfect engineering college and branch based on your WBJEE rank with detailed analysis and cutoff trends.
-              </p>
-            </header>
-          </div>
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-800 dark:text-slate-100 mb-4 tracking-tight">
+              WBJEE College Predictor
+            </h1>
+            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+              Free WBJEE college predictor tool. Find your perfect engineering college and branch based on your WBJEE rank with detailed analysis and cutoff trends.
+            </p>
+          </header>
 
           {/* Rank Input and Filters */}
           <section className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 mb-8">
@@ -687,35 +722,21 @@ export default function NewPredictorClient() {
                 Your WBJEE Rank
               </label>
               <div className="space-y-2">
-                {/* Rank Input with Clear Button */}
-                <div className="relative w-full max-w-sm">
-                  <input
-                    id="rank-input"
-                    type="number"
-                    value={activeFilters.rank}
-                    onChange={(e) => handleRankChange(e.target.value)}
-                    placeholder="Enter your WBJEE rank for college prediction (e.g., 5000)"
-                    min="1"
-                    max="50000"
-                    className={`w-full px-4 py-3 pr-12 border rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 text-lg font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${rankError ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 dark:border-slate-600'
-                      }`}
-                  />
-                  {/* Clear Button */}
-                  {activeFilters.rank && (
-                    <button
-                      onClick={clearRank}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-full transition-colors"
-                      aria-label="Clear rank input"
-                      title="Clear rank"
-                    >
-                      <X className="w-5 h-5 text-slate-400 dark:text-slate-500" />
-                    </button>
-                  )}
-                </div>
+                <input
+                  id="rank-input"
+                  type="number"
+                  value={activeFilters.rank}
+                  onChange={(e) => handleRankChange(e.target.value)}
+                  placeholder="Enter your WBJEE rank for college prediction (e.g., 5000)"
+                  min="1"
+                  max="50000"
+                  className={`w-full max-w-sm px-4 py-3 border rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 text-lg font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${rankError ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 dark:border-slate-600'
+                    }`}
+                />
 
                 {/* Validation Messages */}
                 {rankError && (
-                  <div role="alert" className="flex items-center gap-2 text-red-600 dark:text-red-400 text-sm">
+                  <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-sm">
                     <AlertCircle className="w-4 h-4" />
                     {rankError}
                   </div>
@@ -733,61 +754,46 @@ export default function NewPredictorClient() {
                 <p className="text-sm text-slate-600 dark:text-slate-400">
                   Get detailed admission predictions for engineering colleges in West Bengal based on your WBJEE rank
                 </p>
-
-                {/* Recent Searches */}
-                {searchHistory.length > 0 && (
-                  <div className="flex flex-wrap items-center gap-2 pt-2">
-                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Recent:</span>
-                    {searchHistory.map((rank) => (
-                      <button
-                        key={rank}
-                        onClick={() => applyHistoryRank(rank)}
-                        className="px-3 py-1 text-sm font-medium bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors border border-indigo-200 dark:border-indigo-800"
-                        title={`Search for rank ${rank}`}
-                      >
-                        {rank.toLocaleString()}
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
 
             <div className="mb-6 flex items-center gap-4">
-              {/* Desktop: Show/Hide Filters Button */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="hidden md:inline-flex px-6 py-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-medium transition-colors focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="px-6 py-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-medium transition-colors focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 aria-expanded={showFilters}
                 aria-controls="filters"
                 aria-label={showFilters ? 'Hide filter options' : 'Show filter options'}
               >
                 {showFilters ? 'Hide Filters' : 'Show Filters'}
               </button>
-
-              {/* Mobile: Open Filter Drawer Button */}
-              <button
-                onClick={() => setShowMobileFilters(true)}
-                className="md:hidden px-6 py-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg font-medium transition-colors focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                aria-label="Open filter options"
-              >
-                Show Filters
-              </button>
               <button
                 onClick={() => setIsSmartFilteringEnabled(!isSmartFilteringEnabled)}
                 className={`px-6 py-3 rounded-lg text-sm font-medium transition-colors shadow-sm ${isSmartFilteringEnabled
                   ? 'bg-emerald-800 hover:bg-emerald-900 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200'
+                  : 'bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200'
                   }`}
                 title={isSmartFilteringEnabled ? 'Disable result filtering' : 'Enable result filtering'}
-                aria-label={isSmartFilteringEnabled ? 'Disable smart filtering' : 'Enable smart filtering'}
               >
                 Result Filtering {isSmartFilteringEnabled ? 'ON' : 'OFF'}
               </button>
               <button
                 onClick={() => {
-                  resetFilters();
+                  setActiveFilters({
+                    rank: '',
+                    institute: [],
+                    branch: [],
+                    category: [],
+                    year: [],
+                    round: [],
+                    quota: [],
+                    seat_type: []
+                  });
+                  setCurrentPage(1);
                   setIsShowingFavorites(false);
+                  setFilterSearchTerms({});
+                  setHasSearched(false);
+                  setRankError('');
                 }}
                 className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors shadow-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
                 title="Reset all filters and settings"
@@ -796,9 +802,8 @@ export default function NewPredictorClient() {
               </button>
             </div>
 
-            {/* Desktop Filters */}
             {showFilters && (
-              <div id="filters" className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              <div id="filters" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                 {(['institute', 'branch', 'category', 'year', 'round', 'quota', 'seat_type'] as const).map((filterKey) => {
                   const allOptions = getFilteredOptions[filterKey];
                   const searchTerm = filterSearchTerms[filterKey] || '';
@@ -904,126 +909,6 @@ export default function NewPredictorClient() {
             )}
           </section>
 
-          {/* Mobile Filter Drawer (Bottom Sheet) */}
-          {showMobileFilters && (
-            <>
-              {/* Backdrop */}
-              <div
-                className="fixed inset-0 bg-black/50 z-40 md:hidden"
-                onClick={() => setShowMobileFilters(false)}
-                aria-hidden="true"
-              />
-
-              {/* Drawer */}
-              <div className="fixed inset-x-0 bottom-0 z-50 md:hidden bg-white dark:bg-slate-800 rounded-t-2xl shadow-2xl max-h-[85vh] overflow-hidden flex flex-col animate-slide-up">
-                {/* Drawer Header */}
-                <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Filter Options</h3>
-                  <button
-                    onClick={() => setShowMobileFilters(false)}
-                    className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                    aria-label="Close filters"
-                  >
-                    <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-                  </button>
-                </div>
-
-                {/* Drawer Content (Scrollable) */}
-                <div className="flex-1 overflow-y-auto p-4">
-                  <div className="space-y-6">
-                    {(['institute', 'branch', 'category', 'year', 'round', 'quota', 'seat_type'] as const).map((filterKey) => {
-                      const allOptions = getFilteredOptions[filterKey];
-                      const searchTerm = filterSearchTerms[filterKey] || '';
-                      const filteredOptions = allOptions.filter(option =>
-                        String(option).toLowerCase().includes(searchTerm.toLowerCase())
-                      );
-
-                      return (
-                        <div key={filterKey} className="relative">
-                          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                            {filterKey.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                          </label>
-                          <div className="relative">
-                            {(filterKey === 'institute' || filterKey === 'branch') && (
-                              <input
-                                type="text"
-                                placeholder={`Search ${filterKey.replace('_', ' ').toLowerCase()}...`}
-                                value={searchTerm}
-                                onChange={(e) => setFilterSearchTerms(prev => ({ ...prev, [filterKey]: e.target.value }))}
-                                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 mb-2"
-                              />
-                            )}
-                            <div className="flex gap-2 mb-2">
-                              <button
-                                onClick={() => {
-                                  const visibleOptions = filteredOptions.map(String);
-                                  setActiveFilters(prev => ({
-                                    ...prev,
-                                    [filterKey]: visibleOptions
-                                  }));
-                                  setCurrentPage(1);
-                                }}
-                                className="flex-1 px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded text-xs font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
-                              >
-                                Select All
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setActiveFilters(prev => ({
-                                    ...prev,
-                                    [filterKey]: []
-                                  }));
-                                  setCurrentPage(1);
-                                }}
-                                className="flex-1 px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded text-xs font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
-                              >
-                                Clear
-                              </button>
-                            </div>
-                            <div className="max-h-40 overflow-y-auto border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700">
-                              <div className="p-2 space-y-1">
-                                {filteredOptions.map((option) => (
-                                  <label key={option} className="flex items-center gap-2 text-sm py-1 px-2 hover:bg-slate-50 dark:hover:bg-slate-600 rounded transition-colors">
-                                    <input
-                                      type="checkbox"
-                                      checked={activeFilters[filterKey].includes(String(option))}
-                                      onChange={(e) => {
-                                        const value = String(option);
-                                        setActiveFilters(prev => ({
-                                          ...prev,
-                                          [filterKey]: e.target.checked
-                                            ? [...prev[filterKey], value]
-                                            : prev[filterKey].filter(v => v !== value)
-                                        }));
-                                        setCurrentPage(1);
-                                      }}
-                                      className="rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500"
-                                    />
-                                    <span className="text-slate-700 dark:text-slate-300">{option}</span>
-                                  </label>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Drawer Footer */}
-                <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-                  <button
-                    onClick={() => setShowMobileFilters(false)}
-                    className="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-colors shadow-lg"
-                  >
-                    Apply Filters
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
-
           {/* Results Table */}
           <h2 className="sr-only">Results</h2><section id="results" className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
             {/* Top Controls */}
@@ -1058,7 +943,7 @@ export default function NewPredictorClient() {
                 {entriesPerPage !== 'all' && sortedResults.length > entriesPerPage && (
                   <div className="flex items-center gap-3">
                     <button
-                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                       disabled={currentPage === 1}
                       className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium transition-colors"
                     >
@@ -1068,8 +953,8 @@ export default function NewPredictorClient() {
                       Page {currentPage} of {Math.ceil(sortedResults.length / entriesPerPage)}
                     </span>
                     <button
-                      onClick={() => setCurrentPage(Math.min(Math.ceil(sortedResults.length / (entriesPerPage as number)), currentPage + 1))}
-                      disabled={currentPage >= Math.ceil(sortedResults.length / (entriesPerPage as number))}
+                      onClick={() => setCurrentPage(prev => Math.min(Math.ceil(sortedResults.length / entriesPerPage), prev + 1))}
+                      disabled={currentPage >= Math.ceil(sortedResults.length / entriesPerPage)}
                       className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium transition-colors"
                     >
                       Next
