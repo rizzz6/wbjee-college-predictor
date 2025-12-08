@@ -697,23 +697,25 @@ export default function NewPredictorClient() {
             transition: isRefreshing ? 'none' : 'transform 0.3s ease-out'
           }}
         >
-          <header id="main-content" className="relative text-center mb-12">
+          {/* Hero Section */}
+          <div className="max-w-7xl mx-auto px-6 mb-12 relative">
             <button
               onClick={() => setShowHelpModal(true)}
-              className="absolute top-0 right-0 w-10 h-10 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-lg flex items-center justify-center transition-colors shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              title="Help & Guide"
+              className="absolute top-0 right-6 w-10 h-10 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-lg flex items-center justify-center transition-colors shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" title="Help & Guide"
               aria-label="Open help and guide modal"
             >
-              {/* NEW ICON */}
               <HelpCircle className="w-5 h-5" />
             </button>
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-800 dark:text-slate-100 mb-4 tracking-tight">
-              WBJEE College Predictor
-            </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-              Free WBJEE college predictor tool. Find your perfect engineering college and branch based on your WBJEE rank with detailed analysis and cutoff trends.
-            </p>
-          </header>
+            {/* Hero Section */}
+            <header id="main-content" className="max-w-4xl mx-auto text-center">
+              <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-4">
+                WBJEE <span className="text-red-600">College Predictor</span>
+              </h1>
+              <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400">
+                Find your perfect engineering college and branch based on your WBJEE rank with detailed analysis and cutoff trends.
+              </p>
+            </header>
+          </div>
 
           {/* Rank Input and Filters */}
           <section className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 mb-8">
