@@ -10,7 +10,13 @@ interface UseFavoritesReturn {
 
 export function useFavorites(storageKey = 'wbjeePredictorFavorites'): UseFavoritesReturn {
     // Lazy initialization - load from localStorage once on mount
+    // Check for browser environment to avoid SSR errors
     const [favorites, setFavorites] = useState<Set<string>>(() => {
+        // Only access localStorage in browser environment
+        if (typeof window === 'undefined') {
+            return new Set();
+        }
+
         try {
             const saved = localStorage.getItem(storageKey);
             if (saved) {
@@ -26,6 +32,9 @@ export function useFavorites(storageKey = 'wbjeePredictorFavorites'): UseFavorit
 
     // Save favorites to localStorage whenever they change
     useEffect(() => {
+        // Only save in browser environment
+        if (typeof window === 'undefined') return;
+
         const timeoutId = setTimeout(() => {
             try {
                 localStorage.setItem(storageKey, JSON.stringify(Array.from(favorites)));
