@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import NewPredictorClient from "./NewPredictorClient";
-import { ChevronDown } from "lucide-react";
 import FAQWidget from "../../components/FAQWidget";
 
 // Page-specific metadata for SEO

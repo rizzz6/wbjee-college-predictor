@@ -24,6 +24,16 @@
   }
 }
 
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
 @layer utilities {
   .animate-fade-in-up {
     animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
@@ -39,6 +49,10 @@
     animation-delay: 0.4s;
     opacity: 0;
     animation-fill-mode: forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   }
 
   /* --- 3. GRID BACKGROUND PATTERN --- */

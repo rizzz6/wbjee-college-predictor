@@ -54,13 +54,12 @@ export default function ComparisonModal({ isOpen, onClose, favorites, allData }:
                   <p><strong>Category:</strong> {college.category}</p>
                   <p><strong>Closing Rank:</strong> {college.closing_rank || 'N/A'}</p>
                   <p><strong>Prediction:</strong>
-                    <span className={`ml-2 px-2 py-1 rounded text-xs font-semibold ${
-                      college.prediction.text === 'Confirm' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-100' :
-                      college.prediction.text === 'Great' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-100' :
-                      college.prediction.text === 'Good' ? 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-100' :
-                      college.prediction.text === 'Low' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-100' :
-                      'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-100'
-                    }`}>
+                    <span className={`ml-2 px-2 py-1 rounded text-xs font-semibold ${college.prediction.text === 'Confirm' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-100' :
+                        college.prediction.text === 'Great' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-100' :
+                          college.prediction.text === 'Good' ? 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-100' :
+                            college.prediction.text === 'Borderline' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-100' :
+                              'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-100'
+                      }`}>
                       {college.prediction.text}
                     </span>
                   </p>

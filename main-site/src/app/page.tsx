@@ -40,7 +40,7 @@ const homeFAQData = [
 function Hero() {
   return (
     <section id="home" className="relative isolate">
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-red-50 via-white to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-900" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-white to-white dark:from-transparent dark:via-gray-900 dark:to-gray-900" />
       <div className="absolute inset-0 -z-10 bg-grid-pattern" />
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-transparent to-white dark:to-gray-900" />
       <div className="max-w-7xl mx-auto px-4 py-20 md:py-28">
