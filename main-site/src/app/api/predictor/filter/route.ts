@@ -39,12 +39,26 @@ let memoryCache: {
 };
 
 const CACHE_TTL = 15 * 60 * 1000; // 15 minutes in milliseconds
+const MEMORY_CACHE_TTL = 30 * 60 * 1000; // 30 minutes
 
-// Initialize Redis
-const redis = new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL!,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+// Initialize Redis with environment validation
+const getRedisClient = () => {
+    try {
+        if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+            console.warn('[Filter API] Redis credentials not found in environment');
+            return null;
+        }
+        return new Redis({
+            url: process.env.UPSTASH_REDIS_REST_URL,
+            token: process.env.UPSTASH_REDIS_REST_TOKEN,
+        });
+    } catch (error) {
+        console.error('[Filter API] Failed to initialize Redis:', error);
+        return null;
+    }
+};
+
+const redis = getRedisClient();
 
 /**
  * Calculate adaptive floor and ceiling multipliers based on rank tier
