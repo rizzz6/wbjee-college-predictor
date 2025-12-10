@@ -39,7 +39,6 @@ let memoryCache: {
 };
 
 const CACHE_TTL = 15 * 60 * 1000; // 15 minutes in milliseconds
-const MEMORY_CACHE_TTL = 30 * 60 * 1000; // 30 minutes
 
 // Initialize Redis with environment validation
 const getRedisClient = () => {
@@ -77,6 +76,38 @@ function getAdaptiveMultipliers(rank: number): { min: number; max: number } {
     }
 }
 
+/**
+ * Load data from local JSON file as fallback
+ */
+async function loadFromLocalFile(): Promise<CollegeData[]> {
+    const now = Date.now();
+    const filePath = path.join(process.cwd(), 'public', 'data.json');
+    const raw = await fs.readFile(filePath, 'utf8');
+    const rawData = JSON.parse(raw) as Record<string, string | number>[];
+
+    // Transform local data to match interface
+    const data: CollegeData[] = rawData.map((item) => ({
+        id: `${item["Institute"]}-${item["Program"]}-${item["Category"]}-${item["Round"]}-${item["Year"]}-${item["Quota"]}-${item["Seat Type"]}`,
+        round: String(item["Round"] || ''),
+        institute: String(item["Institute"] || ''),
+        branch: String(item["Program"] || ''),
+        seat_type: String(item["Seat Type"] || ''),
+        quota: String(item["Quota"] || ''),
+        category: String(item["Category"] || ''),
+        opening_rank: item["Opening Rank"] ? Number(item["Opening Rank"]) : null,
+        closing_rank: item["Closing Rank"] ? Number(item["Closing Rank"]) : null,
+        year: item["Year"] ? Number(item["Year"]) : null,
+        prediction: { text: '-', order: 6 }
+    }));
+
+    memoryCache = {
+        data: data,
+        timestamp: now // Still cache it to avoid FS reads every time
+    };
+
+    return data;
+}
+
 async function getMasterData(): Promise<CollegeData[]> {
     const now = Date.now();
 
@@ -85,24 +116,29 @@ async function getMasterData(): Promise<CollegeData[]> {
         return memoryCache.data;
     }
 
+    // 2. If Redis not available, skip to local file fallback
+    if (!redis) {
+        console.warn('🔄 Redis not available, loading from local file...');
+        return loadFromLocalFile();
+    }
+
     console.log('🔄 Cache stale or empty. Fetching from Upstash...');
 
     try {
-        // 2. Fetch Compressed Blob from Redis
-        // Get as base64 string
+        // 3. Fetch Compressed Blob from Redis
         const base64Data = await redis.get<string>('wbjee:master_data');
 
         if (!base64Data) {
-            throw new Error('No data found in Redis');
+            console.warn('No data found in Redis, falling back to local file');
+            return loadFromLocalFile();
         }
 
-        // 3. Decompress
-        // Convert base64 -> buffer -> decompress -> json parse
+        // 4. Decompress
         const buffer = Buffer.from(base64Data, 'base64');
         const decompressed = await gunzip(buffer);
         const data = JSON.parse(decompressed.toString()) as CollegeData[];
 
-        // 4. Update Cache
+        // 5. Update Cache
         memoryCache = {
             data: data,
             timestamp: now
@@ -116,31 +152,7 @@ async function getMasterData(): Promise<CollegeData[]> {
 
         // 5. Fallback: Local JSON file
         try {
-            const filePath = path.join(process.cwd(), 'public', 'data.json');
-            const raw = await fs.readFile(filePath, 'utf8');
-            const rawData = JSON.parse(raw) as Record<string, string | number>[];
-
-            // Transform local data to match interface
-            const data: CollegeData[] = rawData.map((item) => ({
-                id: `${item["Institute"]}-${item["Program"]}-${item["Category"]}-${item["Round"]}-${item["Year"]}-${item["Quota"]}-${item["Seat Type"]}`,
-                round: String(item["Round"] || ''),
-                institute: String(item["Institute"] || ''),
-                branch: String(item["Program"] || ''),
-                seat_type: String(item["Seat Type"] || ''),
-                quota: String(item["Quota"] || ''),
-                category: String(item["Category"] || ''),
-                opening_rank: item["Opening Rank"] ? Number(item["Opening Rank"]) : null,
-                closing_rank: item["Closing Rank"] ? Number(item["Closing Rank"]) : null,
-                year: item["Year"] ? Number(item["Year"]) : null,
-                prediction: { text: '-', order: 6 }
-            }));
-
-            memoryCache = {
-                data: data,
-                timestamp: now // Still cache it to avoid FS reads every time
-            };
-
-            return data;
+            return await loadFromLocalFile();
         } catch (localError) {
             console.error('❌ Fatal: Local fallback failed:', localError);
             throw new Error('Service unavailable');
