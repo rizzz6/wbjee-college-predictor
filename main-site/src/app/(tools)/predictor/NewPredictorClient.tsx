@@ -238,6 +238,7 @@ export default function NewPredictorClient() {
     return () => clearTimeout(timeoutId);
   }, [saveUserPreferences]);
 
+
   // Pull-to-refresh functionality
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (window.scrollY === 0) {
@@ -258,17 +259,7 @@ export default function NewPredictorClient() {
     }
   }, [startY]);
 
-  const handleTouchEnd = useCallback(async () => {
-    if (canRefresh && !isRefreshing) {
-      setIsRefreshing(true);
-      await handleRefresh();
-    }
-    setPullDistance(0);
-    setStartY(0);
-    setCanRefresh(false);
-  }, [canRefresh, isRefreshing, handleRefresh]);
-
-
+  // Define handleRefresh BEFORE handleTouchEnd to avoid block-scoped variable error
   const handleRefresh = useCallback(async () => {
     try {
       setIsRefreshing(true);
@@ -307,6 +298,16 @@ export default function NewPredictorClient() {
       setIsRefreshing(false);
     }
   }, [searchFilters]);
+
+  const handleTouchEnd = useCallback(async () => {
+    if (canRefresh && !isRefreshing) {
+      setIsRefreshing(true);
+      await handleRefresh();
+    }
+    setPullDistance(0);
+    setStartY(0);
+    setCanRefresh(false);
+  }, [canRefresh, isRefreshing, handleRefresh]);
 
   // Update filteredData when API results change
   useEffect(() => {
