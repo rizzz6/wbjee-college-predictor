@@ -5,8 +5,22 @@ import { promisify } from 'util';
 
 const gunzip = promisify(zlib.gunzip);
 
-// Initialize Redis client
-const redis = Redis.fromEnv();
+// Initialize Redis client with environment validation
+const getRedisClient = () => {
+    try {
+        // Check if Redis environment variables are available
+        if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+            console.warn('[Metadata API] Redis credentials not found in environment');
+            return null;
+        }
+        return Redis.fromEnv();
+    } catch (error) {
+        console.error('[Metadata API] Failed to initialize Redis:', error);
+        return null;
+    }
+};
+
+const redis = getRedisClient();
 
 /**
  * GET /api/predictor/metadata
@@ -15,6 +29,15 @@ const redis = Redis.fromEnv();
  */
 export async function GET() {
     try {
+        // If Redis is not available, return error response
+        if (!redis) {
+            console.error('[Metadata API] Redis not available - check environment variables');
+            return NextResponse.json(
+                { error: 'Database connection not configured' },
+                { status: 503 }
+            );
+        }
+
         // Try to get cached metadata
         const cachedMetadata = await redis.get('wbjee:metadata');
 
