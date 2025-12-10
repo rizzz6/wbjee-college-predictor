@@ -1,4 +1,5 @@
 {
+  "$schema": "./.vscode/package.schema.json",
   "name": "main-site",
   "version": "0.1.0",
   "private": true,
@@ -7,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "indexnow": "node scripts/submit-indexnow.mjs"
+    "indexnow": "node scripts/submit-indexnow.mjs",
+    "seed:upstash": "tsx scripts/seed-upstash.ts",
+    "build:metadata": "tsx scripts/buildMetadata.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -16,6 +19,7 @@
     "@sanity/image-url": "^1.2.0",
     "@sanity/table": "^2.0.0",
     "@sanity/vision": "^4.17.0",
+    "@upstash/redis": "^1.35.7",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
     "chart.js": "^4.5.0",
@@ -46,11 +50,13 @@
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.48.0",
     "@typescript-eslint/parser": "^8.48.0",
+    "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "^16.0.7",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   },
   "browserslist": [
