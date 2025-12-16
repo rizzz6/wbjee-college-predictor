@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
+import SmartBreadcrumb from "./components/SmartBreadcrumb";
 import Footer from "./components/Footer";
 import Providers from "./providers";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -27,34 +28,12 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "WBJEE College Predictor 2025 - Free College Finder Tool",
+  title: "rwbjee | WBJEE Companion | Resources, Colleges & Community",
   description:
-    "Free WBJEE college predictor tool 2025. Find engineering colleges and branches in West Bengal based on your WBJEE rank. Get detailed analysis, cutoff trends, admission chances, and college comparison for Jadavpur University, Calcutta University, and other top engineering colleges. Instant results, mobile-friendly, and completely free to use.",
-  keywords: [
-    "WBJEE 2025",
-    "WBJEE college finder",
-    "WBJEE rank predictor",
-    "WBJEE college predictor",
-    "WBJEE cutoff 2025",
-    "engineering colleges West Bengal",
-    "WBJEE admission",
-    "WBJEE rank calculator",
-    "WBJEE college list",
-    "WBJEE branch finder",
-    "Jadavpur University",
-    "Calcutta University",
-    "engineering admission West Bengal",
-    "WBJEE counseling",
-    "WBJEE rank analysis",
-    "WBJEE seat allotment",
-    "WBJEE merit list",
-    "engineering colleges Kolkata",
-    "WBJEE 2025 cutoff",
-    "WBJEE admission process"
-  ],
+    "Your guide for WBJEE 2026. Free college Predictor, dates, cutoffs, rank analysis & exam resources to simplify your journey from prep to admission.",
   authors: [{ name: "rizzz6" }],
   creator: "rizzz6",
-  publisher: "WBJEE College Predictor",
+  publisher: "rwbjee",
   formatDetection: {
     email: false,
     address: false,
@@ -65,17 +44,17 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: "WBJEE College Predictor 2025 - Free College Finder Tool",
+    title: "rwbjee | WBJEE Companion | Resources, Colleges & Community",
     description:
-      "Free WBJEE college predictor tool 2025. Find engineering colleges and branches in West Bengal based on your WBJEE rank. Get detailed analysis, cutoff trends, admission chances, and college comparison for Jadavpur University, Calcutta University, and other top engineering colleges.",
+      "Your guide for WBJEE 2026. Free college Predictor, dates, cutoffs, rank analysis & exam resources to simplify your journey from prep to admission.",
     url: "https://www.rwbjee.com",
-    siteName: "WBJEE College Predictor",
+    siteName: "rwbjee",
     images: [
       {
         url: "/og-image.svg",
         width: 1200,
         height: 630,
-        alt: "WBJEE College Predictor - Find Your Perfect Engineering College",
+        alt: "rwbjee | WBJEE Companion | Resources, Colleges & Community",
       },
     ],
     locale: "en_US",
@@ -83,9 +62,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "WBJEE College Predictor 2025 - Free College Finder Tool",
+    title: "rwbjee | WBJEE Companion | Resources, Colleges & Community",
     description:
-      "Free WBJEE college predictor tool 2025. Find engineering colleges and branches in West Bengal based on your WBJEE rank...",
+      "Your guide for WBJEE 2026. Free college Predictor, dates, cutoffs, rank analysis & exam resources to simplify your journey from prep to admission.",
     images: ["/og-image.svg"],
     creator: "@rizzz6",
   },
@@ -117,8 +96,31 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://ytfxpldt.apicdn.sanity.io" crossOrigin="anonymous" />
 
-        {/* FIX: Added inline styles to the script to force the background immediately. 
-            We used backticks (`) correctly here to prevent TypeScript errors. */}
+        {/* CRITICAL: CSS must load BEFORE script to prevent white flash */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+          /* Default light mode */
+          html, body {
+            background-color: #ffffff;
+            color: #111827;
+          }
+          
+          /* System dark mode preference */
+          @media (prefers-color-scheme: dark) {
+            html, body { 
+              background-color: #111827 !important; 
+              color: white !important;
+            }
+          }
+          
+          /* When script adds .dark class to html, body inherits immediately */
+          html.dark body {
+            background-color: #111827 !important;
+            color: white !important;
+          }
+        `}} />
+
+        {/* Theme initialization script - adds .dark class to html before body renders */}
         <script
           id="theme-init"
           dangerouslySetInnerHTML={{
@@ -132,12 +134,8 @@ export default function RootLayout({
                     var html = document.documentElement;
                     if (darkMode) {
                       html.classList.add(classNameDark);
-                      html.style.backgroundColor = '#111827'; 
-                      html.style.color = '#ffffff';
                     } else {
                       html.classList.remove(classNameDark);
-                      html.style.backgroundColor = '#ffffff';
-                      html.style.color = '#111827';
                     }
                   }
                   
@@ -162,20 +160,21 @@ export default function RootLayout({
             `,
           }}
         />
-
-        {/* FIX: Added a CSS fallback that runs BEFORE the script as a safety net */}
-        <style dangerouslySetInnerHTML={{
-          __html: `
-          @media (prefers-color-scheme: dark) {
-            html { background-color: #111827; color: white; }
-          }
-        `}} />
       </head>
 
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased text-gray-900 dark:text-white`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-white`}>
         <Providers>
+          {/* Skip Navigation - Accessibility */}
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-red-600 focus:text-white focus:rounded-md focus:shadow-lg transition-all"
+          >
+            Skip to main content
+          </a>
+
           <Navbar />
-          <main className="flex-grow">
+          <SmartBreadcrumb />
+          <main id="main-content" className="flex-grow">
             {children}
           </main>
           <Footer />

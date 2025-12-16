@@ -147,13 +147,13 @@ export default function ImportantDates({
                         : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 shadow-sm'
                       }`}>
                       <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                        <span className={`text-sm font-bold ${isActive ? 'text-red-700 dark:text-red-300' : 'text-gray-500 dark:text-gray-400'}`}>
+                        <span className={`text-sm font-bold ${isActive ? 'text-red-700 dark:text-red-300' : 'text-gray-700 dark:text-gray-300'}`}>
                           {format(eventDate, 'MMMM d, yyyy')}
                         </span>
                         {isEventToday ? (
                           <span className="text-xs bg-red-700 text-white px-2 py-0.5 rounded font-medium">Today</span>
                         ) : isEventPast ? (
-                          <span className="text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded font-medium">Done</span>
+                          <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2 py-1 rounded font-medium">Done</span>
                         ) : (
                           <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-0.5 rounded font-medium">{daysLeft} Days left</span>
                         )}
@@ -161,7 +161,7 @@ export default function ImportantDates({
                           <span className="text-xs bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-500 px-2 py-0.5 rounded font-medium">Tentative</span>
                         )}
                       </div>
-                      <h3 className={`text-base font-medium ${isEventPast ? 'text-gray-400 dark:text-gray-500 line-through' : 'text-gray-800 dark:text-gray-200'}`}>
+                      <h3 className={`text-base font-medium ${isEventPast ? 'text-gray-700 dark:text-gray-300 line-through' : 'text-gray-800 dark:text-gray-200'}`}>
                         {event.title}
                       </h3>
                     </div>

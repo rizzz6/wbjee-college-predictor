@@ -144,8 +144,8 @@ export default function RankFinderClient() {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 py-8">
-      <div className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
+    <div className="w-full max-w-4xl mx-auto px-6 py-8">
+      <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* College Selection */}
           <div className="space-y-2">

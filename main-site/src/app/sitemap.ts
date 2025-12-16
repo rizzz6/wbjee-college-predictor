@@ -6,7 +6,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 1. Fetch Data from Sanity
   const posts = await client.fetch(`*[_type == "post"] { "slug": slug.current, publishedAt }`)
-  const colleges = await client.fetch(`*[_type == "college" && isVisible == true] { "slug": slug.current }`)
+  // MAKE SURE THIS LINE MATCHES:
+  const colleges = await client.fetch(`*[_type == "college" && isVisible == true] { "slug": slug.current, _updatedAt }`)
 
   // 2. Define Static Pages
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -23,7 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/rank-finder`,
+      url: `${baseUrl}/cutoffs`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.9,
@@ -81,9 +82,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   // 4. Generate Dynamic College URLs
-  const collegeRoutes: MetadataRoute.Sitemap = colleges.map((college: { slug: string }) => ({
+  const collegeRoutes: MetadataRoute.Sitemap = colleges.map((college: { slug: string; _updatedAt?: string }) => ({
     url: `${baseUrl}/colleges/${college.slug}`,
-    lastModified: new Date(),
+    lastModified: new Date(college._updatedAt || new Date()),
     changeFrequency: 'monthly',
     priority: 0.7,
   }))

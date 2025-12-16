@@ -34,7 +34,7 @@ export default function FeaturedColleges({ colleges }: { colleges: College[] }) 
         </div>
 
         {/* CARDS GRID */}
-        <div className="flex flex-wrap justify-center gap-4">
+        <div className="flex flex-wrap justify-center gap-6">
           {colleges.map((col) => (
             <Link
               key={col._id}

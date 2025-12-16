@@ -59,17 +59,60 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const college = await client.fetch(`*[_type == "college" && slug.current == $slug][0]{ name, coverImage }`, { slug });
-  if (!college) return { title: 'College Not Found' };
+
+  // Fetch minimum data needed for SEO
+  const college = await client.fetch(
+    `*[_type == "college" && slug.current == $slug][0]{ name, coverImage }`,
+    { slug }
+  );
+
+  if (!college) {
+    return {
+      title: 'College Not Found | rwbjee',
+      description: 'The requested engineering college could not be found.',
+      robots: { index: false, follow: false }
+    };
+  }
+
+  // 1. SEO Title: Prioritize "Cutoffs" and "Fees" with "WBJEE 2026" context
+  const seoTitle = `${college.name}: Cutoffs, Fees & Placements | WBJEE 2026`;
+
+  // 2. Description: Sell the "Quick Info" and "5 Year Data"
+  const description = `Get quick info on ${college.name} for WBJEE 2026. Explore last 5 years' cutoffs (OR-CR), fee structures, and placement stats at a glance.`;
+
+  // 3. Image Logic: Fallback to default if no cover image exists
+  const imageUrl = college.coverImage
+    ? urlFor(college.coverImage).width(1200).height(630).url()
+    : 'https://www.rwbjee.com/og-college-default.jpg'; // Ensure this file exists in /public folder
+
   return {
-    title: `${college.name} - 2026 Fees, Placements & Cutoff`,
-    description: `Complete details for ${college.name}. Check fees, admission process, and placement statistics.`,
+    title: seoTitle,
+    description: description,
     alternates: {
       canonical: `/colleges/${slug}`,
     },
     openGraph: {
-      images: college.coverImage ? [{ url: urlFor(college.coverImage).width(1200).height(630).url() }] : [],
+      title: `${college.name} - Details | Cutoffs, Placements, Fees & More`,
+      description: description,
+      url: `https://www.rwbjee.com/colleges/${slug}`,
+      siteName: 'rwbjee',
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${college.name} Campus`,
+        },
+      ],
+      type: 'article',
+      locale: 'en_US',
     },
+    twitter: {
+      card: 'summary_large_image',
+      title: seoTitle,
+      description: description,
+      images: [imageUrl],
+    }
   };
 }
 
@@ -95,10 +138,8 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
         {college.coverImage ? (
           <div className="absolute inset-0 opacity-30 dark:opacity-60 transition-opacity duration-300">
             <Image
-              /* FIX 1: Removed .height(600) so Sanity doesn't crop it. */
               src={urlFor(college.coverImage).width(1920).url()}
               fill
-              /* FIX 2: Changed object-cover to object-contain so the whole image fits */
               className="object-contain blur-[2px]"
               alt="Campus"
             />
@@ -114,7 +155,6 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
           <div className="flex flex-col md:flex-row md:items-end gap-6 text-left">
 
             {/* LOGO BOX */}
-            {/* FIX: Reduced size to w-20 (mobile) and w-32 (desktop) */}
             <div className="w-20 h-20 md:w-32 md:h-32 bg-white rounded-2xl shadow-xl shrink-0 relative overflow-hidden border border-gray-100 dark:border-gray-800">
               {college.logo ? (
                 <div className="absolute inset-0 p-2 flex items-center justify-center">
@@ -122,6 +162,7 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
                     src={urlFor(college.logo).width(400).url()}
                     alt={college.name}
                     fill
+                    sizes="(max-width: 768px) 80px, 128px"
                     className="object-contain"
                   />
                 </div>

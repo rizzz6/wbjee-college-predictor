@@ -17,7 +17,7 @@ const faqData = [
         a: (
           <>
             No, this is not the official WBJEE website. This site is an independent resource to help students with tools, predictors, and information. For official updates, always refer to{" "}
-            <a href="https://wbjeeb.nic.in/" target="_blank" rel="noopener noreferrer" className="text-red-600 underline hover:text-red-800">wbjeeb.nic.in</a>.
+            <a href="https://wbjeeb.nic.in/" target="_blank" rel="noopener noreferrer" className="text-red-600 dark:text-red-400 underline hover:text-red-800 dark:hover:text-red-300">wbjeeb.nic.in</a>.
           </>
         ),
       },
@@ -64,41 +64,76 @@ export default function FAQDedicated() {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      <div className="space-y-12">
-        {faqData.map((cat, catIdx) => (
-          <div key={cat.category}>
-            <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white mt-12 mb-6">
-              {cat.category}
-            </h2>
-            {cat.questions.map((item, qIdx) => {
-              const key = `${catIdx}-${qIdx}`;
-              const isOpen = !!open[key];
-              return (
-                <div className="border-b border-gray-200 dark:border-gray-700" key={key}>
-                  <button
-                    className="w-full flex justify-between items-center py-4 text-left text-lg font-semibold text-gray-800 dark:text-white"
-                    aria-expanded={isOpen}
-                    onClick={() => handleToggle(catIdx, qIdx)}
-                  >
-                    <span>{item.q}</span>
-                    <span className={`transform transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`}>
-                      +
-                    </span>
-                  </button>
-                  <div
-                    className={`grid transition-all duration-300 ease-in-out ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                      }`}
-                  >
-                    <div className="overflow-hidden">
-                      <div className="py-4 text-gray-600 dark:text-gray-300">{item.a}</div>
-                    </div>
-                  </div>
+    <div className="min-h-screen bg-white dark:bg-gray-900 px-4 md:px-6 py-12">
+      <div className="max-w-4xl mx-auto">
+        {/* Header Section */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-4">
+            Frequently Asked <span className="text-red-600">Questions</span>
+          </h1>
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400">
+            Find answers to common questions about WBJEE and our tools
+          </p>
+        </div>
+
+        {/* FAQ Categories */}
+        <div className="space-y-8">
+          {faqData.map((cat, catIdx) => (
+            <div
+              key={cat.category}
+              className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300"
+            >
+              {/* Category Header */}
+              <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+                  {cat.category}
+                </h2>
+              </div>
+
+              {/* Questions */}
+              <div className="p-6">
+                <div className="space-y-4">
+                  {cat.questions.map((item, qIdx) => {
+                    const key = `${catIdx}-${qIdx}`;
+                    const isOpen = !!open[key];
+                    return (
+                      <div
+                        className="border-b border-gray-200 dark:border-gray-700 last:border-b-0 pb-4 last:pb-0"
+                        key={key}
+                      >
+                        <button
+                          className="w-full flex justify-between items-start gap-4 py-3 text-left group"
+                          aria-expanded={isOpen}
+                          onClick={() => handleToggle(catIdx, qIdx)}
+                        >
+                          <span className="text-lg font-semibold text-gray-800 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                            {item.q}
+                          </span>
+                          <span
+                            className={`flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-bold transform transition-transform duration-300 ${isOpen ? "rotate-45" : ""
+                              }`}
+                          >
+                            +
+                          </span>
+                        </button>
+                        <div
+                          className={`grid transition-all duration-300 ease-in-out ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                            }`}
+                        >
+                          <div className="overflow-hidden">
+                            <div className="pt-3 pb-1 text-gray-600 dark:text-gray-300 leading-relaxed">
+                              {item.a}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </div>
-        ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
