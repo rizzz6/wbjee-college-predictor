@@ -55,6 +55,7 @@
     "eslint-config-next": "^16.0.7",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "jsdom": "^27.3.0",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5"

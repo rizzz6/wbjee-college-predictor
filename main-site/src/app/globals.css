@@ -2,13 +2,27 @@
 @import "tailwindcss";
 
 /* --- 1. WHITE FLASH FIX --- */
-/* Forces dark background immediately based on system settings */
+/* Base colors for both html and body */
+html,
+body {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+/* System dark mode preference */
 @media (prefers-color-scheme: dark) {
-  html {
+
+  html,
+  body {
     background-color: #111827;
-    /* Tailwind gray-900 */
     color: white;
   }
+}
+
+/* When .dark class is added to html via script */
+html.dark body {
+  background-color: #111827;
+  color: white;
 }
 
 /* --- 2. ANIMATIONS --- */
@@ -67,5 +81,14 @@
     background-image:
       linear-gradient(to right, rgba(255, 255, 255, 0.01) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+  }
+
+  /* --- 4. ACCESSIBILITY FOCUS INDICATORS --- */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-red-400 dark:focus:ring-offset-gray-900;
+  }
+
+  .focus-ring-white {
+    @apply focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-red-600;
   }
 }

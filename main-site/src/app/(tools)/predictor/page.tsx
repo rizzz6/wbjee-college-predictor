@@ -4,27 +4,16 @@ import FAQWidget from "../../components/FAQWidget";
 
 // Page-specific metadata for SEO
 export const metadata: Metadata = {
-  title: "WBJEE College Predictor 2025 | Find Your Best Engineering College",
+  title: "WBJEE College Predictor 2026 | Find Your Best Engineering College",
   description: "Enter your WBJEE rank and instantly find your admission chances. Compare Jadavpur, CU, and top engineering colleges with detailed cutoff trends and branch analysis.",
-  keywords: [
-    "WBJEE college predictor",
-    "WBJEE React predictor",
-    "college trend charts",
-    "engineering admission predictor",
-    "WBJEE rank analysis tool",
-    "interactive college finder",
-    "WBJEE cutoff trends",
-    "engineering college comparison",
-    "smart filtering predictor",
-    "WBJEE admission chances"
-  ],
   alternates: {
     canonical: '/predictor',
   },
   openGraph: {
-    title: "WBJEE College Predictor 2025 |   Find Your Best Engineering College",
+    title: "WBJEE College Predictor 2026 | Find Your Best Engineering College",
     description: "Enter your WBJEE rank and instantly find your admission chances. Compare Jadavpur, CU, and top engineering colleges with detailed cutoff trends and branch analysis.",
     url: "https://www.rwbjee.com/predictor",
+    siteName: "rwbjee",
     images: [
       {
         url: "/og-image.svg",
@@ -35,37 +24,12 @@ export const metadata: Metadata = {
     ],
     type: "website",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "WBJEE College Predictor 2025 | Find Your Best Engineering College",
-    description: "Enter your WBJEE rank and instantly find your admission chances. Compare Jadavpur, CU, and top engineering colleges with detailed cutoff trends and branch analysis.",
-    images: ["/og-image.svg"],
-  },
 };
 
-// Breadcrumb structured data for SEO
-const breadcrumbSchema = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Home",
-      "item": "https://www.rwbjee.com"
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": "WBJEE College Predictor",
-      "item": "https://www.rwbjee.com/predictor"
-    }
-  ]
-};
 
 const predictorFAQData = [
   {
-    q: "How to use WBJEE College Predictor 2025?",
+    q: "How to use WBJEE College Predictor 2026?",
     a: "Enter your WBJEE rank in the input field and get instant college predictions for engineering admission in West Bengal. Use advanced filtering options to find specific engineering branches at Jadavpur University, Calcutta University, or other top colleges."
   },
   {
@@ -108,14 +72,6 @@ const faqSchema = {
 export default function NewPredictorPage() {
   return (
     <>
-      {/* Breadcrumb Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(breadcrumbSchema)
-        }}
-      />
-
       {/* FAQ Schema for Rich Snippets */}
       <script
         type="application/ld+json"

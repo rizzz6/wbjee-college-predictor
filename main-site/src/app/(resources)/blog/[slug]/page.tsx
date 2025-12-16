@@ -18,6 +18,7 @@ interface Post {
   mainImage?: SanityImageSource;
   publishedAt: string;
   author?: { name: string };
+  tags?: string[];
 }
 
 const ptComponents: PortableTextComponents = {
@@ -76,7 +77,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     `*[_type == "post" && slug.current == $slug][0]{
       title,
       body,
-      mainImage
+      mainImage,
+      tags
     }`,
     { slug }
   );

@@ -1,5 +1,6 @@
 export const revalidate = 60;
 
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import ImportantDates from "./components/ImportantDates";
@@ -10,6 +11,27 @@ const HowItWorks = dynamic(() => import('./components/HowItWorks'));
 const JoinCommunity = dynamic(() => import('./components/JoinCommunity'));
 const FAQWidget = dynamic(() => import('./components/FAQWidget'));
 
+export const metadata: Metadata = {
+  title: "rwbjee | WBJEE Companion | Resources, Colleges & Community",
+  description: "Your guide for WBJEE 2026. Free college Predictor, dates, cutoffs, rank analysis & exam resources to simplify your journey from prep to admission.",
+  openGraph: {
+    title: "rwbjee | WBJEE Companion | Resources, Colleges & Community",
+    description: "Your guide for WBJEE 2026. Free college Predictor, dates, cutoffs, rank analysis & exam resources to simplify your journey from prep to admission.",
+    url: "https://www.rwbjee.com",
+    siteName: "rwbjee",
+    images: [
+      {
+        url: "/og-image.svg",
+        width: 1200,
+        height: 630,
+        alt: "rwbjee | WBJEE Companion | Resources, Colleges & Community",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+};
+
 // Define Homepage FAQ Data
 const homeFAQData = [
   {
@@ -17,7 +39,7 @@ const homeFAQData = [
     a: (
       <>
         No, this is a free community resource. For official updates, always visit{" "}
-        <a href="https://wbjeeb.nic.in/" target="_blank" rel="noopener noreferrer" className="text-red-600 underline hover:text-red-800">wbjeeb.nic.in</a>.
+        <a href="https://wbjeeb.nic.in/" target="_blank" rel="noopener noreferrer" className="text-red-600 dark:text-red-400 underline hover:text-red-800 dark:hover:text-red-300">wbjeeb.nic.in</a>.
       </>
     ),
   },
@@ -27,7 +49,7 @@ const homeFAQData = [
   },
   {
     q: "Is the college data up to date?",
-    a: "Yes, we have updated the fees and placement stats for the 2024-2025 session based on the latest available reports.",
+    a: "Yes, we have updated the fees and placement stats for the 2026-2027 session based on the latest available reports.",
   },
 ];
 
@@ -48,14 +70,14 @@ function Hero() {
 
           {/* ⚡️ OPTIMIZED: Static class list. No animation. 
               Lighthouse will see this instantly. */}
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-800 dark:text-white">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             WBJEE College Predictor – Instantly See Your College Options
           </h1>
 
           {/* ✨ ANIMATED: This fades in 200ms later. 
               Since it's not the LCP element, it doesn't hurt your score! */}
-          <p className="mt-4 text-lg md:text-xl text-gray-700 dark:text-gray-200 animate-fade-in-up animation-delay-200">
-            Instantly discover the engineering and pharmacy colleges you can get into based on your WBJEE 2025 rank using our <Link href="/predictor" className="text-red-600 underline hover:text-red-800">College Predictor</Link>.
+          <p className="mt-4 text-lg md:text-xl text-gray-600 dark:text-gray-400 animate-fade-in-up animation-delay-200">
+            Instantly discover the engineering and pharmacy colleges you can get into based on your WBJEE 2026 rank using our <Link href="/predictor" className="text-red-600 underline hover:text-red-800">College Predictor</Link>.
           </p>
 
           <div className="mt-8 animate-fade-in-up animation-delay-400">
@@ -174,17 +196,19 @@ export default function Page() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
-            "name": "WBJEE College Predictor",
+            "name": "rwbjee",
+            "alternateName": "r/wbjee Companion",
             "url": "https://www.rwbjee.com",
             "logo": "https://www.rwbjee.com/og-image.svg",
-            "description": "Free WBJEE college predictor tool 2025. Find engineering colleges and branches in West Bengal based on your WBJEE rank.",
+            "description": "Your guide for WBJEE 2026. Free college Predictor, dates, cutoffs, rank analysis & exam resources to simplify your journey from prep to admission.",
             "founder": {
               "@type": "Person",
-              "name": "rizzz6"
+              "name": "rizzz6",
+              "url": "https://reddit.com/u/rizzz6"
             },
             "sameAs": [
               "https://www.reddit.com/r/wbjee/",
-              "https://discord.gg/wbjee-community",
+              "https://discord.gg/pTTKPYryDp",
               "https://reddit.com/u/rizzz6"
             ]
           })
@@ -196,25 +220,10 @@ export default function Page() {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "WebApplication",
-            "name": "WBJEE College Predictor",
+            "@type": "WebSite",
+            "name": "rwbjee",
             "url": "https://www.rwbjee.com",
-            "description": "Free WBJEE college predictor tool to find colleges and branches based on your rank",
-            "applicationCategory": "EducationalApplication",
-            "operatingSystem": "Web Browser",
-            "offers": {
-              "@type": "Offer",
-              "price": "0",
-              "priceCurrency": "INR"
-            },
-            "featureList": [
-              "College prediction based on WBJEE rank",
-              "Branch-wise cutoff analysis",
-              "Historical trend analysis",
-              "Filter by college, branch, category",
-              "Export results to CSV",
-              "Mobile responsive design"
-            ]
+            "description": "Your guide for WBJEE 2026. Free college Predictor, dates, cutoffs, rank analysis & exam resources to simplify your journey from prep to admission."
           })
         }}
       />

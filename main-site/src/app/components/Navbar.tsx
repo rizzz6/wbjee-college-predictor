@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Sun, Moon, Menu } from 'lucide-react'
+import { Sun, Moon, Menu, X } from 'lucide-react'
+import { LazyMotion, domAnimation, m, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useAppTheme } from "../providers";
 
@@ -29,7 +30,7 @@ function ThemeToggle() {
       aria-label="Toggle theme"
       onClick={toggleTheme}
       // 2. Force the button to match the skeleton exactly
-      className="inline-flex h-[34px] w-[84px] items-center justify-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 bg-transparent text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+      className="inline-flex h-[34px] w-[84px] items-center justify-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 bg-transparent text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors focus-ring"
     >
       {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
       <span>{isDark ? "Light" : "Dark"}</span>
@@ -49,50 +50,73 @@ export default function Navbar() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-6 text-gray-700 dark:text-gray-200">
-            <Link href="/#home" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Home</Link>
-            <Link href="/colleges" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Colleges</Link>
-            <Link href="/predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Predictor</Link>
+            <Link href="/#home" className="hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">Home</Link>
+            <Link href="/colleges" className="hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">Colleges</Link>
+            <Link href="/predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">Predictor</Link>
             <a
               href="/old-predictor/index.html"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-red-600 dark:hover:text-red-400 transition-colors"
+              className="hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1"
             >
-              Legacy Predictor ↗
-            </a>            <Link href="/rank-finder" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Rank Finder</Link>
-            <Link href="/blog" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Blog</Link>
+              Legacy Predictor
+              <span className="sr-only"> (opens in new tab)</span>
+              <span aria-hidden="true"> ↗</span>
+            </a>            <Link href="/cutoffs" className="hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">Cutoffs</Link>
+            <Link href="/blog" className="hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">Blog</Link>
             <ThemeToggle />
           </nav>
 
+
+
           <button
             aria-label="Toggle navigation"
-            className="md:hidden p-2 rounded border border-gray-200 dark:border-gray-700"
+            className="md:hidden p-2 rounded border border-gray-200 dark:border-gray-700 focus-ring"
             onClick={() => setOpen(v => !v)}
           >
-            <Menu className="w-6 h-6 text-gray-700 dark:text-gray-200" />
+            <LazyMotion features={domAnimation}>
+              <m.div
+                animate={{ rotate: open ? 90 : 0 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+              >
+                {open ? <X className="w-6 h-6 text-gray-700 dark:text-gray-200" /> : <Menu className="w-6 h-6 text-gray-700 dark:text-gray-200" />}
+              </m.div>
+            </LazyMotion>
           </button>
         </div>
 
-        {open && (
-          <div className="md:hidden pb-4">
-            <nav className="flex flex-col gap-3 text-gray-700 dark:text-gray-200">
-              <Link href="/#home" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Home</Link>
-              <Link href="/colleges" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Colleges</Link>
-              <Link href="/predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Predictor</Link>
-              <a
-                href="/old-predictor/index.html"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-red-600 dark:hover:text-red-400 transition-colors"
+        <LazyMotion features={domAnimation}>
+          <AnimatePresence>
+            {open && (
+              <m.div
+                className="md:hidden absolute top-16 left-0 w-full bg-white/80 dark:bg-gray-900/70 backdrop-blur border-b border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden px-4 pb-4"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
               >
-                Legacy Predictor ↗
-              </a>
-              <Link href="/rank-finder" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Rank Finder</Link>
-              <Link href="/blog" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Blog</Link>
-              <ThemeToggle />
-            </nav>
-          </div>
-        )}
+                <nav className="flex flex-col gap-3 text-gray-700 dark:text-gray-200">
+                  <Link href="/#home" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Home</Link>
+                  <Link href="/colleges" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Colleges</Link>
+                  <Link href="/predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Predictor</Link>
+                  <a
+                    href="/old-predictor/index.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  >
+                    Legacy Predictor
+                    <span className="sr-only"> (opens in new tab)</span>
+                    <span aria-hidden="true"> ↗</span>
+                  </a>
+                  <Link href="/cutoffs" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Cutoffs</Link>
+                  <Link href="/blog" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Blog</Link>
+                  <ThemeToggle />
+                </nav>
+              </m.div>
+            )}
+          </AnimatePresence>
+        </LazyMotion>
       </div>
     </header>
   );

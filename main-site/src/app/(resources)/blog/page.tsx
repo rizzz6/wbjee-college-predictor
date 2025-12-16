@@ -5,6 +5,7 @@ import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 import Image from 'next/image';
 import { FileText, ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
+import { PageHero } from '../../components/PageHero';
 
 export const revalidate = 60;
 
@@ -23,10 +24,19 @@ export const metadata: Metadata = {
     canonical: '/blog',
   },
   openGraph: {
-    title: "WBJEE Prep Blog - r/wbjee Companion",
+    title: "WBJEE Prep Blog | r/wbjee Companion",
     description: "Expert guides and latest updates for WBJEE aspirants.",
     url: "https://www.rwbjee.com/blog",
+    siteName: "rwbjee",
     type: "website",
+    images: [
+      {
+        url: "/og-image.svg",
+        width: 1200,
+        height: 630,
+        alt: "WBJEE Prep Blog - Expert Guides and Updates",
+      },
+    ],
   }
 };
 
@@ -35,25 +45,17 @@ export default async function BlogPage() {
 
   return (
     /* FIX: Added 'min-h-screen' and explicit 'bg-white dark:bg-gray-900' to force correct theme background */
-    <div className="min-h-screen bg-white dark:bg-gray-900 px-6 md:px-12 py-12">
+    <div className="bg-white dark:bg-gray-900">
 
-      <div className="max-w-7xl mx-auto mb-16 text-center">
-        {/* FIX: Updated colors for Accessibility (Contrast Ratio) */}
-        <div className="inline-block p-2 px-4 rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 text-sm font-medium mb-4">
-          {`From the Editor's Desk`}
-        </div>
+      <PageHero
+        title={{ main: 'Latest', accent: 'Updates' }}
+        description="Essential guides, exam analysis, and strategy tips for every WBJEE aspirant."
+        badge="From the Editor's Desk"
+      />
 
-        <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-6 tracking-tight">
-          Latest <span className="text-red-600">Updates</span>
-        </h1>
-        <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-          Essential guides, exam analysis, and strategy tips for every WBJEE aspirant.
-        </p>
-      </div>
-
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-4 pb-12">
         {posts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.map((post) => (
               <Link
                 key={post._id}
@@ -84,7 +86,7 @@ export default async function BlogPage() {
                     {post.title}
                   </h2>
 
-                  <div className="mt-auto pt-6 border-t border-gray-50 dark:border-gray-700 flex items-center justify-between text-sm font-semibold text-gray-500 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                  <div className="mt-auto pt-6 border-t border-gray-50 dark:border-gray-700 flex items-center justify-between text-sm font-semibold text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
                     <span>Read Article</span>
                     <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                   </div>
