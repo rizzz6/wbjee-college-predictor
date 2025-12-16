@@ -75,13 +75,24 @@ function generateBreadcrumbs(
         { name: 'Home', href: '/', position: 1 }
     ];
 
+    // Normalize pathname: remove trailing slashes and handle edge cases
+    const normalizedPath = pathname.replace(/\/+$/, '') || '/';
+
     // Don't generate breadcrumbs for home page
-    if (pathname === '/') {
+    // Handle cases: '/', '', '/index'
+    if (normalizedPath === '/' || normalizedPath === '' || normalizedPath === '/index') {
         return [];
     }
 
-    // Split pathname and filter out empty segments
-    const segments = pathname.split('/').filter(Boolean);
+    // Split pathname and filter out empty segments and 'index'
+    const segments = pathname.split('/').filter(segment =>
+        segment !== '' && segment !== 'index'
+    );
+
+    // If no valid segments after filtering, return empty (homepage)
+    if (segments.length === 0) {
+        return [];
+    }
 
     // Build breadcrumbs for each segment
     let currentPath = '';
@@ -144,6 +155,11 @@ export default function SmartBreadcrumb({
 }: SmartBreadcrumbProps = {}) {
     // Get current pathname from Next.js navigation hook (client-side)
     const pathname = usePathname();
+
+    // 🔍 DEBUG: Log pathname to understand what we're getting
+    if (typeof window !== 'undefined') {
+        console.log('🔍 SmartBreadcrumb pathname:', pathname);
+    }
 
     // Use custom items if provided, otherwise generate from URL
     const breadcrumbItems = customItems || generateBreadcrumbs(pathname, overrides);
