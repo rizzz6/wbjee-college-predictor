@@ -95,74 +95,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://ytfxpldt.apicdn.sanity.io" crossOrigin="anonymous" />
-
-        {/* CRITICAL: CSS must load BEFORE script to prevent white flash */}
-        <style dangerouslySetInnerHTML={{
-          __html: `
-          /* Default light mode */
-          html, body {
-            background-color: #ffffff;
-            color: #111827;
-          }
-          
-          /* System dark mode preference */
-          @media (prefers-color-scheme: dark) {
-            html, body { 
-              background-color: #111827 !important; 
-              color: white !important;
-            }
-          }
-          
-          /* When script adds .dark class to html, body inherits immediately */
-          html.dark body {
-            background-color: #111827 !important;
-            color: white !important;
-          }
-        `}} />
-
-        {/* Theme initialization script - adds .dark class to html before body renders */}
-        <script
-          id="theme-init"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var storageKey = 'theme';
-                  var classNameDark = 'dark';
-                  
-                  function setClassOnDocumentBody(darkMode) {
-                    var html = document.documentElement;
-                    if (darkMode) {
-                      html.classList.add(classNameDark);
-                    } else {
-                      html.classList.remove(classNameDark);
-                    }
-                  }
-                  
-                  var localStorageTheme = null;
-                  try {
-                    localStorageTheme = localStorage.getItem(storageKey) || localStorage.getItem('wbjeeTheme');
-                  } catch (err) {}
-                  
-                  var localStorageExists = localStorageTheme !== null;
-                  if (localStorageExists) {
-                    localStorageTheme = JSON.parse(localStorageTheme);
-                  }
-
-                  if (localStorageExists) {
-                    setClassOnDocumentBody(localStorageTheme === 'dark');
-                  } else {
-                    var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    setClassOnDocumentBody(isDarkMode);
-                  }
-                } catch (err) {}
-              })();
-            `,
-          }}
-        />
       </head>
 
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-white`}>
+
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-transparent text-gray-900 dark:text-white`}>
         <Providers>
           {/* Skip Navigation - Accessibility */}
           <a
