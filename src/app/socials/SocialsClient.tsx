@@ -2,8 +2,7 @@
 
 import { LazyMotion, domAnimation, m, type Variants } from "framer-motion";
 import { Mail } from "lucide-react";
-import { useState } from "react";
-import JoinCommunity from "@/app/components/JoinCommunity";
+import { useState, type ReactNode } from "react";
 import { FaDiscord, FaReddit } from "react-icons/fa";
 
 interface SocialPlatform {
@@ -130,7 +129,7 @@ function SocialCard({ platform }: { platform: SocialPlatform }) {
   );
 }
 
-export default function SocialsClient() {
+export default function SocialsClient({ children }: { children?: ReactNode }) {
   const container: Variants = {
     hidden: { opacity: 0 },
     show: {
@@ -190,7 +189,7 @@ export default function SocialsClient() {
             >
               {/* Primary Community Card */}
               <div className="w-full">
-                <JoinCommunity />
+                {children}
               </div>
 
               {/* Other Social Links */}

@@ -3,19 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Search, Loader2, AlertCircle, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
 
-type RankEntry = {
-  "Sr.No": string;
-  Round: string;
-  Institute: string;
-  Program: string;
-  Stream: string;
-  Quota: string;
-  Category: string;
-  "Opening Rank": string;
-  "Closing Rank": string;
-  Year: number;
-  "Seat Type": string;
-};
+
 
 
 export default function RankFinderClient() {
@@ -120,7 +108,7 @@ export default function RankFinderClient() {
       } else {
         setError(data.error || "No data found for the selected criteria.");
       }
-    } catch (err) {
+    } catch {
       setError("An error occurred while fetching data.");
     } finally {
       setLoading(false);

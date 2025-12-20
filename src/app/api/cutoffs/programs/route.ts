@@ -5,8 +5,22 @@ import fs from 'fs/promises';
 
 const CACHE_TTL = 900000; // 15 minutes
 
+type RankEntry = {
+    "Sr.No": string;
+    Round: string;
+    Institute: string;
+    Program: string;
+    Stream: string;
+    Quota: string;
+    Category: string;
+    "Opening Rank": string;
+    "Closing Rank": string;
+    Year: number;
+    "Seat Type": string;
+};
+
 let memoryCache: {
-    data: any[] | null;
+    data: RankEntry[] | null;
     timestamp: number;
 } = { data: null, timestamp: 0 };
 
@@ -26,9 +40,9 @@ async function getMasterData() {
                 token: process.env.UPSTASH_REDIS_REST_TOKEN,
             });
 
-            const cached = await redis.get('wbjee:cutoff_data');
+            const cached = await redis.get<RankEntry[]>('wbjee:cutoff_data');
             if (cached) {
-                memoryCache = { data: cached as any[], timestamp: now };
+                memoryCache = { data: cached, timestamp: now };
                 return cached;
             }
         } catch (error) {
@@ -71,8 +85,8 @@ export async function GET(request: NextRequest) {
 
         const programs = [...new Set(
             allData
-                .filter((d: any) => d.Institute === college)
-                .map((d: any) => d.Program)
+                .filter((d: RankEntry) => d.Institute === college)
+                .map((d: RankEntry) => d.Program)
         )].sort();
 
         return NextResponse.json({ programs });

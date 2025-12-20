@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import SocialsClient from "./SocialsClient";
+import JoinCommunity from "@/app/components/JoinCommunity";
 
 export const metadata: Metadata = {
     title: "Join the WBJEE Community | Discord & Reddit",
@@ -24,6 +25,10 @@ export const metadata: Metadata = {
     }
 };
 
-export default function SocialsPage() {
-    return <SocialsClient />;
+export default async function SocialsPage() {
+    return (
+        <SocialsClient>
+            <JoinCommunity />
+        </SocialsClient>
+    );
 }
