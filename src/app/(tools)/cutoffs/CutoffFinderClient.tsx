@@ -17,40 +17,18 @@ type RankEntry = {
   "Seat Type": string;
 };
 
-async function findRankForProgram(
-  allData: RankEntry[],
-  college: string,
-  program: string,
-  year: number,
-  round: string,
-  category: string,
-  seatType: string
-) {
-  await new Promise(resolve => setTimeout(resolve, 500));
-
-  const entry = allData.find(
-    (item) =>
-      item.Institute === college &&
-      item.Program === program &&
-      item.Year === year &&
-      item.Round === round &&
-      item.Category === category &&
-      item["Seat Type"] === seatType
-  );
-
-  if (entry) {
-    return {
-      openingRank: parseInt(entry["Opening Rank"]),
-      closingRank: parseInt(entry["Closing Rank"]),
-    };
-  }
-  return null;
-}
 
 export default function RankFinderClient() {
-  const [data, setData] = useState<RankEntry[]>([]);
-  const [loadingData, setLoadingData] = useState(true);
-  const [dataError, setDataError] = useState<string | null>(null);
+  const [metadata, setMetadata] = useState<{
+    colleges: string[];
+    categories: string[];
+    years: number[];
+    rounds: string[];
+    seatTypes: string[];
+  } | null>(null);
+  const [loadingMetadata, setLoadingMetadata] = useState(true);
+  const [metadataError, setMetadataError] = useState<string | null>(null);
+  const [programs, setPrograms] = useState<string[]>([]);
 
   const [selectedCollege, setSelectedCollege] = useState("");
   const [selectedProgram, setSelectedProgram] = useState("");
@@ -63,35 +41,56 @@ export default function RankFinderClient() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Load filter metadata on mount
   useEffect(() => {
-    fetch("/data.json")
+    fetch('/api/cutoffs/metadata')
       .then((res) => {
-        if (!res.ok) throw new Error("Failed to load data");
+        if (!res.ok) throw new Error("Failed to load metadata");
         return res.json();
       })
-      .then((jsonData) => {
-        setData(jsonData);
-        setLoadingData(false);
+      .then((data) => {
+        setMetadata(data);
+        setLoadingMetadata(false);
       })
       .catch((err) => {
-        console.error("Error loading data:", err);
-        setDataError("Failed to load college data. Please refresh.");
-        setLoadingData(false);
+        console.error("Error loading metadata:", err);
+        setMetadataError("Failed to load filter options. Please refresh.");
+        setLoadingMetadata(false);
       });
   }, []);
 
+  // Fetch programs when college changes
+  useEffect(() => {
+    if (!selectedCollege || !metadata) {
+      setPrograms([]);
+      setSelectedProgram(""); // Reset program when college changes
+      return;
+    }
+
+    // Fetch programs from API
+    fetch(`/api/cutoffs/programs?college=${encodeURIComponent(selectedCollege)}`)
+      .then(res => res.json())
+      .then(data => {
+        setPrograms(data.programs || []);
+      })
+      .catch(err => {
+        console.error('Failed to load programs:', err);
+        setPrograms([]);
+      });
+  }, [selectedCollege, metadata]);
+
   const filters = useMemo(() => {
-    if (data.length === 0) return { colleges: [], programs: [], categories: [], years: [], rounds: [], seatTypes: [] };
+    if (!metadata) return { colleges: [], programs: [], categories: [], years: [], rounds: [], seatTypes: [] };
 
-    const colleges = Array.from(new Set(data.map(d => d.Institute))).sort();
-    const programs = Array.from(new Set(data.filter(d => d.Institute === selectedCollege).map(d => d.Program))).sort();
-    const categories = Array.from(new Set(data.map(d => d.Category))).sort();
-    const years = Array.from(new Set(data.map(d => d.Year))).sort((a, b) => b - a);
-    const rounds = Array.from(new Set(data.map(d => d.Round))).sort();
-    const seatTypes = Array.from(new Set(data.map(d => d["Seat Type"]))).sort();
-
-    return { colleges, programs, categories, years, rounds, seatTypes };
-  }, [data, selectedCollege]);
+    return {
+      colleges: metadata.colleges,
+      programs: programs,
+      categories: metadata.categories,
+      years: metadata.years,
+      rounds: metadata.rounds,
+      seatTypes: metadata.seatTypes
+    };
+  }, [metadata, programs]);
 
   const handleSearch = async () => {
     if (!selectedCollege || !selectedProgram) {
@@ -104,29 +103,31 @@ export default function RankFinderClient() {
     setResult(null);
 
     try {
-      const res = await findRankForProgram(
-        data,
-        selectedCollege,
-        selectedProgram,
-        parseInt(selectedYear),
-        selectedRound,
-        selectedCategory,
-        selectedSeatType
-      );
+      const params = new URLSearchParams({
+        college: selectedCollege,
+        program: selectedProgram,
+        year: selectedYear,
+        round: selectedRound,
+        category: selectedCategory,
+        seat_type: selectedSeatType
+      });
 
-      if (res) {
-        setResult(res);
+      const res = await fetch(`/api/cutoffs/search?${params}`);
+      const data = await res.json();
+
+      if (res.ok && !data.error) {
+        setResult(data);
       } else {
-        setError("No data found for the selected criteria.");
+        setError(data.error || "No data found for the selected criteria.");
       }
-    } catch {
+    } catch (err) {
       setError("An error occurred while fetching data.");
     } finally {
       setLoading(false);
     }
   };
 
-  if (loadingData) {
+  if (loadingMetadata) {
     return (
       <div className="flex justify-center items-center py-20">
         <Loader2 className="w-8 h-8 animate-spin text-red-600" />
@@ -134,11 +135,11 @@ export default function RankFinderClient() {
     );
   }
 
-  if (dataError) {
+  if (metadataError) {
     return (
       <div className="text-center py-20 text-red-500">
         <AlertCircle className="w-10 h-10 mx-auto mb-2" />
-        {dataError}
+        {metadataError}
       </div>
     );
   }
