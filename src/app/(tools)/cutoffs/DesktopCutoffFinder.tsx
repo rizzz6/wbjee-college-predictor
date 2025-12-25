@@ -1,20 +1,12 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useCutoffsData } from '@/hooks/cutoffs/useCutoffsData';
 import { FilterSelect } from './components/FilterSelect';
 import { ActionButton } from './components/ActionButton';
 import { ResultCard } from './components/ResultCard';
 import { Monitor } from 'lucide-react';
-
-interface FilterState {
-    college?: string;
-    program?: string;
-    year?: number;
-    category?: string;
-    round?: string;
-    seatType?: string;
-}
+import type { FilterState } from '@/types/cutoff-finder';
 
 export default function DesktopCutoffFinder() {
     const { colleges, getProgramsForCollege, getFilterOptions, getCutoffs, isLoading } = useCutoffsData();
@@ -42,7 +34,7 @@ export default function DesktopCutoffFinder() {
     const canSearch = filters.college && filters.program && filters.year &&
         filters.category && filters.round && filters.seatType;
 
-    const updateFilter = (key: keyof FilterState, value: string | number | undefined) => {
+    const updateFilter = useCallback((key: keyof FilterState, value: string | number | undefined) => {
         setFilters(prev => {
             const newFilters = { ...prev, [key]: value };
 
@@ -64,7 +56,7 @@ export default function DesktopCutoffFinder() {
         });
         setResult(null);
         setError(null);
-    };
+    }, []);
 
     const handleSearch = () => {
         if (!canSearch) return;
@@ -80,12 +72,13 @@ export default function DesktopCutoffFinder() {
                 });
                 setError(null);
             } else {
-                setError('No cutoff data found for the selected combination');
+                setError('No cutoff data found for the selected combination. Try adjusting your filters.');
                 setResult(null);
             }
         } catch (err) {
-            setError('An error occurred while searching');
-            console.error(err);
+            const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+            setError(`Failed to search cutoffs: ${errorMessage}`);
+            console.error('[DesktopCutoffFinder] Search error:', err);
         }
     };
 
