@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   experimental: {
-    serverComponentsExternalPackages: ["jsdom"],
+    serverComponentsExternalPackages: ["jsdom", "isomorphic-dompurify"],
   },
   images: {
     // FIX: Disable server optimization in dev to bypass local network IP blocks
