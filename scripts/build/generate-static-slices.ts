@@ -4,7 +4,7 @@ import path from 'path';
 import { config } from 'dotenv';
 import { encodeColumnarData, createSlug, type Cutoff } from '../../src/utils/compression/cutoff-decoder';
 
-config({ path: '.env.local' });
+config({ path: '.env.local', quiet: true });
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SECRET_KEY;
@@ -28,7 +28,7 @@ interface RawCutoff {
 }
 
 async function generateStaticSlices() {
-    console.log('🔧 Generating static slices for mobile...\n');
+    console.log('Generating static slices for mobile...\n');
 
     // Fetch all cutoff data with pagination
     let allData: RawCutoff[] = [];
@@ -43,7 +43,7 @@ async function generateStaticSlices() {
             .range(page * pageSize, (page + 1) * pageSize - 1);
 
         if (error) {
-            console.error('\n❌ Error fetching data:', error);
+            console.error('\nError fetching data:', error);
             process.exit(1);
         }
 
@@ -57,7 +57,7 @@ async function generateStaticSlices() {
     }
     process.stdout.write('\n');
 
-    console.log(`\n✅ Fetched ${allData.length} total records\n`);
+    console.log(`\nFetched ${allData.length} total records\n`);
 
     // Group by college
     const collegeMap = new Map<string, Cutoff[]>();
@@ -80,7 +80,7 @@ async function generateStaticSlices() {
         collegeMap.get(row.institute)!.push(cutoff);
     });
 
-    console.log(`📊 Grouped into ${collegeMap.size} colleges\n`);
+    console.log(`Grouped into ${collegeMap.size} colleges\n`);
 
     // Create output directory
     const dataDir = path.join(process.cwd(), 'public', 'data');
@@ -100,7 +100,7 @@ async function generateStaticSlices() {
     let minSize = Infinity;
     let maxSize = 0;
 
-    console.log('🔨 Generating slices...');
+    console.log('Generating slices...');
 
     let count = 0;
     const total = collegeMap.size;
@@ -110,7 +110,7 @@ async function generateStaticSlices() {
 
         // Validate slug
         if (!slug || slug === 'undefined') {
-            console.warn(`\n⚠️  Skipping invalid slug for college: ${college}`);
+            console.warn(`\nSkipping invalid slug for college: ${college}`);
             continue;
         }
 
@@ -150,7 +150,7 @@ async function generateStaticSlices() {
     });
     const undefinedFiles = files.filter(file => file.includes('undefined'));
 
-    console.log('\n📈 Statistics:');
+    console.log('\nStatistics:');
     console.log(`   Colleges: ${colleges.length}`);
     console.log(`   Index size: ${(indexSize / 1024).toFixed(2)} KB`);
     console.log(`   Slice sizes: ${(minSize / 1024).toFixed(2)} KB - ${(maxSize / 1024).toFixed(2)} KB`);
@@ -164,11 +164,11 @@ async function generateStaticSlices() {
 
     if (undefinedFiles.length > 0) {
         console.error(`\\n❌ Found ${undefinedFiles.length} undefined files:`, undefinedFiles);
-        console.error(`\n❌ Found ${undefinedFiles.length} undefined files:`, undefinedFiles);
+        console.error(`\nFound ${undefinedFiles.length} undefined files:`, undefinedFiles);
         process.exit(1);
     }
 
-    console.log('\n✅ Static slices generated successfully!');
+    console.log('\nStatic slices generated successfully!');
     console.log(`   Output: public/data/`);
     console.log(`   - mobile-index.json`);
     console.log(`   - colleges/*.json (${files.length} files)\n`);
