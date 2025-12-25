@@ -187,37 +187,34 @@ wbjee_college_predictor/
 │   │   ├── (legal)/              # Legal pages (privacy, disclaimer, FAQ)
 │   │   ├── (resources)/          # Resources (blog, colleges, timeline)
 │   │   ├── (tools)/              # Tools (predictor, cutoffs, rank-finder)
-│   │   │   ├── cutoffs/
-│   │   │   │   ├── DesktopCutoffFinder.tsx
-│   │   │   │   ├── MobileCutoffFinder.tsx
-│   │   │   │   └── page.tsx
-│   │   │   ├── predictor/
-│   │   │   └── rank-finder/
 │   │   ├── api/                  # API routes
-│   │   │   └── cutoffs/
-│   │   │       ├── colleges-programs/
-│   │   │       ├── program-data/
-│   │   │       └── search/
-│   │   ├── colleges/[id]/        # Dynamic college pages
 │   │   └── layout.tsx
-│   ├── components/               # Shared components
-│   │   ├── cutoffs/
-│   │   ├── predictor/
-│   │   └── ui/
+│   ├── components/               # Feature-based Components
+│   │   ├── content/              # Tables, FAQ, Socials
+│   │   ├── eastereggs/           # Interactive elements
+│   │   ├── features/             # Business logic (Search, Filters)
+│   │   ├── layout/               # Navbar, Footer, PageHero
+│   │   └── ui/                   # Reusable UI (Buttons, Inputs)
 │   ├── hooks/                    # Custom React hooks
-│   │   ├── useCutoffsData.ts     # Flat columnar decoder
-│   │   └── useCascadingFilters.ts
-│   ├── lib/                      # Utilities
-│   ├── middleware.ts             # Device detection
-│   └── sanity/                   # Sanity CMS config
+│   │   ├── cutoffs/              # Cutoff tool specific hooks
+│   │   ├── predictor/            # Predictor tool specific hooks
+│   │   └── useFavorites.ts       # Shared hooks
+│   ├── utils/                    # Utilities
+│   │   ├── api/                  # API helpers & proxy
+│   │   ├── compression/          # Flat columnar compression
+│   │   └── database/             # Supabase client
+│   ├── sanity/                   # Sanity CMS config
+│   └── middleware.ts             # Device detection
+├── scripts/                      # Build & Maintenance Scripts
+│   ├── build/                    # Data generation (metadata, mobile)
+│   ├── database/                 # Migrations & seeding
+│   ├── validation/               # Testing & verification
+│   └── seo/                      # IndexNow & sitemaps
 ├── public/
-│   ├── cutoffs-data.json         # Compressed cutoff data (106 KB)
-│   ├── colleges-programs.json    # Mobile index (5 KB)
-│   └── data.json                 # Predictor data
-├── scripts/
-│   ├── build-cutoffs-data.ts     # Flat columnar builder
-│   ├── generate-colleges-programs.ts
-│   └── migrate-to-supabase.ts
+│   ├── data/                     # Generated mobile slices
+│   ├── assets/                   # Static images & files
+│   ├── cutoffs-data.json         # Desktop compressed data
+│   └── colleges-programs.json    # Programs index
 ├── supabase/
 │   └── schema.sql                # Database schema
 └── [config files]
