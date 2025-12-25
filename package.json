@@ -72,6 +72,8 @@
     "not op_mini all"
   ],
   "overrides": {
-    "glob": "^10.4.6"
+    "glob": "^10.4.6",
+    "jsdom": "^20.0.3",
+    "parse5": "^6.0.1"
   }
 }
