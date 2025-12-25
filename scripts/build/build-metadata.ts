@@ -22,7 +22,7 @@ import { promisify } from 'util';
 const gunzip = promisify(zlib.gunzip);
 
 // Load environment variables from .env.local
-config({ path: join(process.cwd(), '.env.local') });
+config({ path: join(process.cwd(), '.env.local'), quiet: true });
 
 // Initialize Redis client
 const redis = Redis.fromEnv();
@@ -39,32 +39,32 @@ interface CollegeData {
 }
 
 async function buildMetadata() {
-    console.log('🚀 Starting metadata build...');
+    console.log('Starting metadata build...');
 
     try {
         // Fetch master data from Redis
-        console.log('📦 Fetching master data from Redis...');
+        console.log('Fetching master data from Redis...');
         const masterDataRaw = await redis.get('wbjee:master_data');
 
         if (!masterDataRaw) {
-            console.error('❌ Error: wbjee:master_data not found in Redis');
-            console.log('💡 Make sure you have uploaded the master data first');
+            console.error('Error: wbjee:master_data not found in Redis');
+            console.log('Make sure you have uploaded the master data first');
             process.exit(1);
         }
 
-        console.log('✅ Successfully fetched data from Redis');
-        console.log(`📏 Data type: ${typeof masterDataRaw}`);
+        console.log('Successfully fetched data from Redis');
+        console.log(`Data type: ${typeof masterDataRaw}`);
 
         // Parse data - handle gzip compression
         let masterData: CollegeData[];
         if (typeof masterDataRaw === 'string') {
             // Check if it's gzip compressed (base64 encoded)
             if (masterDataRaw.startsWith('H4sI')) {
-                console.log('🗜️  Decompressing gzip data...');
+                console.log('Decompressing gzip data...');
                 const buffer = Buffer.from(masterDataRaw, 'base64');
                 const decompressed = await gunzip(buffer);
                 masterData = JSON.parse(decompressed.toString('utf-8'));
-                console.log('✅ Data decompressed successfully');
+                console.log('Data decompressed successfully');
             } else {
                 masterData = JSON.parse(masterDataRaw);
             }
@@ -72,10 +72,10 @@ async function buildMetadata() {
             masterData = masterDataRaw as CollegeData[];
         }
 
-        console.log(`✅ Loaded ${masterData.length.toLocaleString()} records`);
+        console.log(`Loaded ${masterData.length.toLocaleString()} records`);
 
         // Extract unique values for each filter field
-        console.log('🔍 Extracting unique values...');
+        console.log('Extracting unique values...');
 
         const metadata = {
             institutes: [...new Set(masterData.map(r => r.institute))].filter(Boolean).sort(),
@@ -88,7 +88,7 @@ async function buildMetadata() {
         };
 
         // Display statistics
-        console.log('\n📊 Metadata Statistics:');
+        console.log('\nMetadata Statistics:');
         console.log(`   Institutes:  ${metadata.institutes.length}`);
         console.log(`   Branches:    ${metadata.branches.length}`);
         console.log(`   Categories:  ${metadata.categories.length}`);
@@ -98,24 +98,24 @@ async function buildMetadata() {
         console.log(`   Rounds:      ${metadata.rounds.length}`);
 
         // Save to Redis
-        console.log('\n💾 Saving metadata to Redis...');
+        console.log('\nSaving metadata to Redis...');
         await redis.set('wbjee:metadata', JSON.stringify(metadata));
 
-        console.log('✅ Metadata successfully saved to Redis key: wbjee:metadata');
-        console.log('\n🎉 Build complete!');
+        console.log('Metadata successfully saved to Redis key: wbjee:metadata');
+        console.log('\nBuild complete!');
 
         // Verify
         const verify = await redis.get('wbjee:metadata');
         if (verify) {
-            console.log('✅ Verification: Metadata key exists in Redis');
+            console.log('Verification: Metadata key exists in Redis');
         } else {
-            console.log('⚠️  Warning: Could not verify metadata in Redis');
+            console.log('Warning: Could not verify metadata in Redis');
         }
 
         process.exit(0);
 
     } catch (error) {
-        console.error('❌ Error building metadata:');
+        console.error('Error building metadata:');
         console.error(error);
         if (error instanceof Error) {
             console.error('Stack trace:', error.stack);

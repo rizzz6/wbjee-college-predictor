@@ -9,7 +9,7 @@ import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: '.env.local' });
+dotenv.config({ path: '.env.local', quiet: true });
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -28,10 +28,10 @@ interface CutoffRow {
 }
 
 async function buildFlatColumnar() {
-    console.log('🔨 Building flat columnar cutoffs data...\n');
+    console.log('[1/4] Building flat columnar cutoffs data...\n');
 
     // 1. Fetch all data from Supabase
-    console.log('📥 Fetching data from Supabase...');
+    console.log('[2/4] Fetching data from Supabase...');
     let allData: CutoffRow[] = [];
     let from = 0;
     const batchSize = 1000;
@@ -47,16 +47,17 @@ async function buildFlatColumnar() {
         if (!data || data.length === 0) break;
 
         allData = allData.concat(data);
-        console.log(`   Batch ${Math.floor(from / batchSize) + 1}: ${data.length} records (total: ${allData.length})`);
+        process.stdout.write(`\r   >> Fetched ${allData.length} records...`);
         from += batchSize;
 
         if (data.length < batchSize) break;
     }
 
-    console.log(`✅ Fetched ${allData.length} total records\n`);
+    process.stdout.write('\n');
+    console.log(`   >> Fetched ${allData.length} total records\n`);
 
     // 2. Build lookup tables
-    console.log('🔍 Building lookup tables...');
+    console.log('[3/4] Building lookup tables...');
     const lookup = {
         C: [...new Set(allData.map(r => r.institute))].sort(),
         P: [...new Set(allData.map(r => r.program))].sort(),
@@ -74,7 +75,7 @@ async function buildFlatColumnar() {
     console.log(`   Seat Types: ${lookup.S.length}\n`);
 
     // 3. Build columnar arrays
-    console.log('📊 Building columnar arrays...');
+    console.log('[4/4] Building columnar arrays...');
     const data = {
         c: [] as number[],  // College indices
         p: [] as number[],  // Program indices
@@ -97,7 +98,7 @@ async function buildFlatColumnar() {
         data.k.push(row.closing_rank);
     }
 
-    console.log(`✅ Built ${data.c.length} columnar entries\n`);
+    console.log(`   >> Built ${data.c.length} columnar entries\n`);
 
     // 4. Write to public directory
     const output = { lookup, data };
@@ -110,12 +111,12 @@ async function buildFlatColumnar() {
     const estimatedGzip = Math.round(sizeKB * 0.6);
     const estimatedBrotli = Math.round(sizeKB * 0.4);
 
-    console.log('📦 File written:');
+    console.log('[SUCCESS] File written:');
     console.log(`   Path: ${outputPath}`);
     console.log(`   Size (uncompressed): ${sizeKB} KB`);
     console.log(`   Estimated gzipped: ~${estimatedGzip} KB`);
     console.log(`   Estimated Brotli: ~${estimatedBrotli} KB`);
-    console.log(`\n✅ Build complete!\n`);
+    console.log(`\nBuild complete!\n`);
 }
 
 buildFlatColumnar().catch(console.error);

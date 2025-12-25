@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run build:metadata && npm run build:mobile && next build",
+    "build": "npm run build:metadata && npm run build:mobile && npm run build:desktop && next build",
     "start": "next start",
     "lint": "eslint .",
     "indexnow": "node scripts/seo/submit-indexnow.mjs",
@@ -12,6 +12,7 @@
     "migrate:supabase": "tsx scripts/database/migrate-to-supabase.ts",
     "build:metadata": "tsx scripts/build/build-metadata.ts",
     "build:mobile": "tsx scripts/build/generate-static-slices.ts",
+    "build:desktop": "tsx scripts/build/build-cutoffs-data.ts",
     "fix:duplicates": "tsx scripts/data-quality/normalize-cutoff-names.ts",
     "test:mobile": "tsx scripts/validation/test-static-slicing.ts"
   },
