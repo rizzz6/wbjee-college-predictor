@@ -35,7 +35,7 @@ async function generateStaticSlices() {
     let page = 0;
     const pageSize = 1000;
 
-    console.log('📥 Fetching data from Supabase...');
+    console.log('Fetching data from Supabase...');
     while (true) {
         const { data, error } = await supabase
             .from('cutoffs')
@@ -158,12 +158,11 @@ async function generateStaticSlices() {
     console.log(`   Total slices: ${(totalSliceSize / 1024).toFixed(2)} KB`);
 
     if (emptyFiles.length > 0) {
-        console.error(`\\n❌ Found ${emptyFiles.length} empty files:`, emptyFiles);
+        console.error(`\nFound ${emptyFiles.length} empty files:`, emptyFiles);
         process.exit(1);
     }
 
     if (undefinedFiles.length > 0) {
-        console.error(`\\n❌ Found ${undefinedFiles.length} undefined files:`, undefinedFiles);
         console.error(`\nFound ${undefinedFiles.length} undefined files:`, undefinedFiles);
         process.exit(1);
     }
