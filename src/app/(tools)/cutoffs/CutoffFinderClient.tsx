@@ -1,103 +1,82 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { Search, Loader2, AlertCircle, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { Search, Loader2, AlertCircle, ArrowDownToLine, ArrowUpFromLine, RotateCcw } from 'lucide-react';
+import { useCascadingFilters } from '@/hooks/predictor/useCascadingFilters';
+import { useRouter, useSearchParams } from 'next/navigation';
 
+export default function CutoffFinderClient() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-
-
-export default function RankFinderClient() {
-  const [metadata, setMetadata] = useState<{
-    colleges: string[];
-    categories: string[];
-    years: number[];
-    rounds: string[];
-    seatTypes: string[];
-  } | null>(null);
-  const [loadingMetadata, setLoadingMetadata] = useState(true);
-  const [metadataError, setMetadataError] = useState<string | null>(null);
-  const [programs, setPrograms] = useState<string[]>([]);
-
-  const [selectedCollege, setSelectedCollege] = useState("");
-  const [selectedProgram, setSelectedProgram] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Open");
-  const [selectedYear, setSelectedYear] = useState("2024");
-  const [selectedRound, setSelectedRound] = useState("Round 1");
-  const [selectedSeatType, setSelectedSeatType] = useState("Open");
+  const {
+    filters,
+    colleges,
+    programs,
+    years,
+    rounds,
+    seatTypes,
+    categories,
+    isLoading,
+    error: filterError,
+    updateFilter,
+    resetFilters,
+  } = useCascadingFilters();
 
   const [result, setResult] = useState<{ openingRank: number; closingRank: number } | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState("");
 
-  // Load filter metadata on mount
+  // Load from URL on mount
   useEffect(() => {
-    fetch('/api/cutoffs/metadata')
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to load metadata");
-        return res.json();
-      })
-      .then((data) => {
-        setMetadata(data);
-        setLoadingMetadata(false);
-      })
-      .catch((err) => {
-        console.error("Error loading metadata:", err);
-        setMetadataError("Failed to load filter options. Please refresh.");
-        setLoadingMetadata(false);
-      });
-  }, []);
+    const collegeParam = searchParams.get('college');
+    const programParam = searchParams.get('program');
+    const yearParam = searchParams.get('year');
+    const categoryParam = searchParams.get('category');
+    const roundParam = searchParams.get('round');
+    const seatTypeParam = searchParams.get('seat_type');
 
-  // Fetch programs when college changes
+    if (collegeParam) updateFilter('college', collegeParam);
+    if (programParam) updateFilter('program', programParam);
+    if (yearParam) updateFilter('year', parseInt(yearParam));
+    if (categoryParam) updateFilter('category', categoryParam);
+    if (roundParam) updateFilter('round', roundParam);
+    if (seatTypeParam) updateFilter('seatType', seatTypeParam);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only on mount
+
+  // Update URL when filters change
   useEffect(() => {
-    if (!selectedCollege || !metadata) {
-      setPrograms([]);
-      setSelectedProgram(""); // Reset program when college changes
-      return;
-    }
+    const params = new URLSearchParams();
+    if (filters.college) params.set('college', filters.college);
+    if (filters.program) params.set('program', filters.program);
+    if (filters.year) params.set('year', filters.year.toString());
+    if (filters.category) params.set('category', filters.category);
+    if (filters.round) params.set('round', filters.round);
+    if (filters.seatType) params.set('seat_type', filters.seatType);
 
-    // Fetch programs from API
-    fetch(`/api/cutoffs/programs?college=${encodeURIComponent(selectedCollege)}`)
-      .then(res => res.json())
-      .then(data => {
-        setPrograms(data.programs || []);
-      })
-      .catch(err => {
-        console.error('Failed to load programs:', err);
-        setPrograms([]);
-      });
-  }, [selectedCollege, metadata]);
-
-  const filters = useMemo(() => {
-    if (!metadata) return { colleges: [], programs: [], categories: [], years: [], rounds: [], seatTypes: [] };
-
-    return {
-      colleges: metadata.colleges,
-      programs: programs,
-      categories: metadata.categories,
-      years: metadata.years,
-      rounds: metadata.rounds,
-      seatTypes: metadata.seatTypes
-    };
-  }, [metadata, programs]);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [filters, router]);
 
   const handleSearch = async () => {
-    if (!selectedCollege || !selectedProgram) {
-      setError("Please select both college and program");
+    if (!filters.college || !filters.program || !filters.year ||
+      !filters.category || !filters.round || !filters.seatType) {
+      setSearchError('Please select all filters');
       return;
     }
 
-    setLoading(true);
-    setError("");
+    setSearching(true);
+    setSearchError("");
     setResult(null);
 
     try {
       const params = new URLSearchParams({
-        college: selectedCollege,
-        program: selectedProgram,
-        year: selectedYear,
-        round: selectedRound,
-        category: selectedCategory,
-        seat_type: selectedSeatType
+        college: filters.college,
+        program: filters.program,
+        year: filters.year.toString(),
+        round: filters.round,
+        category: filters.category,
+        seat_type: filters.seatType,
       });
 
       const res = await fetch(`/api/cutoffs/search?${params}`);
@@ -106,28 +85,39 @@ export default function RankFinderClient() {
       if (res.ok && !data.error) {
         setResult(data);
       } else {
-        setError(data.error || "No data found for the selected criteria.");
+        setSearchError(data.error || "No data found for the selected criteria.");
       }
-    } catch {
-      setError("An error occurred while fetching data.");
+    } catch (err) {
+      setSearchError("An error occurred while fetching data.");
+      console.error(err);
     } finally {
-      setLoading(false);
+      setSearching(false);
     }
   };
 
-  if (loadingMetadata) {
+  const handleReset = () => {
+    resetFilters();
+    setResult(null);
+    setSearchError("");
+  };
+
+  // Show loading state while metadata loads
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center py-20">
         <Loader2 className="w-8 h-8 animate-spin text-red-600" />
+        <span className="ml-3 text-gray-600 dark:text-gray-300">Loading filters...</span>
       </div>
     );
   }
 
-  if (metadataError) {
+  // Show error if metadata fails to load
+  if (filterError) {
     return (
-      <div className="text-center py-20 text-red-500">
-        <AlertCircle className="w-10 h-10 mx-auto mb-2" />
-        {metadataError}
+      <div className="text-center py-20">
+        <AlertCircle className="w-10 h-10 mx-auto mb-2 text-red-500" />
+        <p className="text-red-600 dark:text-red-400">Failed to load filter options</p>
+        <p className="text-sm text-gray-500 mt-2">{filterError.message}</p>
       </div>
     );
   }
@@ -135,104 +125,150 @@ export default function RankFinderClient() {
   return (
     <div className="w-full max-w-4xl mx-auto px-6 py-8">
       <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* College Selection */}
+
+          {/* COLLEGE - Tier 1 */}
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Select College</label>
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              College <span className="text-red-500">*</span>
+            </label>
             <select
               className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all"
-              value={selectedCollege}
+              value={filters.college || ''}
               onChange={(e) => {
-                setSelectedCollege(e.target.value);
-                setSelectedProgram("");
+                updateFilter('college', e.target.value);
+                setResult(null);
               }}
             >
-              <option value="">-- Choose College --</option>
-              {filters.colleges.map((c) => (
+              <option value="">-- Select College --</option>
+              {colleges.map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
           </div>
 
-          {/* Program Selection */}
+          {/* PROGRAM - Tier 2 */}
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Select Program</label>
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Program <span className="text-red-500">*</span>
+            </label>
             <select
-              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all disabled:opacity-50"
-              value={selectedProgram}
-              onChange={(e) => setSelectedProgram(e.target.value)}
-              disabled={!selectedCollege}
+              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              value={filters.program || ''}
+              onChange={(e) => {
+                updateFilter('program', e.target.value);
+                setResult(null);
+              }}
+              disabled={!filters.college}
             >
-              <option value="">-- Choose Program --</option>
-              {filters.programs.map((p) => (
+              <option value="">-- Select Program --</option>
+              {programs.map((p) => (
                 <option key={p} value={p}>{p}</option>
               ))}
             </select>
+            {programs.length === 0 && filters.college && (
+              <p className="text-xs text-amber-600 dark:text-amber-400">No programs found for this college</p>
+            )}
           </div>
 
-          {/* Other Filters Row 1 */}
+          {/* YEAR - Tier 3 (appears after program) */}
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Year</label>
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Year <span className="text-red-500">*</span>
+            </label>
             <select
-              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none"
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
+              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              value={filters.year || ''}
+              onChange={(e) => {
+                updateFilter('year', parseInt(e.target.value));
+                setResult(null);
+              }}
+              disabled={!filters.program}
             >
-              {filters.years.map((y) => (
+              <option value="">-- Select Year --</option>
+              {years.map((y) => (
                 <option key={y} value={y}>{y}</option>
               ))}
             </select>
           </div>
 
+          {/* CATEGORY - Tier 3 */}
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Round</label>
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Category <span className="text-red-500">*</span>
+            </label>
             <select
-              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none"
-              value={selectedRound}
-              onChange={(e) => setSelectedRound(e.target.value)}
+              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              value={filters.category || ''}
+              onChange={(e) => {
+                updateFilter('category', e.target.value);
+                setResult(null);
+              }}
+              disabled={!filters.program}
             >
-              {filters.rounds.map((r) => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Other Filters Row 2 */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Category</label>
-            <select
-              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-            >
-              {filters.categories.map((c) => (
+              <option value="">-- Select Category --</option>
+              {categories.map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
           </div>
 
+          {/* ROUND - Tier 3 */}
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Seat Type</label>
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Round <span className="text-red-500">*</span>
+            </label>
             <select
-              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none"
-              value={selectedSeatType}
-              onChange={(e) => setSelectedSeatType(e.target.value)}
+              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              value={filters.round || ''}
+              onChange={(e) => {
+                updateFilter('round', e.target.value);
+                setResult(null);
+              }}
+              disabled={!filters.program}
             >
-              {filters.seatTypes.map((s) => (
+              <option value="">-- Select Round --</option>
+              {rounds.map((r) => (
+                <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* SEAT TYPE - Tier 3 */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Seat Type <span className="text-red-500">*</span>
+            </label>
+            <select
+              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              value={filters.seatType || ''}
+              onChange={(e) => {
+                updateFilter('seatType', e.target.value);
+                setResult(null);
+              }}
+              disabled={!filters.program}
+            >
+              <option value="">-- Select Seat Type --</option>
+              {seatTypes.map((s) => (
                 <option key={s} value={s}>{s}</option>
               ))}
             </select>
           </div>
         </div>
 
-        {/* Search Button */}
-        <div className="mt-8">
+        {/* Action Buttons */}
+        <div className="mt-8 flex gap-4">
           <button
             onClick={handleSearch}
-            disabled={loading || !selectedCollege || !selectedProgram}
-            className="w-full py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+            disabled={
+              searching ||
+              !filters.college || !filters.program || !filters.year ||
+              !filters.category || !filters.round || !filters.seatType
+            }
+            className="flex-1 py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
           >
-            {loading ? (
+            {searching ? (
               <>
                 <Loader2 className="w-6 h-6 animate-spin" /> Finding Ranks...
               </>
@@ -242,13 +278,21 @@ export default function RankFinderClient() {
               </>
             )}
           </button>
+
+          <button
+            onClick={handleReset}
+            className="px-6 py-4 border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl font-semibold transition-all flex items-center gap-2"
+          >
+            <RotateCcw className="w-5 h-5" />
+            <span className="hidden sm:inline">Reset</span>
+          </button>
         </div>
 
-        {/* Error Message */}
-        {error && (
+        {/* Search Error Message */}
+        {searchError && (
           <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 flex items-center gap-2">
             <AlertCircle className="w-5 h-5" />
-            {error}
+            {searchError}
           </div>
         )}
 
@@ -259,7 +303,7 @@ export default function RankFinderClient() {
               <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 mb-6">
                 Search Result
                 <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-auto hidden md:inline">
-                  {selectedYear} • {selectedRound}
+                  {filters.year} • {filters.round}
                 </span>
               </h2>
 

@@ -5,7 +5,7 @@ import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 import Image from 'next/image';
 import { FileText, ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
-import { PageHero } from '../../components/PageHero';
+import { PageHero } from '@/components/layout/PageHero';
 
 export const revalidate = 60;
 

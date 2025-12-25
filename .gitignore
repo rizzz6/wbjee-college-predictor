@@ -81,3 +81,11 @@ pids
 
 # Yarn Integrity file
 .yarn-integrity
+
+# Build artifacts - Generated data files
+/public/data/
+
+# Large generated data files
+/public/data.json
+/public/cutoffs-data.json
+/public/colleges-programs.json

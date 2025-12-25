@@ -1,4 +1,4 @@
-import ImportantDates from '../../components/ImportantDates';
+import ImportantDates from '@/components/features/ImportantDates';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {

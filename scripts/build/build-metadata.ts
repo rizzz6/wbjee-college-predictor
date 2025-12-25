@@ -22,7 +22,7 @@ import { promisify } from 'util';
 const gunzip = promisify(zlib.gunzip);
 
 // Load environment variables from .env.local
-config({ path: join(__dirname, '..', '.env.local') });
+config({ path: join(process.cwd(), '.env.local') });
 
 // Initialize Redis client
 const redis = Redis.fromEnv();

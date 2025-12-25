@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import FAQ from '../../components/FAQDedicated';
+import FAQ from '@/components/content/FAQDedicated';
 
 export const metadata: Metadata = {
   title: "FAQ | WBJEE College Predictor",

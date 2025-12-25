@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import SocialsClient from "./SocialsClient";
-import JoinCommunity from "@/app/components/JoinCommunity";
+import JoinCommunity from "@/components/content/JoinCommunity";
 
 export const metadata: Metadata = {
     title: "Join the WBJEE Community | Discord & Reddit",

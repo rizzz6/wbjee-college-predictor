@@ -2,16 +2,16 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef, Component, ReactNode } from "react";
 import dynamic from 'next/dynamic';
-import FloatingScrollbar from '../../components/FloatingScrollbar';
-import { PageHero } from '../../components/PageHero';
+import FloatingScrollbar from '@/components/ui/FloatingScrollbar';
+import { PageHero } from '@/components/layout/PageHero';
 import {
   AlertCircle, HelpCircle, Check, X, ChevronDown, Download,
   Share2, Copy, Star, ArrowUp, ArrowDown, Grid, List, ChevronLeft, ChevronRight
 } from 'lucide-react';
-import { useFavorites } from '../../../hooks/useFavorites';
-import { usePredictorFilters } from '../../../hooks/usePredictorFilters';
-import { usePredictorPagination } from '../../../hooks/usePredictorPagination';
-import { usePredictorAPI } from '../../../hooks/usePredictorAPI';
+import { useFavorites } from '@/hooks/useFavorites';
+import { usePredictorFilters } from '@/hooks/predictor/usePredictorFilters';
+import { usePredictorPagination } from '@/hooks/predictor/usePredictorPagination';
+import { usePredictorAPI } from '@/hooks/predictor/usePredictorAPI';
 import { CardResults } from './components/v2';
 
 // Define types based on the data structure
