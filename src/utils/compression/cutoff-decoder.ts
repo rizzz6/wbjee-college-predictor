@@ -36,31 +36,72 @@ export interface Cutoff {
 }
 
 /**
+ * Safely retrieves a value from a lookup array with bounds checking
+ * @throws Error if index is out of bounds
+ */
+function getLookupValue<T>(array: T[], index: number, fieldName: string): T {
+    if (index < 0 || index >= array.length) {
+        throw new Error(
+            `[Decoder] Invalid ${fieldName} index: ${index} (array length: ${array.length})`
+        );
+    }
+    return array[index];
+}
+
+/**
  * Decodes columnar compressed data into an array of cutoff objects
  * Handles both desktop (with college column) and mobile (without college column) formats
+ * @throws Error if data is malformed or indices are out of bounds
  */
 export function decodeColumnarData(data: CompressedData): Cutoff[] {
     const { lookup, data: columns } = data;
     const count = columns.p.length;
     const results: Cutoff[] = [];
 
+    // Validate column alignment
+    const columnLengths = [
+        columns.p.length,
+        columns.y.length,
+        columns.t.length,
+        columns.r.length,
+        columns.s.length,
+        columns.o.length,
+        columns.k.length
+    ];
+
+    if (columns.c) {
+        columnLengths.push(columns.c.length);
+    }
+
+    if (!columnLengths.every(len => len === count)) {
+        throw new Error(
+            `[Decoder] Column length mismatch. Expected ${count}, got [${columnLengths.join(', ')}]`
+        );
+    }
+
     for (let i = 0; i < count; i++) {
-        const cutoff: Cutoff = {
-            program: lookup.P[columns.p[i]],
-            year: lookup.Y[columns.y[i]],
-            category: lookup.T[columns.t[i]],
-            round: lookup.R[columns.r[i]],
-            seatType: lookup.S[columns.s[i]],
-            opening: columns.o[i],
-            closing: columns.k[i]
-        };
+        try {
+            const cutoff: Cutoff = {
+                program: getLookupValue(lookup.P, columns.p[i], 'program'),
+                year: getLookupValue(lookup.Y, columns.y[i], 'year'),
+                category: getLookupValue(lookup.T, columns.t[i], 'category'),
+                round: getLookupValue(lookup.R, columns.r[i], 'round'),
+                seatType: getLookupValue(lookup.S, columns.s[i], 'seatType'),
+                opening: columns.o[i],
+                closing: columns.k[i]
+            };
 
-        // Add college if present (desktop format)
-        if (lookup.C && columns.c) {
-            cutoff.college = lookup.C[columns.c[i]];
+            // Add college if present (desktop format)
+            if (lookup.C && columns.c) {
+                cutoff.college = getLookupValue(lookup.C, columns.c[i], 'college');
+            }
+
+            results.push(cutoff);
+        } catch (error) {
+            console.error(`[Decoder] Failed to decode row ${i}:`, error);
+            // Skip corrupt row instead of crashing entire decode
+            continue;
         }
-
-        results.push(cutoff);
     }
 
     return results;

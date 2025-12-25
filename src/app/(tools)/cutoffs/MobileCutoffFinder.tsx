@@ -1,25 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useStaticSlices } from '@/hooks/cutoffs/useStaticSlices';
 import { FilterSelect } from './components/FilterSelect';
 import { ActionButton } from './components/ActionButton';
 import { ResultCard } from './components/ResultCard';
 import { Loader2, Smartphone } from 'lucide-react';
-
-interface FilterState {
-    college?: string;
-    program?: string;
-    year?: number;
-    category?: string;
-    round?: string;
-    seatType?: string;
-}
-
-interface SearchResult {
-    openingRank: number;
-    closingRank: number;
-}
+import type { FilterState, SearchResult } from '@/types/cutoff-finder';
 
 export default function MobileCutoffFinder() {
     const {
@@ -27,7 +14,9 @@ export default function MobileCutoffFinder() {
         isLoadingIndex,
         collegeData,
         isLoadingSlice,
-        selectCollege
+        sliceError,
+        selectCollege,
+        retrySlice
     } = useStaticSlices();
 
     const [filters, setFilters] = useState<FilterState>({});
@@ -37,7 +26,7 @@ export default function MobileCutoffFinder() {
     const canSearch = filters.college && filters.program && filters.year &&
         filters.category && filters.round && filters.seatType;
 
-    const updateFilter = (key: keyof FilterState, value: string | number | undefined) => {
+    const updateFilter = useCallback((key: keyof FilterState, value: string | number | undefined) => {
         setFilters(prev => {
             const newFilters = { ...prev, [key]: value };
 
@@ -64,7 +53,7 @@ export default function MobileCutoffFinder() {
         });
         setResult(null);
         setError(null);
-    };
+    }, [selectCollege]);
 
     const resetFilters = () => {
         setFilters({});
@@ -92,12 +81,13 @@ export default function MobileCutoffFinder() {
                 });
                 setError(null);
             } else {
-                setError('No cutoff data found for this combination');
+                setError('No cutoff data found for this combination. The college may not offer this program in the selected category.');
                 setResult(null);
             }
         } catch (err) {
-            setError('An error occurred while searching');
-            console.error(err);
+            const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+            setError(`Failed to search cutoffs: ${errorMessage}`);
+            console.error('[MobileCutoffFinder] Search error:', err);
         }
     };
 
@@ -136,6 +126,21 @@ export default function MobileCutoffFinder() {
                     <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-4 py-3 rounded-lg">
                         <Loader2 className="h-4 w-4 animate-spin" />
                         <span>Loading college data...</span>
+                    </div>
+                )}
+
+                {/* Error state for college data */}
+                {sliceError && (
+                    <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                        <p className="text-red-600 dark:text-red-400 mb-3">
+                            Failed to load college data. Please check your connection and try again.
+                        </p>
+                        <button
+                            onClick={retrySlice}
+                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                        >
+                            Retry
+                        </button>
                     </div>
                 )}
 

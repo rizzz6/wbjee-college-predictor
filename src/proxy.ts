@@ -9,7 +9,6 @@ export function proxy(request: NextRequest) {
     // This must be the FIRST check.
     const isBot = /bot|googlebot|crawler|spider|robot|crawling|facebookexternalhit|twitterbot|whatsapp|slackbot|discordbot|telegrambot/i.test(userAgent);
     if (isBot) {
-
         const requestHeaders = new Headers(request.headers);
         requestHeaders.set('x-device-type', 'desktop');
 
@@ -75,8 +74,6 @@ export function proxy(request: NextRequest) {
     // Also set on RESPONSE (for debugging/CDN)
     response.headers.set('x-device-type', deviceType);
     response.headers.set('Vary', 'x-device-type');
-
-
 
     return response;
 }

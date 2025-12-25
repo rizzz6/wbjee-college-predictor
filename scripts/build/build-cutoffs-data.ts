@@ -8,6 +8,7 @@
 import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import { FETCH_BATCH_SIZE, TABLES } from './config';
 
 dotenv.config({ path: '.env.local', quiet: true });
 
@@ -34,23 +35,22 @@ async function buildFlatColumnar() {
     console.log('[2/4] Fetching data from Supabase...');
     let allData: CutoffRow[] = [];
     let from = 0;
-    const batchSize = 1000;
 
     while (true) {
         const { data, error } = await supabase
-            .from('cutoffs')
+            .from(TABLES.CUTOFFS)
             .select('institute, program, year, category, round, seat_type, opening_rank, closing_rank')
             .order('institute, program, year, category, round')
-            .range(from, from + batchSize - 1);
+            .range(from, from + FETCH_BATCH_SIZE - 1);
 
         if (error) throw error;
         if (!data || data.length === 0) break;
 
         allData = allData.concat(data);
         process.stdout.write(`\r   >> Fetched ${allData.length} records...`);
-        from += batchSize;
+        from += FETCH_BATCH_SIZE;
 
-        if (data.length < batchSize) break;
+        if (data.length < FETCH_BATCH_SIZE) break;
     }
 
     process.stdout.write('\n');

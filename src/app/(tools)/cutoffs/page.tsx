@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { headers } from 'next/headers';
 import dynamic from 'next/dynamic';
 import { PageHero } from "@/components/layout/PageHero";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 // Dynamic imports for true code splitting
 // Mobile devices will never download DesktopCutoffFinder code
@@ -58,11 +59,13 @@ export default async function CutoffsPage() {
 
       {/* Server-side fork with dynamic imports for true code splitting */}
       <Suspense fallback={<div className="flex justify-center py-12">Loading...</div>}>
-        {isMobile ? (
-          <MobileCutoffFinder />
-        ) : (
-          <DesktopCutoffFinder />
-        )}
+        <ErrorBoundary>
+          {isMobile ? (
+            <MobileCutoffFinder />
+          ) : (
+            <DesktopCutoffFinder />
+          )}
+        </ErrorBoundary>
       </Suspense>
     </div>
   );
