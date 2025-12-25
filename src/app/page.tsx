@@ -3,13 +3,13 @@ export const revalidate = 60;
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import ImportantDates from "./components/ImportantDates";
-import FeaturedColleges from "./components/FeaturedColleges";
+import ImportantDates from "@/components/features/ImportantDates";
+import FeaturedColleges from "@/components/features/FeaturedColleges";
 import { client } from "../sanity/client";
 import dynamic from 'next/dynamic';
-const HowItWorks = dynamic(() => import('./components/HowItWorks'));
-const JoinCommunity = dynamic(() => import('./components/JoinCommunity'));
-const FAQWidget = dynamic(() => import('./components/FAQWidget'));
+const HowItWorks = dynamic(() => import('@/components/features/HowItWorks'));
+const JoinCommunity = dynamic(() => import('@/components/content/JoinCommunity'));
+const FAQWidget = dynamic(() => import('@/components/content/FAQWidget'));
 
 export const metadata: Metadata = {
   title: "rwbjee | WBJEE Companion | Resources, Colleges & Community",

@@ -1,6 +1,19 @@
 import type { Metadata } from "next";
-import { PageHero } from "../../components/PageHero";
-import CutoffFinderClient from "./CutoffFinderClient";
+import { Suspense } from "react";
+import { headers } from 'next/headers';
+import dynamic from 'next/dynamic';
+import { PageHero } from "@/components/layout/PageHero";
+
+// Dynamic imports for true code splitting
+// Mobile devices will never download DesktopCutoffFinder code
+// Desktop devices will never download MobileCutoffFinder code
+const MobileCutoffFinder = dynamic(() => import('./MobileCutoffFinder'), {
+  loading: () => <div className="flex justify-center py-12">Loading...</div>
+});
+
+const DesktopCutoffFinder = dynamic(() => import('./DesktopCutoffFinder'), {
+  loading: () => <div className="flex justify-center py-12">Loading...</div>
+});
 
 export const metadata: Metadata = {
   title: "WBJEE Opening & Closing Ranks (OR-CR) | Previous Year Cutoff Search",
@@ -34,11 +47,23 @@ function Hero() {
   );
 }
 
-export default function CutoffsPage() {
+export default async function CutoffsPage() {
+  const headersList = await headers();
+  const deviceType = headersList.get('x-device-type');
+  const isMobile = deviceType === 'mobile';
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
       <Hero />
-      <CutoffFinderClient />
+
+      {/* Server-side fork with dynamic imports for true code splitting */}
+      <Suspense fallback={<div className="flex justify-center py-12">Loading...</div>}>
+        {isMobile ? (
+          <MobileCutoffFinder />
+        ) : (
+          <DesktopCutoffFinder />
+        )}
+      </Suspense>
     </div>
   );
 }

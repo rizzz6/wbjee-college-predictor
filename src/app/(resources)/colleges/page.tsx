@@ -1,8 +1,8 @@
 import { client } from '../../../sanity/lib/client';
-import CollegeSearch from '@/app/components/CollegeSearch';
+import CollegeSearch from '@/components/features/CollegeSearch';
 import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 import { Metadata } from 'next';
-import { PageHero } from '../../components/PageHero';
+import { PageHero } from '@/components/layout/PageHero';
 
 export const revalidate = 60;
 

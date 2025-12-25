@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Users } from 'lucide-react';
-import AnimatedCounter from './AnimatedCounter';
+import AnimatedCounter from '../ui/AnimatedCounter';
 
 interface JoinCommunityProps {
   showHeader?: boolean;

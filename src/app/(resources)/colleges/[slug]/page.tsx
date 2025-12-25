@@ -1,4 +1,4 @@
-import { client, urlFor } from '../../../..//sanity/client';
+import { client, urlFor } from '@/sanity/client';
 import { PortableText } from '@portabletext/react';
 import { PortableTextBlock } from 'sanity';
 import Image from 'next/image';
@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { MapPin, Building2, Calendar, Globe, Landmark, IndianRupee, TrendingUp, BarChart3, ArrowRight } from 'lucide-react';
-import SanityTable from '../../../components/SanityTable';
-import CutoffTable from '../../../components/CutoffTable';
+import SanityTable from '@/components/content/SanityTable';
+import CutoffTable from '@/components/content/CutoffTable';
 
 export const revalidate = 60;
 

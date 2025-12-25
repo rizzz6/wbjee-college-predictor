@@ -1,13 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "./components/Navbar";
-import SmartBreadcrumb from "./components/SmartBreadcrumb";
-import Footer from "./components/Footer";
+import Navbar from "@/components/layout/Navbar";
+import SmartBreadcrumb from "@/components/ui/SmartBreadcrumb";
+import Footer from "@/components/layout/Footer";
 import Providers from "./providers";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleTagManager } from '@next/third-parties/google';
-import EasterEggManager from './components/eastereggs/EasterEggManager';
+import EasterEggManager from "@/components/eastereggs/EasterEggManager";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

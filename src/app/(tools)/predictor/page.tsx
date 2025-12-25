@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import NewPredictorClient from "./NewPredictorClient";
-import FAQWidget from "../../components/FAQWidget";
+import FAQWidget from "@/components/content/FAQWidget";
 
 // Page-specific metadata for SEO
 export const metadata: Metadata = {

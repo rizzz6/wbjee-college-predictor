@@ -3,7 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   images: {
     // FIX: Disable server optimization in dev to bypass local network IP blocks
-    unoptimized: process.env.NODE_ENV === 'development',
+    // Temporarily also disabled for local production testing
+    unoptimized: true, // Change back to: process.env.NODE_ENV === 'development' for real deployment
 
     remotePatterns: [
       {
