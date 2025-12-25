@@ -88,4 +88,4 @@ pids
 # Large generated data files
 /public/data.json
 /public/cutoffs-data.json
-/public/colleges-programs.json
+

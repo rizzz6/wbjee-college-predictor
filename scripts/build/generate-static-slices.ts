@@ -28,7 +28,7 @@ interface RawCutoff {
 }
 
 async function generateStaticSlices() {
-    console.log('🔧 Generating static slices for mobile...\\n');
+    console.log('🔧 Generating static slices for mobile...\n');
 
     // Fetch all cutoff data with pagination
     let allData: RawCutoff[] = [];
@@ -43,20 +43,21 @@ async function generateStaticSlices() {
             .range(page * pageSize, (page + 1) * pageSize - 1);
 
         if (error) {
-            console.error('❌ Error fetching data:', error);
+            console.error('\n❌ Error fetching data:', error);
             process.exit(1);
         }
 
         if (!data || data.length === 0) break;
 
         allData = allData.concat(data as RawCutoff[]);
-        console.log(`   Page ${page + 1}: ${data.length} records (total: ${allData.length})`);
+        process.stdout.write(`\r   Fetched ${allData.length} records...`);
 
         if (data.length < pageSize) break;
         page++;
     }
+    process.stdout.write('\n');
 
-    console.log(`\\n✅ Fetched ${allData.length} total records\\n`);
+    console.log(`\n✅ Fetched ${allData.length} total records\n`);
 
     // Group by college
     const collegeMap = new Map<string, Cutoff[]>();
@@ -79,7 +80,7 @@ async function generateStaticSlices() {
         collegeMap.get(row.institute)!.push(cutoff);
     });
 
-    console.log(`📊 Grouped into ${collegeMap.size} colleges\\n`);
+    console.log(`📊 Grouped into ${collegeMap.size} colleges\n`);
 
     // Create output directory
     const dataDir = path.join(process.cwd(), 'public', 'data');
@@ -101,12 +102,15 @@ async function generateStaticSlices() {
 
     console.log('🔨 Generating slices...');
 
+    let count = 0;
+    const total = collegeMap.size;
+
     for (const [college, cutoffs] of collegeMap.entries()) {
         const slug = createSlug(college);
 
         // Validate slug
         if (!slug || slug === 'undefined') {
-            console.warn(`⚠️  Skipping invalid slug for college: ${college}`);
+            console.warn(`\n⚠️  Skipping invalid slug for college: ${college}`);
             continue;
         }
 
@@ -126,8 +130,10 @@ async function generateStaticSlices() {
         minSize = Math.min(minSize, fileSize);
         maxSize = Math.max(maxSize, fileSize);
 
-        console.log(`   ✓ ${college} → ${slug}.json (${(fileSize / 1024).toFixed(2)} KB)`);
+        count++;
+        process.stdout.write(`\r   Generated ${count}/${total} slices...`);
     }
+    process.stdout.write('\n');
 
     // Generate index file
     const index = { colleges, slugs };
@@ -144,7 +150,7 @@ async function generateStaticSlices() {
     });
     const undefinedFiles = files.filter(file => file.includes('undefined'));
 
-    console.log('\\n📈 Statistics:');
+    console.log('\n📈 Statistics:');
     console.log(`   Colleges: ${colleges.length}`);
     console.log(`   Index size: ${(indexSize / 1024).toFixed(2)} KB`);
     console.log(`   Slice sizes: ${(minSize / 1024).toFixed(2)} KB - ${(maxSize / 1024).toFixed(2)} KB`);
@@ -158,13 +164,14 @@ async function generateStaticSlices() {
 
     if (undefinedFiles.length > 0) {
         console.error(`\\n❌ Found ${undefinedFiles.length} undefined files:`, undefinedFiles);
+        console.error(`\n❌ Found ${undefinedFiles.length} undefined files:`, undefinedFiles);
         process.exit(1);
     }
 
-    console.log('\\n✅ Static slices generated successfully!');
+    console.log('\n✅ Static slices generated successfully!');
     console.log(`   Output: public/data/`);
     console.log(`   - mobile-index.json`);
-    console.log(`   - colleges/*.json (${colleges.length} files)\\n`);
+    console.log(`   - colleges/*.json (${files.length} files)\n`);
 }
 
 generateStaticSlices().catch(console.error);
