@@ -143,7 +143,7 @@ export default function ImportantDates({
                     <div className={`p-4 rounded-lg border transition-all duration-300 ${isActive
                       ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-900/30 border-l-4 border-l-red-600 shadow-md'
                       : isEventPast
-                        ? 'bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 opacity-70 grayscale'
+                        ? 'bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 grayscale'
                         : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 shadow-sm'
                       }`}>
                       <div className="flex flex-wrap items-center gap-2 mb-1.5">
@@ -153,7 +153,7 @@ export default function ImportantDates({
                         {isEventToday ? (
                           <span className="text-xs bg-red-700 text-white px-2 py-0.5 rounded font-medium">Today</span>
                         ) : isEventPast ? (
-                          <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2 py-1 rounded font-medium">Done</span>
+                          <span className="text-xs bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded font-medium">Done</span>
                         ) : (
                           <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-0.5 rounded font-medium">{daysLeft} Days left</span>
                         )}
