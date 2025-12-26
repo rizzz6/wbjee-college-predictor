@@ -51,6 +51,7 @@ export default function FeaturedColleges({ colleges }: { colleges: College[] }) 
                       fill
                       sizes="80px"
                       className="object-contain"
+                      priority={true}
                     />
                   </div>
                 ) : (

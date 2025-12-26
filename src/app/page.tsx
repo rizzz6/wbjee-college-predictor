@@ -3,10 +3,11 @@ export const revalidate = 60;
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import ImportantDates from "@/components/features/ImportantDates";
 import FeaturedColleges from "@/components/features/FeaturedColleges";
 import { client } from "../sanity/client";
 import dynamic from 'next/dynamic';
+
+const ImportantDates = dynamic(() => import('@/components/features/ImportantDates'));
 const HowItWorks = dynamic(() => import('@/components/features/HowItWorks'));
 const JoinCommunity = dynamic(() => import('@/components/content/JoinCommunity'));
 const FAQWidget = dynamic(() => import('@/components/content/FAQWidget'));
@@ -117,6 +118,8 @@ function FeaturedCollegesSkeleton() {
   );
 }
 
+
+
 // --- Main Page ---
 
 export default function Page() {
@@ -134,7 +137,9 @@ export default function Page() {
           showViewAll={true}
         />
 
-        {/* 5. Suspense Boundary: This loads in background while user reads the Hero */}
+        {/* 5. Suspense Boundary: This loads in background while user reads the Hero.
+            Reverted to Suspense as bundling it delayed LCP to 3.2s due to contention.
+            Streaming it achieves ~2.7s LCP. */}
         <Suspense fallback={<FeaturedCollegesSkeleton />}>
           <FeaturedCollegesSection />
         </Suspense>
@@ -156,7 +161,9 @@ export default function Page() {
             />
           </div>
           <div className="w-full sticky top-24">
-            <JoinCommunity showHeader={true} />
+            <Suspense fallback={<div className="h-64 rounded-2xl bg-gray-100 dark:bg-gray-800 animate-pulse border border-gray-200 dark:border-gray-700" />}>
+              <JoinCommunity showHeader={true} />
+            </Suspense>
           </div>
         </div>
       </div>

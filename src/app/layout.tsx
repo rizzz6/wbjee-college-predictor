@@ -7,7 +7,7 @@ import Footer from "@/components/layout/Footer";
 import Providers from "./providers";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleTagManager } from '@next/third-parties/google';
-import EasterEggManager from "@/components/eastereggs/EasterEggManager";
+import EasterEggLoader from "@/components/eastereggs/EasterEggLoader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -95,6 +95,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://ytfxpldt.apicdn.sanity.io" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
       </head>
 
 
@@ -114,7 +115,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
-          <EasterEggManager />
+          <EasterEggLoader />
 
           {process.env.NODE_ENV === 'production' && <SpeedInsights />}
         </Providers>

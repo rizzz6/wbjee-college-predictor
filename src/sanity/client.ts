@@ -6,7 +6,7 @@ export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
   dataset: 'rwbjee-dataset',
   apiVersion: '2024-01-01',
-  useCdn: false,
+  useCdn: true,
 })
 
 const builder = createImageUrlBuilder({
