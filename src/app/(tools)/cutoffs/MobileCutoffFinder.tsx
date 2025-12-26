@@ -92,11 +92,11 @@ export default function MobileCutoffFinder() {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
-            {/* Mobile Mode Indicator */}
-            <div className="mb-6 flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-lg">
-                <Smartphone className="h-4 w-4" />
-                <span>Mobile mode - Static slices (~8KB total)</span>
+        <div className="container mx-auto px-4 py-8 max-w-4xl relative">
+            {/* Subtle Mode Indicator - Top Right Corner */}
+            <div className="absolute top-2 right-4 flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full opacity-50 hover:opacity-100 transition-opacity">
+                <Smartphone className="h-3 w-3" />
+                <span>Mobile</span>
             </div>
 
             <div className="space-y-4">

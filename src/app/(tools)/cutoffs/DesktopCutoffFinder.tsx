@@ -83,11 +83,11 @@ export default function DesktopCutoffFinder() {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
-            {/* Desktop Mode Indicator */}
-            <div className="mb-6 flex items-center gap-2 text-sm text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-4 py-2 rounded-lg">
-                <Monitor className="h-4 w-4" />
-                <span>Desktop mode - Instant filter switching (all metadata loaded)</span>
+        <div className="container mx-auto px-4 py-8 max-w-4xl relative">
+            {/* Subtle Mode Indicator - Top Right Corner */}
+            <div className="absolute top-2 right-4 flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full opacity-50 hover:opacity-100 transition-opacity">
+                <Monitor className="h-3 w-3" />
+                <span>Desktop</span>
             </div>
 
             <div className="space-y-4">
