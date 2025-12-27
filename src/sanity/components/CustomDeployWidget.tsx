@@ -1,5 +1,5 @@
 import { Card, Button, Stack, Text, Spinner, Select, Flex, TextInput } from '@sanity/ui'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useClient } from 'sanity'
 import { Trash2, Edit, Plus, Rocket, Check, AlertCircle } from 'lucide-react'
 
@@ -29,7 +29,7 @@ export function CustomDeployWidget() {
     const [formData, setFormData] = useState<Partial<DeploymentTarget>>({})
 
     // Fetch deployment targets from Sanity
-    const fetchTargets = async () => {
+    const fetchTargets = useCallback(async () => {
         setIsLoading(true)
         try {
             const data = await client.fetch<DeploymentTarget[]>(
@@ -46,19 +46,22 @@ export function CustomDeployWidget() {
         }`
             )
             setTargets(data)
-            if (data.length > 0 && !selectedTarget) {
-                setSelectedTarget(data[0]._id)
-            }
+            setSelectedTarget(prev => {
+                if (data.length > 0 && !prev) {
+                    return data[0]._id
+                }
+                return prev
+            })
         } catch (error) {
             console.error('Failed to fetch deployment targets:', error)
         } finally {
             setIsLoading(false)
         }
-    }
+    }, [client])
 
     useEffect(() => {
         fetchTargets()
-    }, [client])
+    }, [fetchTargets])
 
     const handleDeploy = async () => {
         const target = targets.find(t => t._id === selectedTarget)

@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import FeaturedColleges from "@/components/features/FeaturedColleges";
 import { client } from "../sanity/client";
 import dynamic from 'next/dynamic';
+import { TrendingUp } from 'lucide-react';
 
 const ImportantDates = dynamic(() => import('@/components/features/ImportantDates'));
 const HowItWorks = dynamic(() => import('@/components/features/HowItWorks'));
@@ -81,12 +82,14 @@ function Hero() {
             Instantly discover the engineering and pharmacy colleges you can get into based on your WBJEE 2026 rank using our <Link href="/predictor" className="text-red-600 underline hover:text-red-800">College Predictor</Link>.
           </p>
 
+
           <div className="mt-8 animate-fade-in-up animation-delay-400">
             <Link
               href="/predictor"
-              className="inline-flex items-center justify-center rounded-lg bg-red-600 px-6 py-3 text-white font-semibold shadow-sm hover:bg-red-700 active:bg-red-800 transition-colors"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-red-600 px-6 py-3 text-white font-semibold shadow-md hover:bg-red-700 active:bg-red-800 transition-colors border-2 border-red-700 hover:border-red-800"
             >
-              Predict My College Now
+              <TrendingUp className="w-5 h-5" />
+              <span>Predict My College Now</span>
             </Link>
           </div>
 
