@@ -4,6 +4,7 @@ import { client } from '../../sanity/lib/client';
 import useSWR from 'swr';
 import { format, isPast, isToday, differenceInCalendarDays, startOfDay } from 'date-fns';
 import Link from 'next/link';
+import { Calendar } from 'lucide-react';
 
 const fetcher = (query: string) => client.fetch(query);
 
@@ -55,8 +56,9 @@ export default function ImportantDates({
       <div className={`w-full ${!compact ? 'max-w-7xl mx-auto px-4' : ''}`}>
         {!hideTitle && (
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
               Important Dates
+              <Calendar className="w-5 h-5 text-red-600 dark:text-red-400" />
             </h2>
           </div>
         )}
@@ -87,8 +89,9 @@ export default function ImportantDates({
         {/* HEADER: Full width, no max-w constraint */}
         {!hideTitle && (
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
               Important Dates
+              <Calendar className="w-5 h-5 text-red-600 dark:text-red-400" />
             </h2>
 
             {showViewAll && (

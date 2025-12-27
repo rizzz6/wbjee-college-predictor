@@ -1,7 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Sun, Moon, Menu, X } from 'lucide-react'
+import {
+  Sun,
+  Moon,
+  Menu,
+  X,
+  Home,
+  GraduationCap,
+  TrendingUp,
+  BarChart3,
+  BookOpen
+} from 'lucide-react'
 import { LazyMotion, domAnimation, m, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useTheme } from "next-themes";
@@ -82,20 +92,26 @@ export default function Navbar() {
             </Link>
 
             <nav className="hidden md:flex items-center gap-6 text-gray-700 dark:text-gray-200">
-              <Link href="/#home" className="hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">Home</Link>
-              <Link href="/colleges" className="hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">Colleges</Link>
-              <Link href="/predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">Predictor</Link>
-              <a
-                href="/old-predictor/index.html"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1"
-              >
-                Legacy Predictor
-                <span className="sr-only"> (opens in new tab)</span>
-                <span aria-hidden="true"> ↗</span>
-              </a>            <Link href="/cutoffs" className="hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">Cutoffs</Link>
-              <Link href="/blog" className="hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">Blog</Link>
+              <Link href="/#home" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">
+                <Home className="w-4 h-4" />
+                <span>Home</span>
+              </Link>
+              <Link href="/colleges" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">
+                <GraduationCap className="w-4 h-4" />
+                <span>Colleges</span>
+              </Link>
+              <Link href="/predictor" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">
+                <TrendingUp className="w-4 h-4" />
+                <span>Predictor</span>
+              </Link>
+              <Link href="/cutoffs" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">
+                <BarChart3 className="w-4 h-4" />
+                <span>Cutoffs</span>
+              </Link>
+              <Link href="/blog" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">
+                <BookOpen className="w-4 h-4" />
+                <span>Blog</span>
+              </Link>
               <ThemeToggle />
             </nav>
 
@@ -129,21 +145,26 @@ export default function Navbar() {
               transition={{ duration: 0.2 }}
             >
               <nav className="flex flex-col gap-3 text-gray-700 dark:text-gray-200">
-                <Link href="/#home" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Home</Link>
-                <Link href="/colleges" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Colleges</Link>
-                <Link href="/predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Predictor</Link>
-                <a
-                  href="/old-predictor/index.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                >
-                  Legacy Predictor
-                  <span className="sr-only"> (opens in new tab)</span>
-                  <span aria-hidden="true"> ↗</span>
-                </a>
-                <Link href="/cutoffs" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Cutoffs</Link>
-                <Link href="/blog" className="hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>Blog</Link>
+                <Link href="/#home" className="flex items-center gap-2 hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>
+                  <Home className="w-4 h-4" />
+                  <span>Home</span>
+                </Link>
+                <Link href="/colleges" className="flex items-center gap-2 hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>
+                  <GraduationCap className="w-4 h-4" />
+                  <span>Colleges</span>
+                </Link>
+                <Link href="/predictor" className="flex items-center gap-2 hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>
+                  <TrendingUp className="w-4 h-4" />
+                  <span>Predictor</span>
+                </Link>
+                <Link href="/cutoffs" className="flex items-center gap-2 hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>
+                  <BarChart3 className="w-4 h-4" />
+                  <span>Cutoffs</span>
+                </Link>
+                <Link href="/blog" className="flex items-center gap-2 hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>
+                  <BookOpen className="w-4 h-4" />
+                  <span>Blog</span>
+                </Link>
                 <ThemeToggle />
               </nav>
             </m.div>

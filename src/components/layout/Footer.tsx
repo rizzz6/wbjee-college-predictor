@@ -1,7 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { User } from 'lucide-react';
+import {
+  User,
+  BookOpen,
+  GraduationCap,
+  Calendar,
+  TrendingUp,
+  BarChart3,
+  Archive,
+  Share2,
+  HelpCircle,
+  Shield,
+  FileText
+} from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 export default function Footer() {
@@ -45,9 +57,18 @@ export default function Footer() {
             <div className="flex flex-col items-start gap-4">
               <h2 className="font-bold text-gray-900 dark:text-white">Resources</h2>
               <div className="flex flex-col items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <Link href="/blog" className="hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">Blog</Link>
-                <Link href="/colleges" className="hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">College List</Link>
-                <Link href="/timeline" className="hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">Important Dates</Link>
+                <Link href="/blog" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">
+                  <BookOpen className="w-4 h-4" />
+                  <span>Blog</span>
+                </Link>
+                <Link href="/colleges" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">
+                  <GraduationCap className="w-4 h-4" />
+                  <span>College List</span>
+                </Link>
+                <Link href="/timeline" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">
+                  <Calendar className="w-4 h-4" />
+                  <span>Important Dates</span>
+                </Link>
               </div>
             </div>
 
@@ -55,9 +76,18 @@ export default function Footer() {
             <div className="flex flex-col items-start gap-4">
               <h2 className="font-bold text-gray-900 dark:text-white">Tools</h2>
               <div className="flex flex-col items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <Link href="/predictor" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Rank Predictor</Link>
-                <Link href="/cutoffs" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Cutoffs</Link>
-                <a href="/old-predictor/index.html" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Legacy Predictor</a>
+                <Link href="/predictor" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors">
+                  <TrendingUp className="w-4 h-4" />
+                  <span>Rank Predictor</span>
+                </Link>
+                <Link href="/cutoffs" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors">
+                  <BarChart3 className="w-4 h-4" />
+                  <span>Cutoffs</span>
+                </Link>
+                <a href="/old-predictor/index.html" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors">
+                  <Archive className="w-4 h-4" />
+                  <span>Legacy Predictor</span>
+                </a>
               </div>
             </div>
 
@@ -65,8 +95,11 @@ export default function Footer() {
             <div className="flex flex-col items-start gap-4">
               <h2 className="font-bold text-gray-900 dark:text-white">Connect</h2>
               <div className="flex flex-col items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <Link href="/socials" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Socials</Link>
-                <a href="https://www.reddit.com/u/rizzz6" target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-red-600 dark:hover:text-red-400 transition-colors">
+                <Link href="/socials" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors">
+                  <Share2 className="w-4 h-4" />
+                  <span>Socials</span>
+                </Link>
+                <a href="https://www.reddit.com/u/rizzz6" target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors">
                   <User className="w-4 h-4" />
                   <span>Contact Me</span>
                 </a>
@@ -77,9 +110,18 @@ export default function Footer() {
             <div className="flex flex-col items-start gap-4">
               <h2 className="font-bold text-gray-900 dark:text-white">Legal</h2>
               <div className="flex flex-col items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <Link href="/faq" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">FAQ</Link>
-                <Link href="/privacy" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Privacy Policy</Link>
-                <Link href="/disclaimer" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Disclaimer</Link>
+                <Link href="/faq" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors">
+                  <HelpCircle className="w-4 h-4" />
+                  <span>FAQ</span>
+                </Link>
+                <Link href="/privacy" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors">
+                  <Shield className="w-4 h-4" />
+                  <span>Privacy Policy</span>
+                </Link>
+                <Link href="/disclaimer" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors">
+                  <FileText className="w-4 h-4" />
+                  <span>Disclaimer</span>
+                </Link>
               </div>
             </div>
 

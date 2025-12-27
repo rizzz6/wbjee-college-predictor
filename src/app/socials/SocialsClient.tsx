@@ -1,7 +1,7 @@
 "use client";
 
 import { LazyMotion, domAnimation, m, type Variants } from "framer-motion";
-import { Mail } from "lucide-react";
+import { Mail, ExternalLink, TrendingUp } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { FaDiscord, FaReddit } from "react-icons/fa";
 
@@ -161,17 +161,17 @@ export default function SocialsClient({ children }: { children?: ReactNode }) {
                   href="https://www.reddit.com/r/wbjee/"
                   target="_blank"
                   rel="noreferrer"
-                  /* FIX: Changed red-500 to red-600 for contrast */
-                  className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+                  className="inline-flex items-center gap-2 bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors shadow-md"
                 >
-                  Join r/wbjee
+                  <ExternalLink className="w-5 h-5" />
+                  <span>Join r/wbjee</span>
                 </a>
                 <a
                   href="/predictor"
-                  /* FIX: Changed red-500 to red-600 for contrast */
-                  className="border border-red-600 text-red-600 px-6 py-3 rounded-lg font-semibold hover:bg-red-600 hover:text-white transition-colors"
+                  className="inline-flex items-center gap-2 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 px-6 py-3 rounded-lg font-semibold hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
-                  Try College Predictor
+                  <TrendingUp className="w-5 h-5" />
+                  <span>Try College Predictor</span>
                 </a>
               </div>
             </m.div>

@@ -98,7 +98,7 @@ export default async function JoinCommunity({ showHeader = false }: JoinCommunit
               href={`https://www.reddit.com/${subredditData.display_name_prefixed}`}
               target="_blank"
               rel="noreferrer"
-              className="bg-red-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-red-700 transition-colors"
+              className="bg-orange-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-orange-700 transition-colors border-2 border-orange-700 hover:border-orange-800 shadow-md"
             >
               Join
             </a>
