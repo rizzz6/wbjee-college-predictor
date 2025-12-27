@@ -1,4 +1,4 @@
-import {defineField, defineType} from 'sanity'
+import { defineField, defineType } from 'sanity'
 import CutoffInstituteInput from '../components/CutoffInstituteInput'
 
 export const collegeType = defineType({
@@ -125,7 +125,19 @@ export const collegeType = defineType({
     select: {
       title: 'name',
       subtitle: 'location',
-      media: 'logo',
+      type: 'type',
+      isVisible: 'isVisible',
+      media: 'logo'
     },
+    prepare({ title, subtitle, type, isVisible, media }) {
+      const typeEmoji = type === 'Government' ? '🏛️' : type === 'Private' ? '🏢' : '🏫'
+      const visibilityTag = isVisible ? '' : ' • ⚠️ HIDDEN'
+
+      return {
+        title: title,
+        subtitle: `${typeEmoji} ${type} • ${subtitle}${visibilityTag}`,
+        media: media
+      }
+    }
   },
 })

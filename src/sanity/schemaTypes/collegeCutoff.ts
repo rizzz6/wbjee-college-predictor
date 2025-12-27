@@ -1,4 +1,4 @@
-import {defineField, defineType} from 'sanity'
+import { defineField, defineType } from 'sanity'
 
 export const collegeCutoffType = defineType({
   name: 'collegeCutoff',
@@ -53,11 +53,31 @@ export const collegeCutoffType = defineType({
               name: 'openingRank',
               type: 'number',
               title: 'Opening Rank',
+              validation: (Rule) =>
+                Rule.required()
+                  .min(1)
+                  .integer()
+                  .error('Opening rank must be a positive integer'),
             }),
             defineField({
               name: 'closingRank',
               type: 'number',
               title: 'Closing Rank',
+              validation: (Rule) =>
+                Rule.required()
+                  .min(1)
+                  .integer()
+                  .custom((closingRank, context) => {
+                    const parent = context.parent as Record<string, unknown>
+                    const openingRank = parent?.openingRank as number | undefined
+
+                    if (openingRank && closingRank !== undefined && closingRank < openingRank) {
+                      return 'Closing rank cannot be lower than opening rank'
+                    }
+
+                    return true
+                  })
+                  .error('Invalid closing rank'),
             }),
           ],
         },

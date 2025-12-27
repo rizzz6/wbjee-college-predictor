@@ -1,7 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import { User } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  // Don't render footer on Sanity Studio routes  
+  if (pathname?.startsWith('/studio')) {
+    return null;
+  }
   return (
     <footer id="contact" className="border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-12">
