@@ -1,0 +1,17 @@
+/* Hide Sanity branding elements in the Studio */
+
+/* Hide the large Sanity logo only */
+svg[data-sanity-icon="sanity-logo"] {
+  display: none !important;
+}
+
+/* Add custom rwbjee branding footer */
+[data-ui="LoginDialog"]::after {
+  content: 'rwbjee © 2025 • rwbjee.com';
+  display: block;
+  text-align: center;
+  font-size: 13px;
+  color: #9ca3af;
+  margin-top: 24px;
+  padding-bottom: 16px;
+}
