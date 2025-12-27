@@ -8,6 +8,8 @@ import Providers from "./providers";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleTagManager } from '@next/third-parties/google';
 import EasterEggLoader from "@/components/eastereggs/EasterEggLoader";
+import { client } from "@/sanity/client";
+import { AnnouncementBanner } from "@/components/AnnouncementBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -86,11 +88,28 @@ export const metadata: Metadata = {
   category: "education",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fetch site settings for announcement banner
+  const settings = await client.fetch(
+    `*[_type == "siteSettings"][0] {
+      announcement {
+        enabled,
+        message,
+        linkUrl,
+        linkText,
+        variant
+      }
+    }`,
+    {},
+    { next: { revalidate: 60 } } // Revalidate every minute
+  );
+
+  const announcement = settings?.announcement;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -101,6 +120,16 @@ export default function RootLayout({
 
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-transparent text-gray-900 dark:text-white`}>
         <Providers>
+          {/* Announcement Banner */}
+          {announcement?.enabled && (
+            <AnnouncementBanner
+              message={announcement.message}
+              linkUrl={announcement.linkUrl}
+              linkText={announcement.linkText}
+              variant={announcement.variant || 'info'}
+            />
+          )}
+
           {/* Skip Navigation - Accessibility */}
           <a
             href="#main-content"

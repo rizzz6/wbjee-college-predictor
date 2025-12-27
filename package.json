@@ -19,6 +19,7 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@next/third-parties": "^16.0.5",
+    "@sanity/dashboard": "^5.0.1",
     "@sanity/icons": "^3.7.4",
     "@sanity/image-url": "^1.2.0",
     "@sanity/table": "^2.0.0",
@@ -43,6 +44,8 @@
     "react-dom": "^19.2.1",
     "react-icons": "^5.5.0",
     "sanity": "^4.17.0",
+    "sanity-plugin-iframe-pane": "^4.0.0",
+    "sanity-plugin-media": "^4.1.1",
     "styled-components": "^6.1.19",
     "swr": "^2.3.8"
   },
