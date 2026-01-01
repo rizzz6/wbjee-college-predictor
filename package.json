@@ -9,12 +9,18 @@
     "lint": "eslint .",
     "indexnow": "node scripts/seo/submit-indexnow.mjs",
     "seed:upstash": "tsx scripts/database/seed-upstash.ts",
+    "import:csv": "tsx scripts/database/import-from-csv.ts",
+    "import:sheets": "tsx scripts/database/import-from-sheets-url.ts",
+    "clear:supabase": "tsx scripts/database/clear-supabase.ts",
     "migrate:supabase": "tsx scripts/database/migrate-to-supabase.ts",
     "build:metadata": "tsx scripts/build/build-metadata.ts",
     "build:mobile": "tsx scripts/build/generate-static-slices.ts",
     "build:desktop": "tsx scripts/build/build-cutoffs-data.ts",
     "fix:duplicates": "tsx scripts/data-quality/normalize-cutoff-names.ts",
-    "test:mobile": "tsx scripts/validation/test-static-slicing.ts"
+    "test:mobile": "tsx scripts/validation/test-static-slicing.ts",
+    "validate:distribution": "tsx scripts/validation/analyze-distribution.ts",
+    "validate:duplicates": "tsx scripts/validation/check-duplicates.ts",
+    "validate:colleges": "tsx scripts/validation/compare-colleges.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

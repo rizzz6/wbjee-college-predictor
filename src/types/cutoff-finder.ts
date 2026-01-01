@@ -12,6 +12,11 @@ export interface FilterState {
 }
 
 export interface SearchResult {
+    program: string;
+    year: number;
+    category: string;
+    round: string;
+    seatType: string;
     openingRank: number;
     closingRank: number;
 }

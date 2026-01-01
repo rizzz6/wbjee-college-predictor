@@ -27,18 +27,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  async rewrites() {
-    return [
-      {
-        source: "/legacy-predictor",
-        destination: "/old-predictor/index.html",
-      },
-      {
-        source: "/legacy-predictor/:path*",
-        destination: "/old-predictor/:path*",
-      },
-    ];
-  },
+
 };
 
 export default nextConfig;

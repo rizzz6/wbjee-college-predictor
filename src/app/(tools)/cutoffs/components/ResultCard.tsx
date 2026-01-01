@@ -24,9 +24,6 @@ export function ResultCard({ openingRank, closingRank }: ResultCardProps) {
                     </p>
                 </div>
             </div>
-            <div className="mt-4 text-sm text-gray-600 dark:text-gray-400 text-center">
-                <p>You need a rank between <strong>{openingRank}</strong> and <strong>{closingRank}</strong> to get admission</p>
-            </div>
         </div>
     );
 }
