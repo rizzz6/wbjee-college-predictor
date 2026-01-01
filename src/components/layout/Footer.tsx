@@ -8,7 +8,6 @@ import {
   Calendar,
   TrendingUp,
   BarChart3,
-  Archive,
   Share2,
   HelpCircle,
   Shield,
@@ -84,10 +83,6 @@ export default function Footer() {
                   <BarChart3 className="w-4 h-4" />
                   <span>Cutoffs</span>
                 </Link>
-                <a href="/old-predictor/index.html" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors">
-                  <Archive className="w-4 h-4" />
-                  <span>Legacy Predictor</span>
-                </a>
               </div>
             </div>
 

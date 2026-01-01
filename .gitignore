@@ -89,3 +89,6 @@ pids
 /public/data.json
 /public/cutoffs-data.json
 
+# CSV import files (source data)
+/public/cutoffs-import.csv
+

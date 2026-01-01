@@ -41,7 +41,6 @@ const ROUTE_LABELS: Record<string, string> = {
     'privacy': 'Privacy Policy',
     'disclaimer': 'Disclaimer',
     'socials': 'Social Links',
-    'old-predictor': 'Legacy Predictor',
 };
 
 /**

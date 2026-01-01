@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Redis } from '@upstash/redis';
 import zlib from 'zlib';
 import { promisify } from 'util';
-import path from 'path';
-import fs from 'fs/promises';
 
 // Switch to Node.js runtime to support zlib and persistent caching
 export const runtime = 'nodejs';
@@ -76,37 +74,6 @@ function getAdaptiveMultipliers(rank: number): { min: number; max: number } {
     }
 }
 
-/**
- * Load data from local JSON file as fallback
- */
-async function loadFromLocalFile(): Promise<CollegeData[]> {
-    const now = Date.now();
-    const filePath = path.join(process.cwd(), 'public', 'data.json');
-    const raw = await fs.readFile(filePath, 'utf8');
-    const rawData = JSON.parse(raw) as Record<string, string | number>[];
-
-    // Transform local data to match interface
-    const data: CollegeData[] = rawData.map((item) => ({
-        id: `${item["Institute"]}-${item["Program"]}-${item["Category"]}-${item["Round"]}-${item["Year"]}-${item["Quota"]}-${item["Seat Type"]}`,
-        round: String(item["Round"] || ''),
-        institute: String(item["Institute"] || ''),
-        branch: String(item["Program"] || ''),
-        seat_type: String(item["Seat Type"] || ''),
-        quota: String(item["Quota"] || ''),
-        category: String(item["Category"] || ''),
-        opening_rank: item["Opening Rank"] ? Number(item["Opening Rank"]) : null,
-        closing_rank: item["Closing Rank"] ? Number(item["Closing Rank"]) : null,
-        year: item["Year"] ? Number(item["Year"]) : null,
-        prediction: { text: '-', order: 6 }
-    }));
-
-    memoryCache = {
-        data: data,
-        timestamp: now // Still cache it to avoid FS reads every time
-    };
-
-    return data;
-}
 
 async function getMasterData(): Promise<CollegeData[]> {
     const now = Date.now();
@@ -116,10 +83,10 @@ async function getMasterData(): Promise<CollegeData[]> {
         return memoryCache.data;
     }
 
-    // 2. If Redis not available, skip to local file fallback
+    // 2. Ensure Redis is available
     if (!redis) {
-        console.warn('🔄 Redis not available, loading from local file...');
-        return loadFromLocalFile();
+        console.error('❌ Redis client not initialized');
+        throw new Error('Database unavailable - Redis credentials missing');
     }
 
     console.log('🔄 Cache stale or empty. Fetching from Upstash...');
@@ -129,8 +96,8 @@ async function getMasterData(): Promise<CollegeData[]> {
         const base64Data = await redis.get<string>('wbjee:master_data');
 
         if (!base64Data) {
-            console.warn('No data found in Redis, falling back to local file');
-            return loadFromLocalFile();
+            console.error('❌ No data found in Redis key: wbjee:master_data');
+            throw new Error('Database not seeded - run seed-upstash script');
         }
 
         // 4. Decompress
@@ -148,17 +115,11 @@ async function getMasterData(): Promise<CollegeData[]> {
         return data;
 
     } catch (error) {
-        console.error('❌ Redis fetch failed, falling back to local file:', error);
-
-        // 5. Fallback: Local JSON file
-        try {
-            return await loadFromLocalFile();
-        } catch (localError) {
-            console.error('❌ Fatal: Local fallback failed:', localError);
-            throw new Error('Service unavailable');
-        }
+        console.error('❌ Redis fetch failed:', error);
+        throw new Error('Service temporarily unavailable');
     }
 }
+
 
 export async function GET(request: NextRequest) {
     try {

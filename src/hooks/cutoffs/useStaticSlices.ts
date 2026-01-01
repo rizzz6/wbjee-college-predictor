@@ -119,8 +119,8 @@ export function useStaticSlices() {
     }, [index]);
 
     return {
-        // Index data
-        colleges: index?.colleges ?? [],
+        // Index data - sort colleges alphabetically
+        colleges: index?.colleges.slice().sort() ?? [],
         isLoadingIndex,
         indexError,
 

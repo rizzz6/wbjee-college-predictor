@@ -1,9 +1,10 @@
 import { config } from 'dotenv';
 import { Redis } from '@upstash/redis';
-import fs from 'fs/promises';
+import { createClient } from '@supabase/supabase-js';
 import path from 'path';
 import zlib from 'zlib';
 import { promisify } from 'util';
+import { FETCH_BATCH_SIZE, TABLES } from '../build/config';
 
 // Promisify gzip
 const gzip = promisify(zlib.gzip);
@@ -28,6 +29,18 @@ interface CollegeData {
     };
 }
 
+interface SupabaseRow {
+    institute: string;
+    program: string;
+    category: string;
+    round: string;
+    year: number;
+    quota: string;
+    seat_type: string;
+    opening_rank: number;
+    closing_rank: number;
+}
+
 async function seedUpstash() {
     console.log('🌱 Seeding Upstash Redis with Blob Strategy...');
 
@@ -37,29 +50,61 @@ async function seedUpstash() {
         process.exit(1);
     }
 
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SECRET_KEY) {
+        console.error('❌ Missing Supabase credentials!');
+        process.exit(1);
+    }
+
     // Initialize Redis
     const redis = new Redis({
         url: process.env.UPSTASH_REDIS_REST_URL!,
         token: process.env.UPSTASH_REDIS_REST_TOKEN!,
     });
 
-    // Read data
-    const filePath = path.join(process.cwd(), 'public', 'data.json');
-    const raw = await fs.readFile(filePath, 'utf8');
-    const rawData = JSON.parse(raw);
+    // Initialize Supabase
+    const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SECRET_KEY
+    );
 
-    // Transform data
-    const data: CollegeData[] = rawData.map((item: Record<string, unknown>) => ({
-        id: `${item["Institute"]}-${item["Program"]}-${item["Category"]}-${item["Round"]}-${item["Year"]}-${item["Quota"]}-${item["Seat Type"]}`,
-        round: item["Round"] as string || '',
-        institute: item["Institute"] as string || '',
-        branch: item["Program"] as string || '',
-        seat_type: item["Seat Type"] as string || '',
-        quota: item["Quota"] as string || '',
-        category: item["Category"] as string || '',
-        opening_rank: item["Opening Rank"] ? parseInt(String(item["Opening Rank"])) : null,
-        closing_rank: item["Closing Rank"] ? parseInt(String(item["Closing Rank"])) : null,
-        year: item["Year"] ? parseInt(String(item["Year"])) : null,
+    // Fetch data from Supabase with pagination
+    console.log('📥 Fetching data from Supabase...');
+    let allData: SupabaseRow[] = [];
+    let from = 0;
+
+    while (true) {
+        const { data: chunk, error } = await supabase
+            .from(TABLES.CUTOFFS)
+            .select('institute, program, category, round, year, quota, seat_type, opening_rank, closing_rank')
+            .range(from, from + FETCH_BATCH_SIZE - 1);
+
+        if (error) {
+            console.error('❌ Supabase fetch error:', error);
+            process.exit(1);
+        }
+
+        if (!chunk || chunk.length === 0) break;
+
+        allData = allData.concat(chunk);
+        process.stdout.write(`\r   Fetched ${allData.length} records...`);
+        from += FETCH_BATCH_SIZE;
+
+        if (chunk.length < FETCH_BATCH_SIZE) break;
+    }
+    process.stdout.write('\n');
+
+    // Transform data to match CollegeData interface
+    const data: CollegeData[] = allData.map((item) => ({
+        id: `${item.institute}-${item.program}-${item.category}-${item.round}-${item.year}-${item.quota}-${item.seat_type}`,
+        round: item.round || '',
+        institute: item.institute || '',
+        branch: item.program || '',
+        seat_type: item.seat_type || '',
+        quota: item.quota || '',
+        category: item.category || '',
+        opening_rank: item.opening_rank || null,
+        closing_rank: item.closing_rank || null,
+        year: item.year || null,
         prediction: { text: '-', order: 6 }
     }));
 
