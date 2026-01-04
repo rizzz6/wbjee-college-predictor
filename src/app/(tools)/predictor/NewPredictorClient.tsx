@@ -1550,7 +1550,7 @@ function HelpContent() {
         <h4 className="font-semibold text-xl mb-4 text-slate-900 dark:text-slate-100">How to Use WBJEE College Predictor 2026</h4>
         <ul className="list-disc list-outside ml-5 space-y-2 text-slate-700 dark:text-slate-300">
           <li className="leading-relaxed">Enter your WBJEE 2026 rank in the input field and get instant college predictions for engineering admission in West Bengal</li>
-          <li className="leading-relaxed">Use advanced filtering options to find specific engineering branches at Jadavpur University, IIT Kharagpur, or other top colleges</li>
+          <li className="leading-relaxed">Use advanced filtering options to find specific engineering branches at Jadavpur University, Calcutta University, or other top WBJEE-participating colleges</li>
           <li className="leading-relaxed">Click the star (<Star className="w-3 h-3 inline text-yellow-500" />) to add colleges to your shortlist for detailed comparison of admission chances</li>
           <li className="leading-relaxed">Click on any table row to view historical WBJEE cutoff trends and rank analysis charts</li>
           <li className="leading-relaxed">Export your personalized college list as CSV or share your results with friends preparing for WBJEE counseling</li>
