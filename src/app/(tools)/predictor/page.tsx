@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 const predictorFAQData = [
   {
     q: "How to use WBJEE College Predictor 2026?",
-    a: "Enter your WBJEE rank in the input field and get instant college predictions for engineering admission in West Bengal. Use advanced filtering options to find specific engineering branches at Jadavpur University, Calcutta University, or other top colleges."
+    a: "Enter your WBJEE rank in the input field and get instant college predictions for engineering admission in West Bengal. Use advanced filtering options to find specific engineering branches at Jadavpur University, Calcutta University, or other top WBJEE-participating colleges."
   },
   {
     q: "What is the difference between this React predictor and the original version?",

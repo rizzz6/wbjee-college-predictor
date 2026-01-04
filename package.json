@@ -25,6 +25,7 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@next/third-parties": "^16.0.5",
+    "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-slot": "^1.2.4",
     "@sanity/dashboard": "^5.0.1",
     "@sanity/icons": "^3.7.4",

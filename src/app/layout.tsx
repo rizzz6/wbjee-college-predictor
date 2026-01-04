@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Serif_Bengali, Noto_Serif_Devanagari } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import SmartBreadcrumb from "@/components/ui/SmartBreadcrumb";
@@ -20,6 +20,18 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const notoBengali = Noto_Serif_Bengali({
+  variable: "--font-noto-bengali",
+  subsets: ["bengali"],
+  display: "swap",
+});
+
+const notoDevanagari = Noto_Serif_Devanagari({
+  variable: "--font-noto-devanagari",
+  subsets: ["devanagari"],
   display: "swap",
 });
 
@@ -118,7 +130,7 @@ export default async function RootLayout({
       </head>
 
 
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-transparent text-gray-900 dark:text-white`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${notoBengali.variable} ${notoDevanagari.variable} antialiased bg-transparent text-gray-900 dark:text-white`}>
         <Providers>
           {/* Announcement Banner */}
           {announcement?.enabled && (

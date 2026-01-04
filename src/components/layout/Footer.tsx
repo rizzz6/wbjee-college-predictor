@@ -14,6 +14,7 @@ import {
   FileText
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import FooterAazadi from './FooterAazadi';
 
 export default function Footer() {
   const pathname = usePathname();
@@ -139,9 +140,7 @@ export default function Footer() {
               .
             </div>
 
-            <p className="text-xs text-gray-600 dark:text-gray-400 font-mono">
-              #Aazadi
-            </p>
+            <FooterAazadi />
           </div>
         </div>
       </div>
