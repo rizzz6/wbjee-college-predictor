@@ -92,3 +92,7 @@ pids
 # CSV import files (source data)
 /public/cutoffs-import.csv
 
+# Validation reports (generated)
+college-details-validation-report.csv
+*.validation-report.csv
+

@@ -483,13 +483,163 @@ npm run migrate:supabase
 
 ---
 
-### 5. Other Database Scripts (Legacy)
+### 6. `seed-sanity-colleges.ts` ✨ NEW
 
-These scripts are **deprecated** and no longer used:
+**Purpose:** Syncs unique colleges from Supabase to Sanity CMS.
 
-- ❌ `import-cutoffs.mjs` - Replaced by `import-from-csv.ts`
-- ❌ `import-grouped-cutoffs.mjs` - Replaced by `import-from-csv.ts`
-- ❌ `seed-colleges.mjs` - Replaced by `import-from-csv.ts`
+**Usage:**
+```bash
+npm run seed:sanity:colleges
+```
+
+**What it does:**
+1. Fetches unique institutes from Supabase
+2. Checks if they exist in Sanity
+3. Creates new `college` documents for missing institutes
+4. Does NOT overwrite existing data (idempotent)
+
+---
+
+### 7. `seed-sanity-cutoffs.ts` ✨ NEW
+
+**Purpose:** Syncs grouped availability data to Sanity for individual college pages.
+
+**Usage:**
+```bash
+npm run seed:sanity:cutoffs
+```
+
+**What it does:**
+1. Fetches ALL cutoff data from Supabase
+2. Groups cutoffs by Institute in memory
+3. Creates or Updates `collegeCutoff` documents in Sanity
+4. Replaces the `cutoffs` array with fresh data from Supabase
+
+---
+
+### 8. College Details Migration Scripts ✨ NEW
+
+**Purpose:** Manages bidirectional sync between `collegeDetail` (source of truth) and `college` documents in Sanity.
+
+#### Architecture
+- `collegeDetail`: Hidden schema containing raw JSON data
+- `college`: Public schema with reference to collegeDetail
+- Bidirectional sync via custom component with Pull/Push buttons
+
+#### Available Commands
+
+**Full Migration (Recommended):**
+```bash
+npm run migrate:college-details
+```
+Runs: `clear` → `seed` → `link` in sequence
+
+**Individual Steps:**
+
+1. **Clear Pre-filled Data**
+   ```bash
+   npm run clear:college-details
+   ```
+   - Clears `highlights`, `placements`, `body` from all colleges
+   - Safe to re-run (idempotent)
+
+2. **Seed College Details**
+   ```bash
+   npm run seed:college-details
+   ```
+   - Imports `individual-college-details.json` → `collegeDetail` documents
+   - Creates 137 structured records
+   - Uses `createOrReplace` (safe to re-run)
+
+3. **Link Colleges**
+   ```bash
+   npm run link:college-details
+   ```
+   - Sets `detailsIdentifier` reference for each college
+   - Uses `college-name-map.ts` for matching
+   - Does NOT pre-fill data (component handles auto-pull)
+
+#### Data Fields Synced
+- `highlights` (Array)
+- `location` (String)
+- `type` (Government/Private)
+- `website` (URL)
+- `description` (SEO text)
+- `estYear` (Extracted from highlights)
+- `body` (About paragraphs → Portable Text)
+- `placements` (Stats → Table)
+- `feeStructure` (Stats → Table)
+
+#### How It Works
+
+**In Sanity Studio:**
+1. Open a College document
+2. See "College Details Source" dropdown
+3. Select a detail record
+4. **Auto-Pull**: Data automatically populates
+5. Edit fields as needed
+6. **Push**: Click button to save changes back to source
+
+**Benefits:**
+- ✅ Source of truth in Sanity (no JSON dependency)
+- ✅ Bidirectional sync (Pull & Push)
+- ✅ Auto-extraction of establishment year
+- ✅ Hidden from navigation (only accessible via college)
+- ✅ Type-safe with TypeScript interfaces
+
+#### Files
+- `clear-college-details.ts` - Cleanup script
+- `seed-college-details.ts` - Import JSON to Sanity
+- `link-college-details.ts` - Create references
+- `college-name-map.ts` - Name matching map
+- `bulk-resync-colleges.ts` - Bulk resync all at once
+
+#### Bulk Operations
+
+**Resync All Colleges:**
+```bash
+npm run resync:all-colleges
+```
+- Re-syncs all colleges that have a `detailsIdentifier` reference
+- Useful after updating collegeDetail records
+- Updates `lastSyncedAt` timestamp
+- Safe to re-run (idempotent)
+
+**Validate Data Quality:**
+```bash
+npm run validate:college-details
+```
+- Generates CSV report of data quality issues
+- Checks for missing references, data, and orphaned records
+- Output: `college-details-validation-report.csv`
+
+#### Component Features
+
+**Auto-Pull:**
+- Automatically syncs when reference is selected
+- Validates source data (warnings for missing content)
+- Extracts establishment year from highlights
+- Updates `lastSyncedAt` timestamp
+
+**Manual Push:**
+- Confirmation dialog prevents accidental overwrites
+- Transforms data back to collegeDetail format
+- Updates source of truth
+
+**UI Features:**
+- Loading spinners during operations
+- Warning when no reference selected
+- Real-time validation feedback
+- Lucide icons (Download/Upload)
+
+---
+
+### 9. Legacy Scripts (Deleted/Deprecated)
+
+- ❌ `import-cutoffs.mjs` - Replaced by `seed-sanity:cutoffs`
+- ❌ `import-grouped-cutoffs.mjs` - Replaced by `seed-sanity:cutoffs`
+- ❌ `seed-colleges.mjs` - Replaced by `seed-sanity:colleges`
+- ❌ `migrate-to-supabase.ts` - Legacy data.json migration (kept for reference)
 - ✅ `delete-old-cutoffs.mjs` - Still available if needed
 
 ---
@@ -661,6 +811,26 @@ npm run fix:duplicates
 Before: "JU", "Jadavpur Univ", "Jadavpur University"
 After:  "Jadavpur University" (all entries)
 ```
+
+### `remove-fuzzy-duplicates.js` ✨ NEW
+
+**Purpose:** Detects and removes fuzzy duplicate entries in `public/data/individual-college-details.json`.
+
+**Usage:**
+```bash
+# Check for duplicates without making changes (Dry Run)
+npm run fix:json-duplicates -- --dry-run
+
+# Automatically remove duplicates and save
+npm run fix:json-duplicates
+```
+
+**What it does:**
+1. Scans `individual-college-details.json`.
+2. Normalizes college names (removes spaces, punctuation, common words).
+3. Groups potential duplicates.
+4. Uses a scoring system to keep the best entry (Title Case > ALL CAPS, longer names, etc.).
+5. Removes lower-scoring duplicates.
 
 ---
 

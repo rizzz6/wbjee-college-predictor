@@ -1,14 +1,30 @@
-import { type SchemaTypeDefinition } from 'sanity'
+// Import document schemas
+import { collegeType } from './documents/college'
+import { collegeCutoffType } from './documents/collegeCutoff'
+import { collegeDetailType } from './documents/collegeDetail'
+import { postType } from './documents/postType'
+import { authorType } from './documents/authorType'
+import { categoryType } from './documents/categoryType'
+import { siteSettingsType } from './documents/siteSettings'
+import { timelineType } from './documents/timeline'
 
-import { blockContentType } from './blockContentType'
-import { categoryType } from './categoryType'
-import { postType } from './postType'
-import { authorType } from './authorType'
-import { collegeType } from './college'
-import { timelineType } from './timeline'
-import { collegeCutoffType } from './collegeCutoff'
-import { siteSettingsType } from './siteSettings'
+// Import object schemas
+import { blockContentType } from './objects/blockContentType'
 
-export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [blockContentType, categoryType, postType, authorType, collegeType, timelineType, collegeCutoffType, siteSettingsType],
+// Export schema configuration
+export const schema = {
+  types: [
+    // Documents
+    collegeType,
+    collegeCutoffType,
+    collegeDetailType,
+    postType,
+    authorType,
+    categoryType,
+    siteSettingsType,
+    timelineType,
+
+    // Objects
+    blockContentType,
+  ],
 }

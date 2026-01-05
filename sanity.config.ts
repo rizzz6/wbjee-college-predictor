@@ -20,7 +20,9 @@ import { table } from '@sanity/table'
 import StudioIcon from './src/sanity/components/StudioIcon'
 import { customTheme } from './src/sanity/theme/customTheme'
 
-import { CustomDeployWidget } from './src/sanity/components/CustomDeployWidget'
+// Import the new tabbed dashboard
+import { TabbedDashboard } from './src/sanity/components/dashboard'
+import { DuplicateAction } from './src/sanity/actions/DuplicateAction'
 
 export default defineConfig({
   name: 'rwbjee-studio',
@@ -40,13 +42,13 @@ export default defineConfig({
   plugins: [
     structureTool({ structure }),
 
-    // Dashboard tool with Custom Deploy Button
+    // Dashboard tool with Tabbed Dashboard
     dashboardTool({
       widgets: [
         {
-          name: 'deploy-production',
-          component: CustomDeployWidget,
-          layout: { width: 'medium', height: 'small' }
+          name: 'tabbed-dashboard',
+          component: TabbedDashboard,
+          layout: { width: 'full', height: 'auto' }
         }
       ],
     }),
@@ -59,5 +61,28 @@ export default defineConfig({
     visionTool({ defaultApiVersion: apiVersion }),
     table()
   ],
-})
 
+  document: {
+    actions: (prev, context) => {
+      if (context.schemaType === 'college') {
+        return [...prev, DuplicateAction]
+      }
+      return prev
+    },
+    productionUrl: async (prev, context) => {
+      const { document } = context
+
+      // Only add preview for college documents
+      if (document._type === 'college') {
+        const slug = (document as any).slug?.current
+        if (slug) {
+          // Use environment variable or fallback to localhost in dev
+          const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+          return `${baseUrl}/colleges/${slug}`
+        }
+      }
+
+      return prev
+    }
+  }
+})

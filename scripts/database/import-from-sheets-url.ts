@@ -16,6 +16,7 @@ import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import https from 'https';
 import http from 'http';
+import { toTitleCase } from '../utils/normalize-text';
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });
@@ -160,11 +161,11 @@ async function importFromSheetsURL() {
         }
 
         // Transform data
-        console.log('🔄 Transforming data...');
+        console.log('🔄 Transforming and normalizing data...');
         const transformed: TransformedCutoff[] = csvData.map(row => ({
-            institute: row.Institute,
-            program: row.Program,
-            stream: row.Stream,
+            institute: toTitleCase(row.Institute),
+            program: toTitleCase(row.Program),
+            stream: toTitleCase(row.Stream),
             quota: row.Quota,
             category: row.Category,
             seat_type: row['Seat Type'],
@@ -176,6 +177,38 @@ async function importFromSheetsURL() {
         }));
 
         console.log('✅ Data transformation complete\n');
+
+        // Deduplicate based on all fields (in case CSV has duplicate rows with different casing)
+        console.log('🔍 Checking for duplicates after normalization...');
+        const seen = new Set<string>();
+        const deduplicated: TransformedCutoff[] = [];
+        let duplicatesRemoved = 0;
+
+        transformed.forEach(record => {
+            const key = JSON.stringify({
+                institute: record.institute,
+                program: record.program,
+                stream: record.stream,
+                quota: record.quota,
+                category: record.category,
+                seat_type: record.seat_type,
+                round: record.round,
+                year: record.year
+            });
+
+            if (!seen.has(key)) {
+                seen.add(key);
+                deduplicated.push(record);
+            } else {
+                duplicatesRemoved++;
+            }
+        });
+
+        if (duplicatesRemoved > 0) {
+            console.log(`   Removed ${duplicatesRemoved} duplicate rows (same data, different casing in source)\n`);
+        } else {
+            console.log('   No duplicates found\n');
+        }
 
         // Check for existing data
         const { count: existingCount } = await supabase
@@ -194,12 +227,12 @@ async function importFromSheetsURL() {
         // Batch insert
         const BATCH_SIZE = 1000;
         let inserted = 0;
-        const totalBatches = Math.ceil(transformed.length / BATCH_SIZE);
+        const totalBatches = Math.ceil(deduplicated.length / BATCH_SIZE);
 
         console.log(`📦 Starting batch insert (${totalBatches} batches)...\n`);
 
-        for (let i = 0; i < transformed.length; i += BATCH_SIZE) {
-            const batch = transformed.slice(i, i + BATCH_SIZE);
+        for (let i = 0; i < deduplicated.length; i += BATCH_SIZE) {
+            const batch = deduplicated.slice(i, i + BATCH_SIZE);
             const batchNumber = Math.floor(i / BATCH_SIZE) + 1;
 
             process.stdout.write(`   Batch ${batchNumber}/${totalBatches}... `);
@@ -214,8 +247,8 @@ async function importFromSheetsURL() {
             }
 
             inserted += batch.length;
-            const percentage = ((inserted / transformed.length) * 100).toFixed(1);
-            console.log(`✅ (${inserted.toLocaleString()} / ${transformed.length.toLocaleString()} - ${percentage}%)`);
+            const percentage = ((inserted / deduplicated.length) * 100).toFixed(1);
+            console.log(`✅ (${inserted.toLocaleString()} / ${deduplicated.length.toLocaleString()} - ${percentage}%)`);
         }
 
         console.log('\n🎉 Import complete!');
@@ -229,7 +262,7 @@ async function importFromSheetsURL() {
 
         console.log(`✅ Verified: ${finalCount?.toLocaleString()} records in database`);
 
-        if (finalCount === transformed.length) {
+        if (finalCount === deduplicated.length) {
             console.log('✅ Count matches! Import successful.\n');
         }
 
@@ -247,6 +280,9 @@ async function importFromSheetsURL() {
         console.log('\n✨ Next steps:');
         console.log('   1. Run: npm run build           # Rebuild all data files');
         console.log('   2. Run: npm run seed:upstash    # Update Redis cache\n');
+
+        process.exit(0);
+
 
     } catch (error) {
         console.error('\n❌ Import failed:', error);
