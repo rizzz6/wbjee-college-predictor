@@ -32,6 +32,7 @@
     "@sanity/image-url": "^1.2.0",
     "@sanity/table": "^2.0.0",
     "@sanity/vision": "^4.17.0",
+    "@sentry/nextjs": "^10.32.1",
     "@supabase/supabase-js": "^2.89.0",
     "@upstash/redis": "^1.35.7",
     "@vercel/analytics": "^1.5.0",
