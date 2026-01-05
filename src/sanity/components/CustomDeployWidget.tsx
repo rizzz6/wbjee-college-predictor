@@ -1,378 +1,196 @@
-import { Card, Button, Stack, Text, Spinner, Select, Flex, TextInput } from '@sanity/ui'
-import { useState, useEffect, useCallback } from 'react'
-import { useClient } from 'sanity'
-import { Trash2, Edit, Plus, Rocket, Check, AlertCircle } from 'lucide-react'
+// Custom Deploy Widget for Sanity Dashboard
+// USES LOCALSTORAGE for security (Vercel webhooks are private)
 
-interface DeploymentTarget {
-    _id: string
-    _rev?: string
-    _createdAt: string
-    _updatedAt: string
-    name: string
-    deployHook: string
-    projectId: string
-    token: string
-    deployLimit: number
-}
+'use client'
+
+import { Stack, Text, Button, Box, TextInput, Grid, Flex, Badge, Card } from '@sanity/ui'
+import { useState } from 'react'
+import { Rocket, Plus, Trash2, ExternalLink, Clock } from 'lucide-react'
+import { useDeployment } from '../utils/hooks/useDeployment'
+import { validateWebhookUrl, type DeployTarget } from '../utils/deployActions'
+import { WidgetCard, EmptyState } from './shared'
 
 export function CustomDeployWidget() {
-    const client = useClient({ apiVersion: '2024-01-01' })
-    const [targets, setTargets] = useState<DeploymentTarget[]>([])
-    const [selectedTarget, setSelectedTarget] = useState<string>('')
-    const [isLoading, setIsLoading] = useState(true)
-    const [isDeploying, setIsDeploying] = useState(false)
-    const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
+    const { targets, deploying, lastDeployed, deploy, addTarget, deleteDeployTarget } = useDeployment()
 
-    // Management state
-    const [showManage, setShowManage] = useState(false)
-    const [editingTarget, setEditingTarget] = useState<DeploymentTarget | null>(null)
-    const [formData, setFormData] = useState<Partial<DeploymentTarget>>({})
+    const [showAddForm, setShowAddForm] = useState(false)
+    const [newTarget, setNewTarget] = useState<Partial<DeployTarget>>({
+        name: '',
+        url: '',
+        branch: ''
+    })
 
-    // Fetch deployment targets from Sanity
-    const fetchTargets = useCallback(async () => {
-        setIsLoading(true)
-        try {
-            const data = await client.fetch<DeploymentTarget[]>(
-                `*[_type == "vercel.deploymentTarget"] | order(_updatedAt desc) {
-          _id,
-          _rev,
-          _createdAt,
-          _updatedAt,
-          name,
-          deployHook,
-          projectId,
-          token,
-          deployLimit
-        }`
-            )
-            setTargets(data)
-            setSelectedTarget(prev => {
-                if (data.length > 0 && !prev) {
-                    return data[0]._id
-                }
-                return prev
-            })
-        } catch (error) {
-            console.error('Failed to fetch deployment targets:', error)
-        } finally {
-            setIsLoading(false)
-        }
-    }, [client])
-
-    useEffect(() => {
-        fetchTargets()
-    }, [fetchTargets])
-
-    const handleDeploy = async () => {
-        const target = targets.find(t => t._id === selectedTarget)
-        if (!target?.deployHook) {
-            alert('No deploy hook configured for this target')
+    const handleAddTarget = () => {
+        if (!newTarget.name || !newTarget.url) {
             return
         }
 
-        setIsDeploying(true)
-        setStatus('idle')
-
-        try {
-            const response = await fetch(target.deployHook, { method: 'POST' })
-
-            if (response.ok) {
-                setStatus('success')
-                setTimeout(() => setStatus('idle'), 5000)
-            } else {
-                setStatus('error')
-            }
-        } catch (error) {
-            console.error('Deploy failed:', error)
-            setStatus('error')
-        } finally {
-            setIsDeploying(false)
-        }
-    }
-
-    const handleDelete = async (targetId: string) => {
-        if (!confirm('Are you sure you want to delete this deployment target?')) {
+        if (!validateWebhookUrl(newTarget.url)) {
+            alert('Invalid webhook URL. Must be a Vercel HTTPS URL.')
             return
         }
 
-        try {
-            await client.delete(targetId)
-            await fetchTargets()
-        } catch (error) {
-            console.error('Failed to delete target:', error)
-            alert('Failed to delete target')
-        }
-    }
-
-    const handleSave = async () => {
-        if (!formData.name || !formData.deployHook || !formData.projectId || !formData.token) {
-            alert('Please fill in all required fields')
-            return
+        const target: DeployTarget = {
+            id: `deploy-${Date.now()}`,
+            name: newTarget.name,
+            url: newTarget.url,
+            branch: newTarget.branch
         }
 
-        try {
-            if (editingTarget?._id) {
-                // Update existing
-                await client
-                    .patch(editingTarget._id)
-                    .set({
-                        name: formData.name,
-                        deployHook: formData.deployHook,
-                        projectId: formData.projectId,
-                        token: formData.token,
-                        deployLimit: formData.deployLimit || 5,
-                    })
-                    .commit()
-            } else {
-                // Create new
-                await client.create({
-                    _type: 'vercel.deploymentTarget',
-                    name: formData.name,
-                    deployHook: formData.deployHook,
-                    projectId: formData.projectId,
-                    token: formData.token,
-                    deployLimit: formData.deployLimit || 5,
-                    teamId: null,
-                })
-            }
-
-            setEditingTarget(null)
-            setFormData({})
-            await fetchTargets()
-        } catch (error) {
-            console.error('Failed to save target:', error)
-            alert('Failed to save target')
-        }
+        addTarget(target)
+        setNewTarget({ name: '', url: '', branch: '' })
+        setShowAddForm(false)
     }
 
-    if (isLoading) {
-        return (
-            <Card padding={4}>
-                <Stack space={3}>
-                    <Flex justify="center">
-                        <Spinner />
-                    </Flex>
-                    <Text size={1} muted align="center">Loading deployment targets...</Text>
-                </Stack>
-            </Card>
-        )
+    const formatLastDeployed = (timestamp?: number) => {
+        if (!timestamp) return null
+        const diff = Date.now() - timestamp
+        const minutes = Math.floor(diff / 60000)
+        if (minutes < 1) return 'Just now'
+        if (minutes < 60) return `${minutes}m ago`
+        const hours = Math.floor(minutes / 60)
+        if (hours < 24) return `${hours}h ago`
+        const days = Math.floor(hours / 24)
+        return `${days}d ago`
     }
 
-    // Edit/Add Dialog
-    if (editingTarget || showManage) {
-        return (
-            <Card padding={4}>
-                <Stack space={4}>
-                    <Flex justify="space-between" align="center">
-                        <Flex align="center" gap={2}>
-                            <Rocket size={18} />
-                            <Text size={2} weight="semibold">
-                                {editingTarget ? `Edit: ${editingTarget.name}` : 'Manage Targets'}
-                            </Text>
-                        </Flex>
-                        <Button
-                            text="Back"
-                            mode="ghost"
-                            onClick={() => {
-                                setEditingTarget(null)
-                                setShowManage(false)
-                                setFormData({})
-                            }}
-                        />
-                    </Flex>
-
-                    {editingTarget ? (
-                        // Edit Form
-                        <Stack space={3}>
-                            <TextInput
-                                placeholder="Target Name (e.g., Production)"
-                                value={formData.name || ''}
-                                onChange={(e) => setFormData({ ...formData, name: e.currentTarget.value })}
-                            />
-                            <TextInput
-                                placeholder="Vercel Project ID"
-                                value={formData.projectId || ''}
-                                onChange={(e) => setFormData({ ...formData, projectId: e.currentTarget.value })}
-                            />
-                            <TextInput
-                                placeholder="Vercel Token"
-                                value={formData.token || ''}
-                                onChange={(e) => setFormData({ ...formData, token: e.currentTarget.value })}
-                            />
-                            <TextInput
-                                placeholder="Deploy Hook URL"
-                                value={formData.deployHook || ''}
-                                onChange={(e) => setFormData({ ...formData, deployHook: e.currentTarget.value })}
-                            />
-                            <TextInput
-                                type="number"
-                                placeholder="Number of deploys to show (5)"
-                                value={formData.deployLimit?.toString() || '5'}
-                                onChange={(e) => setFormData({ ...formData, deployLimit: parseInt(e.currentTarget.value) || 5 })}
-                            />
-                            <Flex gap={2}>
-                                <Button text="Save" tone="primary" onClick={handleSave} />
-                                <Button text="Cancel" mode="ghost" onClick={() => {
-                                    setEditingTarget(null)
-                                    setFormData({})
-                                }} />
-                            </Flex>
-                        </Stack>
-                    ) : (
-                        // Manage List
-                        <Stack space={3}>
-                            <Button
-                                text="Add New Target"
-                                icon={Plus}
-                                tone="primary"
-                                onClick={() => {
-                                    setEditingTarget({} as DeploymentTarget)
-                                    setFormData({ deployLimit: 5 })
-                                }}
-                            />
-
-                            {targets.map((target) => (
-                                <Card key={target._id} padding={3} border tone="default">
-                                    <Flex justify="space-between" align="center">
-                                        <Stack space={2}>
-                                            <Text weight="semibold">{target.name}</Text>
-                                            <Text size={1} muted>Project: {target.projectId}</Text>
-                                            <Text size={1} muted>
-                                                {target._createdAt
-                                                    ? `Created: ${new Date(target._createdAt).toLocaleDateString('en-IN', {
-                                                        day: 'numeric',
-                                                        month: 'short',
-                                                        year: 'numeric',
-                                                        hour: '2-digit',
-                                                        minute: '2-digit'
-                                                    })}`
-                                                    : 'Created: Unknown'
-                                                }
-                                            </Text>
-                                        </Stack>
-                                        <Flex gap={2}>
-                                            <Button
-                                                icon={Edit}
-                                                mode="ghost"
-                                                tone="primary"
-                                                onClick={() => {
-                                                    setEditingTarget(target)
-                                                    setFormData(target)
-                                                }}
-                                            />
-                                            <Button
-                                                icon={Trash2}
-                                                mode="ghost"
-                                                tone="critical"
-                                                onClick={() => handleDelete(target._id)}
-                                            />
-                                        </Flex>
-                                    </Flex>
-                                </Card>
-                            ))}
-                        </Stack>
-                    )}
-                </Stack>
-            </Card>
-        )
-    }
-
-    if (targets.length === 0) {
-        return (
-            <Card padding={4} tone="caution">
-                <Stack space={3}>
-                    <Flex align="center" gap={2}>
-                        <Rocket size={18} />
-                        <Text size={2} weight="semibold">Deploy to Production</Text>
-                    </Flex>
-                    <Text size={1}>
-                        No deployment targets configured.
-                    </Text>
-                    <Button
-                        text="Add Target"
-                        icon={Plus}
-                        onClick={() => {
-                            setEditingTarget({} as DeploymentTarget)
-                            setFormData({ deployLimit: 5 })
-                        }}
-                    />
-                </Stack>
-            </Card>
-        )
-    }
-
-    // Main Deploy View
     return (
-        <Card padding={4} radius={2} shadow={1} tone={status === 'success' ? 'positive' : status === 'error' ? 'critical' : undefined}>
-            <Stack space={3}>
-                <Flex justify="space-between" align="center">
-                    <Flex align="center" gap={2}>
-                        <Rocket size={18} />
-                        <Text size={2} weight="semibold">
-                            Deploy to Production
-                        </Text>
-                    </Flex>
-                    <Button
-                        text="Manage"
-                        mode="ghost"
-                        fontSize={1}
-                        onClick={() => setShowManage(true)}
-                    />
-                </Flex>
-
-                {targets.length > 1 && (
-                    <Select
-                        value={selectedTarget}
-                        onChange={(e) => setSelectedTarget(e.currentTarget.value)}
-                    >
-                        {targets.map((target) => (
-                            <option key={target._id} value={target._id}>
-                                {target.name}
-                            </option>
-                        ))}
-                    </Select>
-                )}
-
-                {targets.length === 1 && (
-                    <Text size={1} muted>
-                        Target: {targets[0].name}
-                    </Text>
-                )}
-
+        <WidgetCard
+            title="Deploy Targets"
+            icon={<Rocket size={18} />}
+            iconColor="#ef4444"
+            headerGradient="linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
+            collapsible
+            actions={
                 <Button
-                    mode="default"
-                    tone={status === 'success' ? 'positive' : status === 'error' ? 'critical' : 'primary'}
-                    loading={isDeploying}
-                    onClick={handleDeploy}
-                    text={
-                        isDeploying
-                            ? 'Deploying...'
-                            : status === 'success'
-                                ? '✓ Deployed!'
-                                : status === 'error'
-                                    ? 'Deploy Failed - Retry?'
-                                    : 'Deploy Now'
-                    }
+                    mode="bleed"
+                    icon={Plus}
+                    text="Add"
+                    onClick={() => setShowAddForm(!showAddForm)}
+                    style={{ color: 'white' }}
+                    fontSize={0}
                 />
+            }
+            footer={
+                <Flex align="center" gap={1}>
+                    <ExternalLink size={12} style={{ opacity: 0.5 }} />
+                    <Text size={0} muted>
+                        Get webhook from Vercel → Settings → Deploy Hooks
+                    </Text>
+                </Flex>
+            }
+        >
+            <Stack space={4}>
+                {/* Add Target Form */}
+                {showAddForm && (
+                    <Box padding={3} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8 }}>
+                        <Stack space={3}>
+                            <Text size={1} weight="semibold">New Deploy Target</Text>
 
-                {status === 'success' && (
-                    <Flex align="center" gap={2}>
-                        <Check style={{ color: 'green' }} />
-                        <Text size={1} muted>
-                            Build started! Check Vercel dashboard for progress.
-                        </Text>
-                    </Flex>
+                            <TextInput
+                                placeholder="Target name (e.g., Production)"
+                                value={newTarget.name || ''}
+                                onChange={(e) => setNewTarget(prev => ({ ...prev, name: e.currentTarget.value }))}
+                                fontSize={1}
+                            />
+
+                            <TextInput
+                                placeholder="Vercel webhook URL"
+                                value={newTarget.url || ''}
+                                onChange={(e) => setNewTarget(prev => ({ ...prev, url: e.currentTarget.value }))}
+                                fontSize={1}
+                            />
+
+                            <TextInput
+                                placeholder="Branch (optional, e.g., main)"
+                                value={newTarget.branch || ''}
+                                onChange={(e) => setNewTarget(prev => ({ ...prev, branch: e.currentTarget.value }))}
+                                fontSize={1}
+                            />
+
+                            <Grid columns={2} gap={2}>
+                                <Button
+                                    mode="default"
+                                    text="Save"
+                                    onClick={handleAddTarget}
+                                    tone="positive"
+                                    disabled={!newTarget.name || !newTarget.url}
+                                    fontSize={1}
+                                />
+                                <Button
+                                    mode="ghost"
+                                    text="Cancel"
+                                    onClick={() => {
+                                        setShowAddForm(false)
+                                        setNewTarget({ name: '', url: '', branch: '' })
+                                    }}
+                                    fontSize={1}
+                                />
+                            </Grid>
+                        </Stack>
+                    </Box>
                 )}
 
-                {status === 'error' && (
-                    <Flex align="center" gap={2}>
-                        <AlertCircle style={{ color: 'red' }} />
-                        <Text size={1} style={{ color: 'red' }}>
-                            Failed to trigger deploy. Check your webhook URL.
-                        </Text>
-                    </Flex>
+                {/* Deploy Targets List */}
+                {targets.length === 0 ? (
+                    <EmptyState
+                        icon={<Rocket size={32} />}
+                        title="No deploy targets configured"
+                        description="Add a Vercel webhook URL to get started"
+                    />
+                ) : (
+                    <Stack space={2}>
+                        {targets.map(target => (
+                            <Card key={target.id} padding={3} border radius={2}>
+                                <Stack space={3}>
+                                    <Flex justify="space-between" align="center">
+                                        <Stack space={1}>
+                                            <Flex align="center" gap={2}>
+                                                <Text size={1} weight="semibold">{target.name}</Text>
+                                                {target.branch && (
+                                                    <Badge tone="primary" fontSize={0}>
+                                                        {target.branch}
+                                                    </Badge>
+                                                )}
+                                            </Flex>
+                                            {lastDeployed[target.id] && (
+                                                <Flex align="center" gap={1}>
+                                                    <Clock size={12} style={{ opacity: 0.5 }} />
+                                                    <Text size={0} muted>
+                                                        Last: {formatLastDeployed(lastDeployed[target.id])}
+                                                    </Text>
+                                                </Flex>
+                                            )}
+                                        </Stack>
+                                        <Button
+                                            mode="ghost"
+                                            icon={Trash2}
+                                            onClick={() => {
+                                                if (confirm(`Delete "${target.name}"?`)) {
+                                                    deleteDeployTarget(target.id)
+                                                }
+                                            }}
+                                            tone="critical"
+                                            fontSize={1}
+                                        />
+                                    </Flex>
+
+                                    <Button
+                                        mode="default"
+                                        icon={Rocket}
+                                        text={deploying[target.id] ? 'Deploying...' : 'Deploy Now'}
+                                        onClick={() => deploy(target)}
+                                        disabled={deploying[target.id]}
+                                        tone="positive"
+                                        fontSize={1}
+                                        style={{ width: '100%' }}
+                                    />
+                                </Stack>
+                            </Card>
+                        ))}
+                    </Stack>
                 )}
             </Stack>
-        </Card>
+        </WidgetCard>
     )
 }

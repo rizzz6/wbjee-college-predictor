@@ -1,92 +1,118 @@
 import type { StructureResolver } from 'sanity/structure'
-import { School, FileText, Settings } from 'lucide-react'
-import { Iframe } from 'sanity-plugin-iframe-pane'
-import React from 'react'
+import {
+  BookOpen, CheckCircle, AlertTriangle, XCircle,
+  AlertOctagon, Building2, GraduationCap, Eye
+} from 'lucide-react'
+import { CollegePreviewPane } from './components/CollegePreviewPane'
 
-// Icon wrappers with custom sizes
-const SettingsIcon = () => React.createElement(Settings, { size: 18 })
-const SchoolIcon = () => React.createElement(School, { size: 18 })
-const FileTextIcon = () => React.createElement(FileText, { size: 18 })
-
-// https://www.sanity.io/docs/structure-builder-cheat-sheet
+// Docs: https://www.sanity.io/docs/structure-builder-cheat-sheet
 export const structure: StructureResolver = (S) =>
   S.list()
     .title('Content')
     .items([
-      // Site Settings (Singleton)
-      S.listItem()
-        .title('Site Settings')
-        .icon(SettingsIcon)
-        .child(
-          S.document()
-            .schemaType('siteSettings')
-            .documentId('siteSettings')
-        ),
-
-      S.divider(),
-
-      // WBJEE Data Group
-      S.listItem()
-        .title('WBJEE Data')
-        .icon(SchoolIcon)
+      S.documentTypeListItem('college')
+        .title('Colleges')
         .child(
           S.list()
-            .title('WBJEE Data')
+            .title('College Views')
             .items([
-              // Colleges with Live Preview
+              // All colleges with sorting
               S.listItem()
-                .title('Colleges')
-                .schemaType('college')
+                .title('All Colleges')
+                .icon(BookOpen)
                 .child(
                   S.documentTypeList('college')
-                    .title('Colleges')
+                    .title('All Colleges')
+                    .defaultOrdering([{ field: '_createdAt', direction: 'desc' }])
                     .child((documentId) =>
                       S.document()
                         .documentId(documentId)
-                        .schemaType('college')
                         .views([
                           S.view.form(),
                           S.view
-                            .component(Iframe)
-                            .options({
-                              url: (doc: { slug?: { current?: string } }) => {
-                                if (!doc?.slug?.current) {
-                                  return `http://localhost:3000/colleges`
-                                }
-                                return `http://localhost:3000/colleges/${doc.slug.current}`
-                              },
-                              reload: { button: true },
-                            })
-                            .title('Live Preview'),
+                            .component(CollegePreviewPane)
+                            .title('Preview')
+                            .icon(Eye)
                         ])
                     )
                 ),
-              S.documentTypeListItem('collegeCutoff').title('College Cutoffs'),
-              S.documentTypeListItem('timeline').title('Timeline Events'),
+
+              S.divider(),
+
+              // Quick Filters
+              S.listItem()
+                .title('Recently Synced (24h)')
+                .icon(CheckCircle)
+                .child(
+                  S.documentList()
+                    .title('Recently Synced Colleges')
+                    .filter('_type == "college" && lastSyncedAt > $yesterday')
+                    .params({
+                      yesterday: new Date(Date.now() - 86400000).toISOString()
+                    })
+                    .defaultOrdering([{ field: 'lastSyncedAt', direction: 'desc' }])
+                ),
+
+              S.listItem()
+                .title('Outdated Sync (>24h)')
+                .icon(AlertTriangle)
+                .child(
+                  S.documentList()
+                    .title('Outdated Colleges')
+                    .filter('_type == "college" && defined(lastSyncedAt) && lastSyncedAt < $yesterday')
+                    .params({
+                      yesterday: new Date(Date.now() - 86400000).toISOString()
+                    })
+                ),
+
+              S.listItem()
+                .title('No Detail Reference')
+                .icon(XCircle)
+                .child(
+                  S.documentList()
+                    .title('Colleges Without Detail Reference')
+                    .filter('_type == "college" && !defined(detailsIdentifier)')
+                ),
+
+              S.listItem()
+                .title('Missing Highlights')
+                .icon(AlertOctagon)
+                .child(
+                  S.documentList()
+                    .title('Colleges Without Highlights')
+                    .filter('_type == "college" && (!defined(highlights) || count(highlights) == 0)')
+                ),
+
+              S.divider(),
+
+              // By Type
+              S.listItem()
+                .title('Government Colleges')
+                .icon(Building2)
+                .child(
+                  S.documentList()
+                    .title('Government Colleges')
+                    .filter('_type == "college" && type == "Government"')
+                ),
+
+              S.listItem()
+                .title('Private Colleges')
+                .icon(GraduationCap)
+                .child(
+                  S.documentList()
+                    .title('Private Colleges')
+                    .filter('_type == "college" && type == "Private"')
+                ),
             ])
         ),
 
-      // Blog & Content Group
-      S.listItem()
-        .title('Blog & Content')
-        .icon(FileTextIcon)
-        .child(
-          S.list()
-            .title('Blog & Content')
-            .items([
-              S.documentTypeListItem('post').title('Blog Posts'),
-              S.documentTypeListItem('category').title('Categories'),
-              S.documentTypeListItem('author').title('Authors'),
-            ])
-        ),
-
+      S.documentTypeListItem('collegeCutoff').title('College Cutoffs'),
       S.divider(),
-
-      // Everything else (if any future types are added)
-      ...S.documentTypeListItems().filter(
-        (item) =>
-          !['college', 'collegeCutoff', 'timeline', 'post', 'category', 'author', 'siteSettings'].includes(
-            item.getId() || ''
-          )
-      ),
+      S.documentTypeListItem('post').title('Blog Posts'),
+      S.documentTypeListItem('category').title('Categories'),
+      S.documentTypeListItem('author').title('Authors'),
+      S.divider(),
+      S.documentTypeListItem('timeline').title('Timeline Events'),
+      S.documentTypeListItem('siteSettings').title('Site Settings'),
+      // collegeDetail is intentionally hidden - only accessible via college reference
     ])

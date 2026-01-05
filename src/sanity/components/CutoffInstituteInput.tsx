@@ -2,6 +2,7 @@ import { Autocomplete } from '@sanity/ui'
 import { useClient } from 'sanity'
 import { useEffect, useState } from 'react'
 import { PatchEvent, set, unset } from 'sanity'
+import { apiVersion } from '../env'
 
 interface CutoffInstituteInputProps {
   value?: string
@@ -9,7 +10,7 @@ interface CutoffInstituteInputProps {
 }
 
 export default function CutoffInstituteInput({ value, onChange }: CutoffInstituteInputProps) {
-  const client = useClient({ apiVersion: '2024-01-01' })
+  const client = useClient({ apiVersion })
   const [institutes, setInstitutes] = useState<string[]>([])
 
   useEffect(() => {
