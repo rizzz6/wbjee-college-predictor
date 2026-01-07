@@ -27,7 +27,6 @@ export const structure: StructureResolver = (S) =>
                     .child((documentId) =>
                       S.document()
                         .documentId(documentId)
-                        .schemaType('college')
                         .views([
                           S.view.form(),
                           S.view
