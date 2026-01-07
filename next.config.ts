@@ -28,6 +28,14 @@ const nextConfig: NextConfig = {
     ],
   },
 
+  // Dev performance optimizations
+  experimental: {
+    // Faster dev server
+    optimizePackageImports: ['@sanity/ui', 'lucide-react'],
+  },
+
+  // Only transpile necessary packages
+  transpilePackages: ['@sanity/ui'],
 };
 
 export default nextConfig;

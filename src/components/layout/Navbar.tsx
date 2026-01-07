@@ -10,12 +10,22 @@ import {
   GraduationCap,
   TrendingUp,
   BarChart3,
-  BookOpen
+  BookOpen,
+  LucideIcon
 } from 'lucide-react'
 import { LazyMotion, domAnimation, m, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
+
+// Centralized navigation links - single source of truth
+const NAV_LINKS: { href: string; icon: LucideIcon; label: string }[] = [
+  { href: '/#home', icon: Home, label: 'Home' },
+  { href: '/colleges', icon: GraduationCap, label: 'Colleges' },
+  { href: '/predictor', icon: TrendingUp, label: 'Predictor' },
+  { href: '/cutoffs', icon: BarChart3, label: 'Cutoffs' },
+  { href: '/blog', icon: BookOpen, label: 'Blog' },
+];
 
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -92,26 +102,16 @@ export default function Navbar() {
             </Link>
 
             <nav className="hidden md:flex items-center gap-6 text-gray-700 dark:text-gray-200">
-              <Link href="/#home" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">
-                <Home className="w-4 h-4" />
-                <span>Home</span>
-              </Link>
-              <Link href="/colleges" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">
-                <GraduationCap className="w-4 h-4" />
-                <span>Colleges</span>
-              </Link>
-              <Link href="/predictor" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">
-                <TrendingUp className="w-4 h-4" />
-                <span>Predictor</span>
-              </Link>
-              <Link href="/cutoffs" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">
-                <BarChart3 className="w-4 h-4" />
-                <span>Cutoffs</span>
-              </Link>
-              <Link href="/blog" className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1">
-                <BookOpen className="w-4 h-4" />
-                <span>Blog</span>
-              </Link>
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="flex items-center gap-1.5 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded focus-ring px-1"
+                >
+                  <link.icon className="w-4 h-4" />
+                  <span>{link.label}</span>
+                </Link>
+              ))}
               <ThemeToggle />
             </nav>
 
@@ -145,26 +145,17 @@ export default function Navbar() {
               transition={{ duration: 0.2 }}
             >
               <nav className="flex flex-col gap-3 text-gray-700 dark:text-gray-200">
-                <Link href="/#home" className="flex items-center gap-2 hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>
-                  <Home className="w-4 h-4" />
-                  <span>Home</span>
-                </Link>
-                <Link href="/colleges" className="flex items-center gap-2 hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>
-                  <GraduationCap className="w-4 h-4" />
-                  <span>Colleges</span>
-                </Link>
-                <Link href="/predictor" className="flex items-center gap-2 hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>
-                  <TrendingUp className="w-4 h-4" />
-                  <span>Predictor</span>
-                </Link>
-                <Link href="/cutoffs" className="flex items-center gap-2 hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>
-                  <BarChart3 className="w-4 h-4" />
-                  <span>Cutoffs</span>
-                </Link>
-                <Link href="/blog" className="flex items-center gap-2 hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => setOpen(false)}>
-                  <BookOpen className="w-4 h-4" />
-                  <span>Blog</span>
-                </Link>
+                {NAV_LINKS.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="flex items-center gap-2 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                    onClick={() => setOpen(false)}
+                  >
+                    <link.icon className="w-4 h-4" />
+                    <span>{link.label}</span>
+                  </Link>
+                ))}
                 <ThemeToggle />
               </nav>
             </m.div>
@@ -174,3 +165,4 @@ export default function Navbar() {
     </>
   );
 }
+

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { MapPin, Building2, Calendar, Globe, Landmark, IndianRupee, TrendingUp, BarChart3, ArrowRight } from 'lucide-react';
+import { MapPin, Building2, Calendar, Globe, Landmark, IndianRupee, TrendingUp, BarChart3, ArrowRight, CheckCircle2 } from 'lucide-react';
 import SanityTable from '@/components/content/SanityTable';
 import CutoffTable from '@/components/content/CutoffTable';
 
@@ -26,6 +26,7 @@ interface College {
   logo?: SanityImage;
   coverImage?: SanityImage;
   description?: string;
+  highlights?: string[];
   fees?: {
     rows: {
       cells: string[]
@@ -121,6 +122,7 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
   const college = await client.fetch<College | null>(
     `*[_type == "college" && slug.current == $slug && isVisible == true][0]{
       ...,
+      highlights,
       body,
       "cutoffGroup": *[_type == "collegeCutoff" && institute == coalesce(^.cutoffIdentifier, ^.name)][0]
     }`,
@@ -281,6 +283,23 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
                   </div>
                 </div>
               </div>
+
+              {/* Key Highlights */}
+              {college.highlights && college.highlights.length > 0 && (
+                <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700">
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 uppercase tracking-wider">
+                    Key Highlights
+                  </h3>
+                  <ul className="space-y-2">
+                    {college.highlights.map((highlight, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
+                        <span className="text-gray-700 dark:text-gray-300">{highlight}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* SIDEBAR BUTTON: Visible on Mobile Only */}
               {college.website && (

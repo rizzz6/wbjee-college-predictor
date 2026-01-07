@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import {
-    X, Printer, AlertTriangle, Sparkles, Skull, Building2,
-    Crown, Trophy, CheckCircle, Landmark, ShieldAlert,
-    IndianRupee, GraduationCap, AlertCircle
+    Printer, AlertTriangle, Sparkles, Skull, Building2,
+    Crown
 } from 'lucide-react';
 import {
     Dialog,
@@ -29,7 +29,7 @@ interface RarityTier {
     label: string;
     color: string; // Tailwind color class for text/badges
     bgColor: string; // Tailwind color class for backgrounds
-    icon: any;
+    icon: React.ComponentType<{ className?: string }>;
     probability: number; // 0-100 percentage
     items: LootItem[];
     rankRange: [number, number];
@@ -292,10 +292,26 @@ const MODTIER_QUOTAS = [
 
 // --- HELPER COMPONENT: LETTER CONTENT ---
 // This component renders the actual letter. It is used twice: once for the screen, once for the printer.
+interface ResultObject {
+    tier: RarityTier;
+    item: LootItem;
+    rank: string;
+    round: string;
+    seatType: string;
+    category: string;
+    quota: string;
+}
+
+interface StampConfig {
+    text: string;
+    color: string;
+    bg: string;
+}
+
 interface LetterContentProps {
-    result: any;
+    result: ResultObject;
     timestamp: string;
-    stampConfig: any;
+    stampConfig: StampConfig;
     isPrintMode?: boolean;
     isRolling?: boolean;
 }
@@ -336,8 +352,8 @@ const LetterContent = ({ result, timestamp, stampConfig, isPrintMode = false, is
             {isPrintMode && (
                 <div className="border-b-2 border-black pb-4 mb-6 flex items-start justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 flex items-center justify-center">
-                            <img src="/assets/images/wbjee-logo.svg" alt="WBJEE Logo" className="w-full h-full object-contain" />
+                        <div className="w-12 h-12 flex items-center justify-center relative">
+                            <Image src="/assets/images/wbjee-logo.svg" alt="WBJEE Logo" fill className="object-contain" />
                         </div>
                         <div className="text-left">
                             <h1 className="text-xl font-bold uppercase tracking-wider">WBJEE Board</h1>
@@ -355,7 +371,9 @@ const LetterContent = ({ result, timestamp, stampConfig, isPrintMode = false, is
             {!isPrintMode && (
                 <div className="bg-slate-50 dark:bg-slate-800/50 p-3 border-b border-slate-200 dark:border-slate-700 -mx-6 -mt-6 mb-5">
                     <div className="flex items-center gap-3">
-                        <img src="/assets/images/wbjee-logo.svg" alt="WBJEE Logo" className="w-14 h-14 object-contain" />
+                        <div className="w-14 h-14 relative flex-shrink-0">
+                            <Image src="/assets/images/wbjee-logo.svg" alt="WBJEE Logo" fill className="object-contain" />
+                        </div>
                         <div className="flex-1 text-left">
                             <h3 className="font-bold text-sm text-slate-900 dark:text-white uppercase tracking-tight">West Bengal Joint Entrance Examinations Board</h3>
                             <p className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">AQ-13/1, Sector-V, Salt Lake City, Kolkata-700091</p>
@@ -490,33 +508,90 @@ const LetterContent = ({ result, timestamp, stampConfig, isPrintMode = false, is
     );
 }
 
+import { useCallback } from 'react';
+
 export default function ResultHack() {
     const [, setKeySequence] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [isRolling, setIsRolling] = useState(false);
-    const [displayResult, setDisplayResult] = useState<{
-        tier: RarityTier;
-        item: LootItem;
-        rank: string;
-        round: string;
-        seatType: string;
-        category: string;
-        quota: string;
-    } | null>(null);
+    const [displayResult, setDisplayResult] = useState<ResultObject | null>(null);
 
     // Config state to hold the rolled result
-    const [result, setResult] = useState<{
-        tier: RarityTier;
-        item: LootItem;
-        rank: string;
-        round: string;
-        seatType: string;
-        category: string;
-        quota: string;
-    } | null>(null);
+    const [result, setResult] = useState<ResultObject | null>(null);
+
+    const triggerConfetti = useCallback((tierId: Rarity) => {
+        // Respect user's motion preferences
+        const shouldReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (shouldReduceMotion) return;
+
+        // Tier-specific configuration
+        const config: Record<Rarity, { colors: string[]; count: number; duration: number }> = {
+            ModTier: { colors: ['#FFD700', '#FFA500', '#FFFF00'], count: 100, duration: 5 },
+            SSR: { colors: ['#FCD34D', '#F59E0B', '#FFA500'], count: 75, duration: 4 },
+            SR: { colors: ['#10B981', '#059669', '#34D399'], count: 60, duration: 3.5 },
+            Glitch: { colors: ['#FACC15', '#EF4444', '#000000'], count: 50, duration: 3 },
+            Rare: { colors: ['#9333EA', '#A855F7', '#C084FC'], count: 50, duration: 3 },
+            Cursed: { colors: ['#DC2626', '#991B1B', '#7F1D1D'], count: 40, duration: 2.5 },
+            Common: { colors: ['#3B82F6', '#60A5FA', '#93C5FD'], count: 30, duration: 2 }
+        };
+
+        const { colors, count, duration } = config[tierId] || config.Common;
+
+        // ModTier screen flash
+        if (tierId === 'ModTier') {
+            const flash = document.createElement('div');
+            Object.assign(flash.style, {
+                position: 'fixed',
+                inset: '0',
+                backgroundColor: 'white',
+                opacity: '0',
+                zIndex: '9998',
+                pointerEvents: 'none'
+            });
+            document.body.appendChild(flash);
+
+            flash.animate([
+                { opacity: '0' },
+                { opacity: '0.6' },
+                { opacity: '0' }
+            ], { duration: 400, easing: 'ease-in-out' });
+
+            setTimeout(() => flash.remove(), 400);
+        }
+
+        // Confetti particles
+        for (let i = 0; i < count; i++) {
+            const confetti = document.createElement('div');
+            Object.assign(confetti.style, {
+                position: 'fixed',
+                width: '10px',
+                height: '10px',
+                backgroundColor: colors[Math.floor(Math.random() * colors.length)],
+                left: Math.random() * 100 + '%',
+                top: '-10px',
+                opacity: '1',
+                transform: 'rotate(' + Math.random() * 360 + 'deg)',
+                zIndex: '9999',
+                pointerEvents: 'none'
+            });
+            document.body.appendChild(confetti);
+
+            const xMovement = (Math.random() - 0.5) * 200;
+
+            confetti.animate([
+                { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+                { transform: `translate(${xMovement}px, 100vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+            ], {
+                duration: duration * 1000,
+                easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+            });
+
+            setTimeout(() => confetti.remove(), duration * 1000);
+        }
+    }, []);
 
     // Roll the Gacha
-    const rollGacha = () => {
+    const rollGacha = useCallback(() => {
         if (isRolling) return; // Prevent multiple triggers
 
         let selectedTier: RarityTier;
@@ -615,7 +690,7 @@ export default function ResultHack() {
             setDisplayResult(null);
             triggerConfetti(finalResult.tier.id);
         }, 2500);
-    };
+    }, [isRolling, triggerConfetti]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -642,78 +717,7 @@ export default function ResultHack() {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, []);
-
-    const triggerConfetti = (tierId: Rarity) => {
-        // Respect user's motion preferences
-        const shouldReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (shouldReduceMotion) return;
-
-        // Tier-specific configuration
-        const config: Record<Rarity, { colors: string[]; count: number; duration: number }> = {
-            ModTier: { colors: ['#FFD700', '#FFA500', '#FFFF00'], count: 100, duration: 5 },
-            SSR: { colors: ['#FCD34D', '#F59E0B', '#FFA500'], count: 75, duration: 4 },
-            SR: { colors: ['#10B981', '#059669', '#34D399'], count: 60, duration: 3.5 },
-            Glitch: { colors: ['#FACC15', '#EF4444', '#000000'], count: 50, duration: 3 },
-            Rare: { colors: ['#9333EA', '#A855F7', '#C084FC'], count: 50, duration: 3 },
-            Cursed: { colors: ['#DC2626', '#991B1B', '#7F1D1D'], count: 40, duration: 2.5 },
-            Common: { colors: ['#3B82F6', '#60A5FA', '#93C5FD'], count: 30, duration: 2 }
-        };
-
-        const { colors, count, duration } = config[tierId] || config.Common;
-
-        // ModTier screen flash
-        if (tierId === 'ModTier') {
-            const flash = document.createElement('div');
-            Object.assign(flash.style, {
-                position: 'fixed',
-                inset: '0',
-                backgroundColor: 'white',
-                opacity: '0',
-                zIndex: '9998',
-                pointerEvents: 'none'
-            });
-            document.body.appendChild(flash);
-
-            flash.animate([
-                { opacity: '0' },
-                { opacity: '0.6' },
-                { opacity: '0' }
-            ], { duration: 400, easing: 'ease-in-out' });
-
-            setTimeout(() => flash.remove(), 400);
-        }
-
-        // Confetti particles
-        for (let i = 0; i < count; i++) {
-            const confetti = document.createElement('div');
-            Object.assign(confetti.style, {
-                position: 'fixed',
-                width: '10px',
-                height: '10px',
-                backgroundColor: colors[Math.floor(Math.random() * colors.length)],
-                left: Math.random() * 100 + '%',
-                top: '-10px',
-                opacity: '1',
-                transform: 'rotate(' + Math.random() * 360 + 'deg)',
-                zIndex: '9999',
-                pointerEvents: 'none'
-            });
-            document.body.appendChild(confetti);
-
-            const xMovement = (Math.random() - 0.5) * 200;
-
-            confetti.animate([
-                { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
-                { transform: `translate(${xMovement}px, 100vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
-            ], {
-                duration: duration * 1000,
-                easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-            });
-
-            setTimeout(() => confetti.remove(), duration * 1000);
-        }
-    };
+    }, [rollGacha]);
 
     if (!isOpen || !result) return null;
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useCutoffFilters } from '@/hooks/useCutoffFilters'
 
 interface Cutoff {
   year: number
@@ -9,6 +9,7 @@ interface Cutoff {
   closingRank: number
   category: string
   quota: string
+  seatType?: string
   program: string
 }
 
@@ -19,46 +20,32 @@ interface CutoffTableProps {
 const INITIAL_ROW_COUNT = 10
 
 export default function CutoffTable({ cutoffs }: CutoffTableProps) {
-  // Extract unique values
-  const uniqueYears = useMemo(() => [...new Set(cutoffs.map(c => c.year))].sort((a, b) => b - a), [cutoffs])
-  const uniqueRounds = useMemo(() => [...new Set(cutoffs.map(c => c.round))].sort(), [cutoffs])
-  const uniqueCategories = useMemo(() => [...new Set(cutoffs.map(c => c.category))].sort(), [cutoffs])
-
-  // FIX: Initialized state directly to avoid useEffect set-state error
-  const [selectedYear, setSelectedYear] = useState<number | 'all'>(() =>
-    uniqueYears.length > 0 ? uniqueYears[0] : 'all'
-  )
-
-  const [selectedRound, setSelectedRound] = useState<string>(() =>
-    uniqueRounds.includes('Round 1') ? 'Round 1' : 'all'
-  )
-
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
-
-  // Expansion state
-  const [isExpanded, setIsExpanded] = useState(false)
-
-  // Filter logic
-  const filteredData = useMemo(() => {
-    return cutoffs.filter(c => {
-      const matchYear = selectedYear === 'all' || c.year === selectedYear
-      const matchRound = selectedRound === 'all' || c.round === selectedRound
-      const matchCategory = selectedCategory === 'all' || c.category === selectedCategory
-      return matchYear && matchRound && matchCategory
-    }).sort((a, b) => a.openingRank - b.openingRank)
-  }, [cutoffs, selectedYear, selectedRound, selectedCategory])
-
-  const visibleRows = isExpanded ? filteredData : filteredData.slice(0, INITIAL_ROW_COUNT)
+  const {
+    filters,
+    updateFilter,
+    uniqueYears,
+    uniqueRounds,
+    uniqueCategories,
+    uniquePrograms,
+    uniqueQuotas,
+    uniqueSeatTypes,
+    showQuota,
+    showSeatType,
+    visibleRows,
+    isExpanded,
+    setIsExpanded,
+    totalResults
+  } = useCutoffFilters({ cutoffs, initialRowCount: INITIAL_ROW_COUNT })
 
   return (
     <div className="w-full space-y-4">
       {/* Filters */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
         <div className="space-y-1">
           <label className="text-xs font-semibold text-gray-500 uppercase">Year</label>
           <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+            value={filters.year}
+            onChange={(e) => updateFilter('year', e.target.value === 'all' ? 'all' : Number(e.target.value))}
             className="w-full p-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500 outline-none"
           >
             {uniqueYears.map(y => <option key={y} value={y}>{y}</option>)}
@@ -69,8 +56,8 @@ export default function CutoffTable({ cutoffs }: CutoffTableProps) {
         <div className="space-y-1">
           <label className="text-xs font-semibold text-gray-500 uppercase">Round</label>
           <select
-            value={selectedRound}
-            onChange={(e) => setSelectedRound(e.target.value)}
+            value={filters.round}
+            onChange={(e) => updateFilter('round', e.target.value)}
             className="w-full p-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500 outline-none"
           >
             {uniqueRounds.map(r => <option key={r} value={r}>{r}</option>)}
@@ -81,14 +68,54 @@ export default function CutoffTable({ cutoffs }: CutoffTableProps) {
         <div className="space-y-1">
           <label className="text-xs font-semibold text-gray-500 uppercase">Category</label>
           <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            value={filters.category}
+            onChange={(e) => updateFilter('category', e.target.value)}
             className="w-full p-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500 outline-none"
           >
             <option value="all">All Categories</option>
             {uniqueCategories.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
+
+        <div className="space-y-1">
+          <label className="text-xs font-semibold text-gray-500 uppercase">Branch</label>
+          <select
+            value={filters.program}
+            onChange={(e) => updateFilter('program', e.target.value)}
+            className="w-full p-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500 outline-none"
+          >
+            <option value="all">All Branches</option>
+            {uniquePrograms.map(p => <option key={p} value={p}>{p}</option>)}
+          </select>
+        </div>
+
+        {showQuota && (
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-gray-500 uppercase">Quota</label>
+            <select
+              value={filters.quota}
+              onChange={(e) => updateFilter('quota', e.target.value)}
+              className="w-full p-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500 outline-none"
+            >
+              <option value="all">All Quotas</option>
+              {uniqueQuotas.map(q => <option key={q} value={q}>{q}</option>)}
+            </select>
+          </div>
+        )}
+
+        {showSeatType && (
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-gray-500 uppercase">Seat Type</label>
+            <select
+              value={filters.seatType}
+              onChange={(e) => updateFilter('seatType', e.target.value)}
+              className="w-full p-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500 outline-none"
+            >
+              <option value="all">All Seat Types</option>
+              {uniqueSeatTypes.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+        )}
       </div>
 
       {/* Table */}
@@ -99,7 +126,9 @@ export default function CutoffTable({ cutoffs }: CutoffTableProps) {
               <tr>
                 <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Year</th>
                 <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Round</th>
+                {showQuota && <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Quota</th>}
                 <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Category</th>
+                {showSeatType && <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Seat Type</th>}
                 <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Branch</th>
                 <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400 text-right">Opening</th>
                 <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400 text-right">Closing</th>
@@ -111,7 +140,9 @@ export default function CutoffTable({ cutoffs }: CutoffTableProps) {
                   <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                     <td className="px-4 py-3">{item.year}</td>
                     <td className="px-4 py-3">{item.round}</td>
+                    {showQuota && <td className="px-4 py-3">{item.quota}</td>}
                     <td className="px-4 py-3">{item.category}</td>
+                    {showSeatType && <td className="px-4 py-3">{item.seatType || '-'}</td>}
                     <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{item.program}</td>
                     <td className="px-4 py-3 text-right font-mono text-gray-600 dark:text-gray-300">{item.openingRank}</td>
                     <td className="px-4 py-3 text-right font-mono font-bold text-gray-900 dark:text-white">{item.closingRank}</td>
@@ -119,7 +150,7 @@ export default function CutoffTable({ cutoffs }: CutoffTableProps) {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                  <td colSpan={6 + (showQuota ? 1 : 0) + (showSeatType ? 1 : 0)} className="px-4 py-8 text-center text-gray-500">
                     No data found for selected filters.
                   </td>
                 </tr>
@@ -128,13 +159,13 @@ export default function CutoffTable({ cutoffs }: CutoffTableProps) {
           </table>
 
           {/* FADE & SHOW MORE BUTTON */}
-          {!isExpanded && visibleRows.length < filteredData.length && (
+          {!isExpanded && visibleRows.length < totalResults && (
             <div className="absolute bottom-0 left-0 right-0 pt-12 pb-4 flex justify-center bg-gradient-to-t from-white dark:from-gray-900 to-transparent z-20">
               <button
                 onClick={() => setIsExpanded(true)}
                 className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
-                Show All ({filteredData.length}) Rows
+                Show All ({totalResults}) Rows
               </button>
             </div>
           )}
