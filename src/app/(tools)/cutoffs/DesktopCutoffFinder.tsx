@@ -6,6 +6,7 @@ import { FilterSelect } from './components/FilterSelect';
 import { ActionButton } from './components/ActionButton';
 import { Monitor, GraduationCap, Award } from 'lucide-react';
 import type { FilterState, SearchResult } from '@/types/cutoff-finder';
+import { getCategoryBorderColor, buildHierarchicalResults } from './utils';
 
 export default function DesktopCutoffFinder() {
     const { colleges, getCutoffs, isLoading } = useCutoffsData();
@@ -174,50 +175,8 @@ export default function DesktopCutoffFinder() {
         }
     };
 
-    // Hierarchical grouping for compact display
-    const hierarchicalResults = useMemo(() => {
-        const byProgram: Record<string, Record<string, SearchResult[]>> = {};
-
-        results.forEach(result => {
-            if (!byProgram[result.program]) {
-                byProgram[result.program] = {};
-            }
-
-            if (!byProgram[result.program][result.seatType]) {
-                byProgram[result.program][result.seatType] = [];
-            }
-
-            byProgram[result.program][result.seatType].push(result);
-        });
-
-        // Sort each group: Category (alphabetical) → Year (newest first) → Round
-        Object.keys(byProgram).forEach(program => {
-            Object.keys(byProgram[program]).forEach(seatType => {
-                byProgram[program][seatType].sort((a, b) => {
-                    if (a.category !== b.category) {
-                        return a.category.localeCompare(b.category);
-                    }
-                    if (a.year !== b.year) {
-                        return b.year - a.year;
-                    }
-                    return a.round.localeCompare(b.round);
-                });
-            });
-        });
-
-        return byProgram;
-    }, [results]);
-
-    // Category border color coding - returns hex color
-    const getCategoryBorderColor = (category: string): string => {
-        if (category === 'GENERAL') return '#3b82f6'; // blue-500
-        if (category.startsWith('OBC')) return '#22c55e'; // green-500
-        if (category.startsWith('SC')) return '#a855f7'; // purple-500
-        if (category.startsWith('ST')) return '#f97316'; // orange-500
-        if (category === 'EWS') return '#eab308'; // yellow-500
-        if (category.startsWith('Open')) return '#06b6d4'; // cyan-500
-        return '#9ca3af'; // gray-400
-    };
+    // Hierarchical grouping for compact display (using shared utility)
+    const hierarchicalResults = useMemo(() => buildHierarchicalResults(results), [results]);
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-4xl relative">

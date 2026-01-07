@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback, useRef, Component, ReactNode } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import dynamic from 'next/dynamic';
 import FloatingScrollbar from '@/components/ui/FloatingScrollbar';
 import { PageHero } from '@/components/layout/PageHero';
@@ -13,24 +13,17 @@ import { usePredictorFilters } from '@/hooks/predictor/usePredictorFilters';
 import { usePredictorPagination } from '@/hooks/predictor/usePredictorPagination';
 import { usePredictorAPI } from '@/hooks/predictor/usePredictorAPI';
 import { CardResults } from './components/v2';
-
-// Define types based on the data structure
-interface CollegeData {
-  id: string;
-  round: string;
-  institute: string;
-  branch: string;
-  seat_type: string;
-  quota: string;
-  category: string;
-  opening_rank: number | null;
-  closing_rank: number | null;
-  year: number | null;
-  prediction: {
-    text: string;
-    order: number;
-  };
-}
+import { HelpContent } from './components/HelpContent';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import type { CollegeData } from './types';
+import {
+  exportToCSV,
+  copyToClipboard,
+  formatResultsAsText,
+  createShareResultsUrl,
+  createShareShortlistUrl,
+  extractUniqueCodes
+} from './utils';
 
 interface Filters {
   rank: string;
@@ -59,47 +52,6 @@ const ComparisonModal = dynamic(() => import('./ComparisonModal'), {
   loading: () => <div className="p-4 text-center">Loading Comparison...</div>,
   ssr: false
 });
-
-// Error Boundary Component
-class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error?: Error }> {
-  constructor(props: { children: ReactNode }) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center font-['Inter',sans-serif]">
-          <div className="text-center max-w-md p-6">
-            <AlertCircle className="mx-auto h-16 w-16 text-red-500 mb-6" />
-            <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-2">Something went wrong</h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-6">
-              We encountered an error while loading the college predictor. Please try refreshing the page.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors shadow-sm"
-            >
-              Refresh Page
-            </button>
-          </div>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
-
 export default function NewPredictorClient() {
   // API search trigger states
   const [searchFilters, setSearchFilters] = useState<Filters>({
@@ -453,35 +405,6 @@ export default function NewPredictorClient() {
     });
   };
 
-  const exportToCSV = (data: CollegeData[]) => {
-    const headers = ['Institute', 'Branch', 'Category', 'Opening Rank', 'Closing Rank', 'Year', 'Round', 'Quota', 'Seat Type', 'Prediction'];
-    const csvContent = [
-      headers.join(','),
-      ...data.map(item => [
-        `"${item.institute}"`,
-        `"${item.branch}"`,
-        `"${item.category}"`,
-        item.opening_rank || '',
-        item.closing_rank || '',
-        item.year || '',
-        `"${item.round}"`,
-        `"${item.quota}"`,
-        `"${item.seat_type}"`,
-        `"${item.prediction.text}"`
-      ].join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'wbjee_predictor_results.csv');
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   const showRankTrendChart = (college: CollegeData) => {
     setSelectedCollegeForChart(college);
     setShowChartModal(true);
@@ -498,7 +421,7 @@ export default function NewPredictorClient() {
       alert('Please enter a rank first to share results!');
       return;
     }
-    const shareUrl = `${window.location.origin}${window.location.pathname}?rank=${activeFilters.rank}`;
+    const shareUrl = createShareResultsUrl(activeFilters.rank);
     copyToClipboard(shareUrl, 'Results link copied to clipboard!');
   };
 
@@ -507,8 +430,7 @@ export default function NewPredictorClient() {
       alert('Your shortlist is empty. Add some colleges first!');
       return;
     }
-    const shortlistIds = Array.from(favorites);
-    const shareUrl = `${window.location.origin}${window.location.pathname}?shortlist=${shortlistIds.join(',')}`;
+    const shareUrl = createShareShortlistUrl(Array.from(favorites));
     copyToClipboard(shareUrl, 'Shortlist link copied to clipboard!');
   };
 
@@ -521,7 +443,8 @@ export default function NewPredictorClient() {
       alert('No results to copy. Please search for colleges first!');
       return;
     }
-    const text = formatResultsAsText(filteredResults);
+    const userRank = parseInt(activeFilters.rank) || 0;
+    const text = formatResultsAsText(filteredResults, userRank);
     copyToClipboard(text, 'Results copied as text!');
   };
 
@@ -535,43 +458,10 @@ export default function NewPredictorClient() {
       return;
     }
 
-    const codes = dataToUse.map((item: CollegeData) => item.institute).filter((code: string, index: number, arr: string[]) => arr.indexOf(code) === index);
+    const codes = extractUniqueCodes(dataToUse);
     copyToClipboard(codes.join('\n'), 'College codes copied to clipboard!');
   };
 
-  const copyToClipboard = (text: string, successMessage: string) => {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(() => {
-        alert(successMessage);
-      }).catch(() => {
-        alert(`Please copy manually:\n\n${text}`);
-      });
-    } else {
-      alert(`Please copy manually:\n\n${text}`);
-    }
-  };
-
-  const formatResultsAsText = (data: CollegeData[]) => {
-    const userRank = parseInt(activeFilters.rank) || 0;
-    let text = `WBJEE College Predictor Results\n`;
-    text += `Generated on: ${new Date().toLocaleDateString()}\n`;
-    if (userRank > 0) text += `Your Rank: ${userRank.toLocaleString()}\n`;
-    text += `Total Colleges Found: ${data.length}\n\n`;
-
-    data.forEach((item, index) => {
-      text += `${index + 1}. ${item.institute}\n`;
-      text += `   Branch: ${item.branch}\n`;
-      text += `   Category: ${item.category}\n`;
-      text += `   Opening Rank: ${item.opening_rank?.toLocaleString() || 'N/A'}\n`;
-      text += `   Closing Rank: ${item.closing_rank?.toLocaleString() || 'N/A'}\n`;
-      text += `   Year: ${item.year || 'N/A'}\n`;
-      text += `   Round: ${item.round || 'N/A'}\n`;
-      text += `   Quota: ${item.quota || 'N/A'}\n`;
-      text += `   Seat Type: ${item.seat_type || 'N/A'}\n\n`;
-    });
-
-    return text;
-  };
 
   // No longer show loading state on initial mount - data comes from API on search
 
@@ -1538,133 +1428,5 @@ export default function NewPredictorClient() {
         </div>
       </div>
     </ErrorBoundary>
-  );
-}
-
-
-// Help Component
-function HelpContent() {
-  return (
-    <div className="space-y-8">
-      <div>
-        <h4 className="font-semibold text-xl mb-4 text-slate-900 dark:text-slate-100">How to Use WBJEE College Predictor 2026</h4>
-        <ul className="list-disc list-outside ml-5 space-y-2 text-slate-700 dark:text-slate-300">
-          <li className="leading-relaxed">Enter your WBJEE 2026 rank in the input field and get instant college predictions for engineering admission in West Bengal</li>
-          <li className="leading-relaxed">Use advanced filtering options to find specific engineering branches at Jadavpur University, Calcutta University, or other top WBJEE-participating colleges</li>
-          <li className="leading-relaxed">Click the star (<Star className="w-3 h-3 inline text-yellow-500" />) to add colleges to your shortlist for detailed comparison of admission chances</li>
-          <li className="leading-relaxed">Click on any table row to view historical WBJEE cutoff trends and rank analysis charts</li>
-          <li className="leading-relaxed">Export your personalized college list as CSV or share your results with friends preparing for WBJEE counseling</li>
-        </ul>
-      </div>
-      <div>
-        <h4 className="font-semibold text-xl mb-4 text-slate-900 dark:text-slate-100">Prediction Guide</h4>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex items-center gap-3 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
-            <span className="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-100 text-xs font-semibold border border-emerald-300 dark:border-emerald-700">Confirm</span>
-            <span className="text-slate-700 dark:text-slate-300 text-sm">Your rank is better than opening rank</span>
-          </div>
-          <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-            <span className="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-100 text-xs font-semibold border border-blue-300 dark:border-blue-700">Great</span>
-            <span className="text-slate-700 dark:text-slate-300 text-sm">Top 30% of admitted batch</span>
-          </div>
-          <div className="flex items-center gap-3 p-3 bg-cyan-50 dark:bg-cyan-900/20 rounded-lg">
-            <span className="px-3 py-1 rounded-full bg-cyan-100 dark:bg-cyan-900/30 text-cyan-800 dark:text-cyan-100 text-xs font-semibold border border-cyan-300 dark:border-cyan-700">Good</span>
-            <span className="text-slate-700 dark:text-slate-300 text-sm">Within closing rank (admitted range)</span>
-          </div>
-          <div className="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
-            <span className="px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-100 text-xs font-semibold border border-amber-300 dark:border-amber-700">Borderline</span>
-            <span className="text-slate-700 dark:text-slate-300 text-sm">Within dynamic buffer (max 5k ranks)</span>
-          </div>
-          <div className="flex items-center gap-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg col-span-1 sm:col-span-2">
-            <span className="px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-100 text-xs font-semibold border border-red-300 dark:border-red-700">No Chance</span>
-            <span className="text-slate-700 dark:text-slate-300 text-sm">Beyond dynamic buffer threshold</span>
-          </div>
-        </div>
-      </div>
-      <div>
-        <h4 className="font-semibold text-xl mb-4 text-slate-900 dark:text-slate-100">Prediction Confidence</h4>
-        <p className="text-slate-700 dark:text-slate-300 mb-3">
-          Each prediction comes with a confidence indicator. Click the <strong>ℹ️ info icon</strong> next to any prediction badge to see:
-        </p>
-        <ul className="list-disc list-inside space-y-2 text-slate-700 dark:text-slate-300 mb-3">
-          <li><strong>Confidence Level</strong> - How certain the prediction is (Very High/High/Good/Moderate/Limited)</li>
-          <li><strong>Percentage Score</strong> - Numerical confidence (0-100%)</li>
-          <li><strong>Reasoning</strong> - Clear explanation of why you got this prediction</li>
-        </ul>
-        <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            <strong>How it&apos;s calculated:</strong> We use a hybrid approach combining your distance from thresholds (60%) and the competitiveness of the program (40%) to give you the most accurate confidence score.
-          </p>
-        </div>
-      </div>
-      <div>
-        <h4 className="font-semibold text-xl mb-4 text-slate-900 dark:text-slate-100">Result Filtering</h4>
-        <p className="text-slate-700 dark:text-slate-300 mb-3">
-          Enable result filtering to automatically show only colleges where you have a realistic chance of admission based on your rank.
-        </p>
-        <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            <strong>Result filtering</strong> uses advanced algorithms to filter colleges based on historical cutoff trends and your specific rank range.
-          </p>
-        </div>
-      </div>
-      <div>
-        <h4 className="font-semibold text-xl mb-4 text-slate-900 dark:text-slate-100">Keyboard Shortcuts</h4>
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-              <span className="text-slate-700 dark:text-slate-300 text-sm">Toggle theme</span>
-              <kbd className="px-2 py-1 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded font-mono">Ctrl+Shift+D</kbd>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-              <span className="text-slate-700 dark:text-slate-300 text-sm">Focus rank input</span>
-              <kbd className="px-2 py-1 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded font-mono">Ctrl+K</kbd>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-              <span className="text-slate-700 dark:text-slate-300 text-sm">Show favorites</span>
-              <kbd className="px-2 py-1 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded font-mono">Ctrl+F</kbd>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-              <span className="text-slate-700 dark:text-slate-300 text-sm">Close modals</span>
-              <kbd className="px-2 py-1 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded font-mono">Escape</kbd>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-              <span className="text-slate-700 dark:text-slate-300 text-sm">Toggle result filtering</span>
-              <kbd className="px-2 py-1 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded font-mono">Ctrl+R</kbd>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-              <span className="text-slate-700 dark:text-slate-300 text-sm">Show filters</span>
-              <kbd className="px-2 py-1 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded font-mono">Ctrl+Shift+F</kbd>
-            </div>
-          </div>
-
-          <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg">
-            <h5 className="font-medium text-slate-800 dark:text-slate-200 mb-2">Navigation Shortcuts</h5>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Skip to main content</span>
-                <kbd className="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded font-mono">Tab</kbd>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Navigate table rows</span>
-                <kbd className="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded font-mono">↑↓</kbd>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Activate row/enter</span>
-                <kbd className="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded font-mono">Enter</kbd>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600 dark:text-slate-400">Select/deselect</span>
-                <kbd className="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded font-mono">Space</kbd>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-sm text-slate-600 dark:text-slate-400">
-            <strong>Tip:</strong> Press <kbd className="px-1 py-0.5 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded font-mono">Tab</kbd> when the page loads to access skip navigation links for quick navigation to different sections.
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
