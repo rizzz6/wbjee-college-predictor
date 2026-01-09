@@ -432,24 +432,27 @@ The application uses a **device-based data loading strategy** that optimizes for
 graph TD
     User[User Visits Cutoff Finder] --> Check{Device Type?}
     
-    subgraph Desktop["🖥️ Desktop Strategy - Instant Search"]
-        Check -->|Desktop| D_Fetch[Fetch Monolith JSON<br/>106 KB Brotli]
+    Check -->|Desktop| D_Fetch
+    Check -->|Mobile| M_Fetch
+    
+    subgraph Desktop[" "]
+        D_Fetch[Fetch Monolith JSON<br/>106 KB Brotli]
         D_Fetch --> D_Decompress[Decompress Flat Columnar Data]
         D_Decompress --> RAM[Load 17,179 Rows into RAM]
-        RAM --> D_Filter[⚡ Instant Client-Side Filtering<br/>0ms Search]
+        RAM --> D_Filter[Instant Client-Side Filtering<br/>0ms Search]
         D_Filter --> D_UI[Render Data Table]
     end
 
-    subgraph Mobile["📱 Mobile Strategy - Progressive Loading"]
-        Check -->|Mobile| M_Fetch[Fetch Index JSON<br/>5 KB]
+    subgraph Mobile[" "]
+        M_Fetch[Fetch Index JSON<br/>5 KB]
         M_Fetch --> M_UI[Render College Dropdown]
-        M_UI -->|User Selects College| M_Slice[Fetch Static Slice<br/>e.g., jadavpur.json]
+        M_UI --> M_Slice[Fetch Static Slice<br/>e.g., jadavpur.json]
         M_Slice --> M_Render[Render Program Cards]
-        M_Render -->|User Changes College| M_Slice
+        M_Render -->|Change College| M_Slice
     end
     
-    style Desktop fill:#e3f2fd
-    style Mobile fill:#fff3e0
+    style Desktop stroke:#1976d2,stroke-width:3px
+    style Mobile stroke:#f57c00,stroke-width:3px
     style D_Filter fill:#4caf50,color:#fff
     style M_Slice fill:#ff9800,color:#fff
 ```
