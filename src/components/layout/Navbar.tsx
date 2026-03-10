@@ -16,7 +16,6 @@ import {
 import { LazyMotion, domAnimation, m, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { usePathname } from "next/navigation";
 
 // Centralized navigation links - single source of truth
 const NAV_LINKS: { href: string; icon: LucideIcon; label: string }[] = [
@@ -84,13 +83,7 @@ function ThemeToggle() {
 }
 
 export default function Navbar() {
-  const pathname = usePathname();
   const [open, setOpen] = useState(false);
-
-  // Don't render navbar on Sanity Studio routes
-  if (pathname?.startsWith('/studio')) {
-    return null;
-  }
 
   return (
     <>
