@@ -9,8 +9,8 @@ Find your potential colleges based on WBJEE rank, access cutoff data, important 
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/rizzz6/rwbjee-companion)
 
-![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat&logo=next.js)
-![React](https://img.shields.io/badge/React-19-blue?style=flat&logo=react)
+![Next.js](https://img.shields.io/badge/Next.js-16.0.7-black?style=flat&logo=next.js)
+![React](https://img.shields.io/badge/React-19.2.1-blue?style=flat&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat&logo=typescript)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?style=flat&logo=tailwindcss)
 
@@ -37,12 +37,14 @@ Find your potential colleges based on WBJEE rank, access cutoff data, important 
 ## ✨ Features
 
 ### 🎯 College Predictor
+
 - **Instant Predictions**: Enter your WBJEE rank and get real-time college predictions
 - **Smart Filtering**: Filter by branch, category, location, and more
 - **Favorites System**: Save and compare your preferred colleges
 - **17,000+ Data Points**: Comprehensive cutoff data from 2022-2025
 
 ### 📊 Cutoff Finder
+
 - **Adaptive Loading**: Optimized for both desktop and mobile
   - **Desktop**: Instant client-side search with 106 KB compressed data (88% reduction)
   - **Mobile**: Lazy loading with progressive API calls
@@ -50,26 +52,31 @@ Find your potential colleges based on WBJEE rank, access cutoff data, important 
 - **Zero Latency**: Desktop searches complete in 0ms (no API calls)
 
 ### 🏛️ College Database
+
 - **138+ Engineering Colleges**: Information on WBJEE participating colleges
 - **Multiple Programs**: Program listings with cutoffs across branches
 - **College Pages**: Individual pages with fees, placements, and facilities
 
 ### 📅 Timeline
+
 - **Important Dates**: WBJEE 2026 exam dates, counseling schedule
 - **Notifications**: Never miss a deadline
 
 ### 📰 Blog & Resources
+
 - **Latest Updates**: WBJEE news and announcements
 - **Guides**: Preparation tips and counseling strategies
-- **Sanity CMS**: Easy content management with custom schemas
-- **Rich Text**: Portable text with custom components
+- **Payload CMS**: Enterprise-grade content management with custom collections
+- **Lexical Editor**: Rich text editing with custom blocks
 
 ### 🎉 Easter Eggs & Extras
+
 - **Interactive Elements**: Hidden surprises for engaged users
 - **Printing Hack**: Special print-friendly views
 - **Dynamic Loading**: Lazy-loaded easter egg manager
 
 ### 🌐 Community Integration
+
 - **Reddit Integration**: Fetches latest posts from r/wbjee
 - **Discord Community**: Active discussion platform
 - **Social Links**: Quick access to community resources
@@ -83,10 +90,10 @@ The application uses a **hybrid data strategy** that adapts to your device:
 ```mermaid
 graph TD
     User[User Visits Cutoff Finder] --> Check{Device Type?}
-    
+
     Check -->|Desktop| D_Fetch
     Check -->|Mobile| M_Index
-    
+
     subgraph Desktop[" "]
         D_Fetch[Download Full Dataset<br/>106 KB compressed]
         D_Fetch --> D_Load[Load 17,179 Records<br/>into Memory]
@@ -98,13 +105,14 @@ graph TD
         M_Index --> M_Select[User Selects College]
         M_Select --> M_Fetch[Fetch College Data<br/>~5-33 KB per college]
     end
-    
+
     style Desktop stroke:#1976d2,stroke-width:3px
     style Mobile stroke:#f57c00,stroke-width:3px
     style D_Search stroke:#4caf50,stroke-width:3px
 ```
 
 **How it works:**
+
 - **Blue box (Desktop)**: Download everything once (106 KB) → 0ms instant search
 - **Orange box (Mobile)**: Download only what you need (5-33 KB per college)
 - Both paths provide the same data, optimized for different contexts
@@ -114,16 +122,19 @@ graph TD
 ## 📸 Screenshots
 
 ### Desktop Predictor - Data Table View
+
 Real-time college predictions with instant filtering (Rank: 5000 shown as example)
 
 ![Desktop Predictor](./public/screenshots/desktop-predictor.png)
 
-### Mobile Predictor - Card Layout  
+### Mobile Predictor - Card Layout
+
 Responsive mobile interface with card-based results
 
 <img src="./public/screenshots/mobile-predictor.png" alt="Mobile Cards" width="400"/>
 
 ### Cutoff Finder Tool
+
 Advanced filtering with real data (Jadavpur University CSE - Opening: 22, Closing: 89)
 
 ![Cutoff Finder](./public/screenshots/cutoff-finder.png)
@@ -133,6 +144,7 @@ Advanced filtering with real data (Jadavpur University CSE - Opening: 22, Closin
 ## 🚀 Tech Stack
 
 ### Frontend
+
 - **Framework**: Next.js 16.0.7 (App Router)
 - **Language**: TypeScript 5
 - **React**: 19.2.1
@@ -142,14 +154,17 @@ Advanced filtering with real data (Jadavpur University CSE - Opening: 22, Closin
 - **State Management**: React Hooks, SWR 2.3.8
 
 ### Backend & Data
+
 - **Database**: Supabase (PostgreSQL) 2.89.0
-- **CMS**: Sanity.io 4.17.0
+- **CMS**: Payload CMS 3.79.0
+- **Media Storage**: AWS S3 (via @payloadcms/storage-s3)
 - **Caching**: Upstash Redis 1.35.7
 - **Data Compression**: Flat Columnar JSON (custom implementation)
 - **Charts**: Chart.js 4.5.0 with react-chartjs-2
 - **Date Utilities**: date-fns 4.1.0
 
 ### Deployment & Analytics
+
 - **Hosting**: Vercel (Edge Network)
 - **Analytics**: Vercel Analytics 1.5.0, Vercel Speed Insights 1.2.0
 - **Tag Manager**: Google Tag Manager (@next/third-parties)
@@ -157,6 +172,7 @@ Advanced filtering with real data (Jadavpur University CSE - Opening: 22, Closin
 - **Theme**: next-themes 0.4.6 (Dark mode support)
 
 ### Performance Optimizations
+
 - **Adaptive Loading**: Device-based data loading strategy
 - **Flat Columnar Compression**: 88% file size reduction (911 KB → 106 KB)
 - **Brotli Compression**: Automatic server-side compression
@@ -168,9 +184,11 @@ Advanced filtering with real data (Jadavpur University CSE - Opening: 22, Closin
 ## 📊 Performance Metrics
 
 ### 🏆 Lighthouse Scores (Varies by Environment)
+
 > Scores depend on network conditions, device, and deployment environment. Production on Vercel typically performs better than local development.
 
 ### ⚡ Core Web Vitals (Development)
+
 - **First Contentful Paint (FCP)**: ~1.1s
 - **Largest Contentful Paint (LCP)**: ~2.7s
 - **Total Blocking Time (TBT)**: ~410ms
@@ -180,19 +198,22 @@ Advanced filtering with real data (Jadavpur University CSE - Opening: 22, Closin
 > **Note**: Production performance on Vercel's edge network is typically better due to CDN caching, Brotli compression, and edge optimization. These metrics are from local development testing.
 
 ### Desktop Cutoff Finder
-- **File Size**: 106 KB (Brotli compressed) - *88% reduction from 911 KB*
+
+- **File Size**: 106 KB (Brotli compressed) - _88% reduction from 911 KB_
 - **Search Speed**: **0ms** (instant client-side)
 - **API Calls**: **0** (all data loaded upfront)
 - **Data Points**: 17,179 cutoff combinations
 - **Loading Strategy**: Monolith JSON with flat columnar compression
 
-### Mobile Cutoff Finder  
+### Mobile Cutoff Finder
+
 - **Initial Load**: 5 KB (colleges index)
 - **Progressive Loading**: On-demand program data via static slices
 - **Optimized for**: 2G/3G networks
 - **Loading Strategy**: Atomic static slicing
 
 ### Recent Optimizations ✨
+
 - ✅ **Flat Columnar Compression**: Custom JSON format (88% size reduction)
 - ✅ **Atomic Static Slicing**: Per-college JSON files for mobile
 - ✅ **Brotli Compression**: Automatic server-side compression on Vercel
@@ -205,10 +226,11 @@ Advanced filtering with real data (Jadavpur University CSE - Opening: 22, Closin
 ## 🛠️ Getting Started
 
 ### Prerequisites
+
 - Node.js 20+
 - npm or yarn
-- Supabase account
-- Sanity.io account (optional, for blog)
+- Supabase account (PostgreSQL)
+- AWS S3 compatible storage (for media)
 
 ### Installation
 
@@ -229,27 +251,32 @@ cp .env.local.example .env.local
 
 Create `.env.local` with the following variables:
 
-| Variable | Description | Required for Dev? | Notes |
-|----------|-------------|-------------------|-------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase API endpoint | ✅ Yes | Get from Supabase project settings |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase public client key | ✅ Yes | Safe for client-side use |
-| `SUPABASE_SECRET_KEY` | Supabase service role key | ⚠️ Build scripts only | Only needed for `migrate:supabase` |
-| `NEXT_PUBLIC_SANITY_PROJECT_ID` | Sanity project ID | 📝 For blog | Optional, only if using blog/CMS |
-| `NEXT_PUBLIC_SANITY_DATASET` | Sanity dataset name | 📝 For blog | Usually "production" |
-| `SANITY_API_TOKEN` | Sanity API token | 📝 For blog | Only needed for Studio access |
-| `UPSTASH_REDIS_REST_URL` | Upstash Redis endpoint | ⚡ For caching | Optional, improves API performance |
-| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis token | ⚡ For caching | Pairs with the URL above |
-| `NEXT_PUBLIC_GTM_ID` | Google Tag Manager ID | 📊 Analytics | Optional, for tracking |
+| Variable                        | Description                  | Required for Dev? | Notes                              |
+| ------------------------------- | ---------------------------- | ----------------- | ---------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase API endpoint        | ✅ Yes            | Get from Supabase project settings |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase public client key   | ✅ Yes            | Safe for client-side use           |
+| `DATABASE_URI`                  | PostgreSQL connection string | ✅ Yes            | Used by Payload CMS                |
+| `PAYLOAD_SECRET`                | Payload secret key           | ✅ Yes            | Random string for security         |
+| `S3_BUCKET`                     | S3 bucket name               | 🖼️ For media      | Optional in dev                    |
+| `S3_ACCESS_KEY_ID`              | S3 access key                | 🖼️ For media      | Optional in dev                    |
+| `S3_SECRET_ACCESS_KEY`          | S3 secret key                | 🖼️ For media      | Optional in dev                    |
+| `S3_REGION`                     | S3 region                    | 🖼️ For media      | Default: `ap-south-1`              |
+| `S3_ENDPOINT`                   | S3 endpoint                  | 🖼️ For media      | For R2/Wasabi/Localstack           |
+| `UPSTASH_REDIS_REST_URL`        | Upstash Redis endpoint       | ⚡ For caching    | Optional, improves API performance |
+| `UPSTASH_REDIS_REST_TOKEN`      | Upstash Redis token          | ⚡ For caching    | Pairs with the URL above           |
+| `NEXT_PUBLIC_GTM_ID`            | Google Tag Manager ID        | 📊 Analytics      | Optional, for tracking             |
 
 **Example `.env.local`:**
+
 ```bash
 # Required
 NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
+DATABASE_URI="postgresql://postgres:password@db.your-project.supabase.co:5432/postgres"
+PAYLOAD_SECRET="your-payload-secret"
 
 # Optional
-NEXT_PUBLIC_SANITY_PROJECT_ID="your-project-id"
-NEXT_PUBLIC_SANITY_DATASET="production"
+S3_BUCKET="your-bucket"
 UPSTASH_REDIS_REST_URL="https://your-db.upstash.io"
 UPSTASH_REDIS_REST_TOKEN="your-token"
 NEXT_PUBLIC_GTM_ID="GTM-XXXXXXXX"
@@ -302,62 +329,27 @@ npm start
 wbjee_college_predictor/
 ├── src/
 │   ├── app/                      # Next.js App Router
-│   │   ├── (legal)/              # Legal pages (privacy, disclaimer, FAQ)
-│   │   ├── (resources)/          # Resources (blog, colleges, timeline)
-│   │   │   ├── blog/             # Blog with Sanity CMS
-│   │   │   ├── colleges/         # College pages ([id])
-│   │   │   └── timeline/         # WBJEE timeline/dates
-│   │   ├── (tools)/              # Tools (predictor, cutoffs)
-│   │   │   ├── cutoffs/          # Cutoff finder tool
-│   │   │   └── predictor/        # College predictor tool
-│   │   ├── api/                  # API routes
-│   │   │   ├── cutoffs/          # Cutoff data endpoints (colleges, metadata, search, ranks)
-│   │   │   ├── predictor/        # Predictor endpoints (search, ranks)
-│   │   │   └── subreddit/        # Reddit integration
-│   │   ├── socials/              # Socials page
-│   │   ├── studio/               # Sanity Studio
-│   │   ├── layout.tsx            # Root layout
-│   │   ├── page.tsx              # Home page
-│   │   ├── sitemap.ts            # Dynamic sitemap
-│   │   └── not-found.tsx         # 404 page
-│   ├── components/               # Feature-based Components
-│   │   ├── content/              # Tables, FAQ, Socials
-│   │   │   ├── CutoffTable.tsx
-│   │   │   ├── FAQDedicated.tsx
-│   │   │   ├── FAQWidget.tsx
-│   │   │   ├── JoinCommunity.tsx
-│   │   │   └── SanityTable.tsx
-│   │   ├── eastereggs/           # Interactive elements
-│   │   │   ├── EasterEggLoader.tsx
-│   │   │   ├── EasterEggManager.tsx
-│   │   │   └── PrintingHack.tsx
-│   │   ├── features/             # Business logic
-│   │   │   ├── CollegeSearch.tsx
-│   │   │   ├── FeaturedColleges.tsx
-│   │   │   ├── HowItWorks.tsx
-│   │   │   └── ImportantDates.tsx
-│   │   ├── layout/               # Navbar, Footer, PageHero
-│   │   │   ├── Navbar.tsx
-│   │   │   ├── Footer.tsx
-│   │   │   └── PageHero.tsx
-│   │   └── ui/                   # Reusable UI Components
-│   │       ├── AnimatedCounter.tsx
-│   │       ├── FloatingScrollbar.tsx
-│   │       ├── SearchableDropdown.tsx
-│   │       └── SmartBreadcrumb.tsx
+│   │   ├── (app)/                # Main application routes
+│   │   │   ├── (legal)/          # Legal pages
+│   │   │   ├── (resources)/      # Resources (blog, colleges, timeline)
+│   │   │   │   ├── blog/         # Blog powered by Payload
+│   │   │   │   ├── colleges/     # College profiles
+│   │   │   │   └── timeline/     # WBJEE schedule
+│   │   │   └── (tools)/          # Predictor & Cutoff tools
+│   │   ├── (payload)/            # Payload CMS Admin Panel
+│   │   ├── api/                  # Backend API routes
+│   │   ├── layout.tsx            # Global layout
+│   │   └── page.tsx              # Homepage
+│   ├── collections/              # Payload CMS Collections
+│   │   ├── Colleges.ts
+│   │   ├── CollegeCutoffs.ts
+│   │   ├── Posts.ts (Blog)
+│   │   └── Timeline.ts
+│   ├── components/               # UI & Feature Components
 │   ├── hooks/                    # Custom React hooks
-│   │   ├── cutoffs/              # Cutoff tool specific hooks
-│   │   ├── predictor/            # Predictor tool specific hooks
-│   │   └── useFavorites.ts       # Shared hooks
-│   ├── utils/                    # Utilities
-│   │   ├── api/                  # API helpers & proxy
-│   │   ├── compression/          # Flat columnar compression
-│   │   └── database/             # Supabase client
-│   ├── sanity/                   # Sanity CMS config
-│   │   ├── client.ts             # Sanity client
-│   │   ├── schemas/              # Content schemas
-│   │   └── components/           # Custom CMS inputs
-│   └── middleware.ts             # Device detection middleware
+│   ├── lib/                      # Shared libraries (Payload client)
+│   ├── utils/                    # Utility functions
+│   └── middleware.ts             # Device detection
 ├── scripts/                      # Build & Maintenance Scripts
 │   ├── build/                    # Data generation
 │   │   ├── build-metadata.ts     # Generate metadata lookup
@@ -390,7 +382,7 @@ wbjee_college_predictor/
 ├── next.config.ts                # Next.js configuration
 ├── tailwind.config.ts            # Tailwind configuration
 ├── tsconfig.json                 # TypeScript configuration
-├── sanity.config.ts              # Sanity Studio configuration
+├── payload.config.ts             # Payload CMS configuration
 └── [other config files]
 ```
 
@@ -401,16 +393,19 @@ wbjee_college_predictor/
 ```bash
 # Development
 npm run dev                    # Start dev server
-npm run build                  # Build for production (auto-runs build:metadata, build:mobile, build:desktop)
+npm run build                  # Build for production
 npm start                      # Start production server
-npm run lint                   # Run ESLint
+npm run lint                   # Run ESLint & Oxlint
+
+# Payload CMS
+npm run generate:importmap     # Update Payload admin import map
 
 # Data Management
-npm run build:metadata         # Generate metadata lookup (compressed cutoff data)
+npm run seed:payload:colleges  # Seed colleges to Payload
+npm run seed:payload:cutoffs   # Seed cutoffs to Payload
+npm run build:metadata         # Generate metadata lookup
 npm run build:mobile           # Generate static slices for mobile
 npm run build:desktop          # Generate cutoffs-data.json for desktop
-npm run migrate:supabase       # Migrate data to Supabase
-npm run fix:duplicates         # Normalize institute/program names
 
 # Testing & Validation
 npm run test:mobile            # Test static slicing implementation
@@ -431,10 +426,10 @@ The application uses a **device-based data loading strategy** that optimizes for
 ```mermaid
 graph TD
     User[User Visits Cutoff Finder] --> Check{Device Type?}
-    
+
     Check -->|Desktop| D_Fetch
     Check -->|Mobile| M_Fetch
-    
+
     subgraph Desktop[" "]
         D_Fetch[Fetch Monolith JSON<br/>106 KB Brotli]
         D_Fetch --> D_Decompress[Decompress Flat Columnar Data]
@@ -450,7 +445,7 @@ graph TD
         M_Slice --> M_Render[Render Program Cards]
         M_Render -->|Change College| M_Slice
     end
-    
+
     style Desktop stroke:#1976d2,stroke-width:3px
     style Mobile stroke:#f57c00,stroke-width:3px
     style D_Filter fill:#4caf50,color:#fff
@@ -458,6 +453,7 @@ graph TD
 ```
 
 ### Desktop (Fast Networks)
+
 - **Strategy**: Load entire dataset upfront
 - **File**: `cutoffs-data.json` (106 KB compressed, 465 KB raw)
 - **Format**: Flat Columnar JSON (custom compression)
@@ -465,6 +461,7 @@ graph TD
 - **Trade-off**: Larger initial payload, but instant UX afterward
 
 ### Mobile (Slow Networks)
+
 - **Strategy**: Lazy loading with static slices
 - **Initial**: `data/index.json` (5 KB) - Just college names
 - **On-Demand**: `data/{college-slug}.json` (~5-33 KB per college)
@@ -474,6 +471,7 @@ graph TD
 ### Data Compression
 
 **Flat Columnar Format**:
+
 ```json
 {
   "lookup": {
@@ -491,6 +489,7 @@ graph TD
 ```
 
 **Benefits**:
+
 - **88% file size reduction** (911 KB → 106 KB)
 - Instant client-side decoding
 - Still JSON (debuggable, no binary format)
@@ -504,17 +503,17 @@ graph LR
     Client[Client] --> API[API Routes]
     API --> Cache{Redis Cache?}
     Cache -->|Hit| Return[Return Cached]
-    Cache -->|Miss| DB[Supabase PostgreSQL]
+    Cache -->|Miss| DB[Payload CMS / Postgres]
     DB --> Store[Store in Redis]
     Store --> Return
-    
+
     style Cache fill:#ff6b6b
     style DB fill:#4ecdc4
 ```
 
 - **Caching Layer**: Upstash Redis for frequently accessed data
-- **Database**: Supabase PostgreSQL for source of truth
-- **CMS**: Sanity.io for blog content
+- **Database**: PostgreSQL (Supabase) via Payload CMS
+- **CMS**: Payload CMS for blog and dynamic content
 - **Static Generation**: Pre-built JSON files for cutoff data
 
 ---
@@ -522,28 +521,33 @@ graph LR
 ## 🎨 Design System
 
 ### Colors
+
 - **Custom HSL Palette**: Carefully curated color scheme with dark mode support
 - **Theme Switching**: Powered by next-themes 0.4.6
 - **Glassmorphism**: Modern glass-effect UI components
 - **Accessibility**: WCAG AA compliant color contrast ratios
 
 ### Typography
+
 - **Primary Font**: Inter (Google Fonts)
 - **Font Weights**: 400 (Regular), 500 (Medium), 600 (Semibold), 700 (Bold)
 - **Responsive Sizing**: Fluid typography scales with viewport
 
 ### Components
+
 - **Reusable UI Library**: Buttons, inputs, dropdowns, cards
 - **Feature Components**: Searchable dropdowns, animated counters, smart breadcrumbs
 - **Layout Components**: Responsive navbar with mobile animations, footer, page hero
 
 ### Animations
+
 - **Library**: Framer Motion 12 with LazyMotion for reduced bundle size
 - **Micro-interactions**: Subtle hover effects, smooth transitions
 - **Mobile Menu**: Slide-down and fade-in animations
 - **Performance**: GPU-accelerated transforms
 
 ### Responsive Design
+
 - **Mobile-First**: Designed for small screens, enhanced for large
 - **Breakpoints**: Tailwind CSS 4 default breakpoints
 - **Adaptive Components**: Different layouts for mobile vs desktop
@@ -556,20 +560,23 @@ graph LR
 The application has been comprehensively tested across multiple dimensions:
 
 ### ✅ Functional Testing
+
 - **Desktop Cutoff Finder**: Multiple colleges tested, instant filtering verified
-- **Mobile Cutoff Finder**: Lazy loading and static slicing verified  
+- **Mobile Cutoff Finder**: Lazy loading and static slicing verified
 - **Predictor Tool**: Rank-based predictions across all categories
 - **Cascading Filters**: Program dropdown updates on college selection
 - **Reset Functionality**: All filters clear properly
 - **Favorites System**: Add/remove colleges, persistent across sessions
 
-### ⚡ Performance Testing  
+### ⚡ Performance Testing
+
 - **Zero API Calls**: Desktop search confirmed via Network tab (0 requests)
 - **File Size Verification**: 106 KB Brotli compression confirmed
 - **Load Time Testing**: Varies by network and deployment environment
 - **Static Slice Generation**: Verified colleges have individual JSON files
 
 ### ♿ Accessibility Testing
+
 - **ARIA Labels**: All interactive elements properly labeled
 - **Color Contrast**: WCAG AA compliance verified
 - **Keyboard Navigation**: Full keyboard support for all features
@@ -577,12 +584,14 @@ The application has been comprehensively tested across multiple dimensions:
 - **Heading Hierarchy**: Logical H1-H6 structure maintained
 
 ### 📱 Device Testing
+
 - **Desktop Browsers**: Chrome, Firefox, Safari, Edge
 - **Mobile Devices**: iOS Safari, Chrome Android
 - **Responsive Breakpoints**: 320px - 2560px tested
 - **Touch Interactions**: Verified on actual mobile devices
 
 ### 🔍 SEO Validation
+
 - **Meta Tags**: All pages have proper title, description, OG tags
 - **Sitemap**: Auto-generated sitemap with dynamic content
 - **Robots.txt**: Properly configured crawl directives
@@ -601,6 +610,7 @@ The application has been comprehensively tested across multiple dimensions:
 4. Deploy
 
 Vercel automatically:
+
 - Enables Brotli compression
 - Serves static files via CDN
 - Handles serverless functions
@@ -617,6 +627,7 @@ npm start
 ## 📈 SEO & Discoverability
 
 ### Meta Tags & Social Sharing
+
 - **Dynamic Metadata**: Unique title, description for each page via Next.js Metadata API
 - **OpenGraph Tags**: Rich preview cards for Facebook, LinkedIn
 - **Twitter Cards**: Optimized for Twitter/X sharing with large images
@@ -624,11 +635,13 @@ npm start
 - **Robots Meta**: Page-level control over indexing and following
 
 ### Structured Data
+
 - **Schema.org Markup**: Organization, WebSite, Article, FAQ schemas
 - **JSON-LD**: Machine-readable structured data in `<head>`
 - **Rich Snippets**: Enhanced search results with star ratings, dates
 
 ### Technical SEO
+
 - **Sitemap**: Auto-generated XML sitemap (`/sitemap.xml`) with dynamic content
 - **Robots.txt**: Search engine crawl directives (`/robots.txt`)
 - **IndexNow**: Automatic URL submission to search engines on content updates
@@ -636,13 +649,15 @@ npm start
 - **Mobile-Friendly**: Responsive design passes Google Mobile-Friendly test
 
 ### Content SEO
+
 - **Heading Hierarchy**: Proper H1-H6 structure on all pages
 - **Alt Text**: All images have descriptive alt attributes
 - **Internal Linking**: Smart breadcrumbs and contextual links
 - **Content Length**: Comprehensive pages with 500+ words where relevant
-- **Fresh Content**: Blog with regular updates via Sanity CMS
+- **Fresh Content**: Blog with regular updates via Payload CMS
 
 ### Local SEO
+
 - **Target Audience**: WBJEE students in West Bengal, India
 - **Regional Keywords**: "WBJEE 2026", "West Bengal engineering colleges"
 - **Language**: English (primary) with localized content
@@ -691,18 +706,21 @@ The information provided by this tool is for guidance only. Always consult offic
 ## 🙏 Acknowledgments
 
 ### Data & Community
+
 - **Data Source**: Official WBJEE cutoff data from West Bengal Joint Entrance Examinations Board
 - **Community**: r/wbjee Reddit community and Discord server members
 - **Inspiration**: Built for and inspired by WBJEE 2026 aspirants
 
 ### Technology
+
 - **Frameworks**: Next.js 16 team, React 19 team, Vercel
-- **Infrastructure**: Supabase, Sanity.io, Upstash
+- **Infrastructure**: Supabase, Payload CMS (Postgres), AWS S3, Upstash
 - **Styling**: Tailwind CSS team
 - **Animation**: Framer Motion
 - **Icons**: Lucide, Heroicons teams
 
 ### Special Thanks
+
 - Contributors to open-source libraries used in this project
 - The Next.js, React, and Vercel teams for excellent documentation
 

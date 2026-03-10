@@ -1,15 +1,12 @@
 import Link from 'next/link';
 import Image from 'next/image';
-// FIX: Corrected import path to match your project structure
-import { urlFor } from '../../sanity/lib/image';
 import { GraduationCap, MapPin } from 'lucide-react';
-import { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
 interface College {
   _id: string;
   name: string;
   slug: { current: string };
-  logo?: SanityImageSource;
+  logo?: { url: string };
   location: string;
   shortName?: string;
 }
@@ -43,10 +40,10 @@ export default function FeaturedColleges({ colleges }: { colleges: College[] }) 
             >
               {/* LOGO CONTAINER */}
               <div className="w-20 h-20 mb-4 relative flex items-center justify-center bg-white rounded-2xl p-2 shadow-sm border border-gray-100 dark:border-gray-700 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
-                {col.logo ? (
+                {col.logo?.url ? (
                   <div className="absolute inset-0 p-2">
                     <Image
-                      src={urlFor(col.logo).width(150).url()}
+                      src={col.logo.url}
                       alt={col.shortName || col.name}
                       fill
                       sizes="80px"
