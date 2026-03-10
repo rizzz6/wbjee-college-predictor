@@ -1,13 +1,34 @@
 import { MetadataRoute } from 'next'
-import { client } from '../sanity/client'
+import { getPayloadClient } from '@/lib/payload-client'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.rwbjee.com'
 
-  // 1. Fetch Data from Sanity
-  const posts = await client.fetch(`*[_type == "post"] { "slug": slug.current, publishedAt }`)
-  // MAKE SURE THIS LINE MATCHES:
-  const colleges = await client.fetch(`*[_type == "college" && isVisible == true] { "slug": slug.current, _updatedAt }`)
+  // 1. Fetch Data from Payload
+  const payload = await getPayloadClient()
+  
+  // Fetch blog posts
+  const postRes = await payload.find({
+    collection: 'posts',
+    limit: 500,
+    pagination: false,
+  })
+  const posts = postRes.docs.map(doc => ({
+    slug: doc.slug,
+    publishedAt: doc.publishedAt,
+  }))
+
+  // Fetch colleges
+  const collegeRes = await payload.find({
+    collection: 'colleges',
+    where: { isVisible: { equals: true } },
+    limit: 500,
+    pagination: false,
+  })
+  const colleges = collegeRes.docs.map(doc => ({
+    slug: doc.slug,
+    _updatedAt: doc.updatedAt,
+  }))
 
   // 2. Define Static Pages
   const staticRoutes: MetadataRoute.Sitemap = [

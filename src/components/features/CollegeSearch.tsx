@@ -2,17 +2,15 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { urlFor } from '../../sanity/client';
 import { GraduationCap, MapPin, ArrowRight } from 'lucide-react';
 import { useState, useMemo } from 'react';
-import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 
 interface College {
   _id: string;
   name: string;
   shortName: string;
   slug: { current: string };
-  logo?: SanityImageSource;
+  logo?: { url: string };
   location: string;
   type: string;
 }
@@ -78,11 +76,11 @@ export default function CollegeSearch({ colleges }: CollegeSearchProps) {
                 {/* LOGO CONTAINER */}
                 {/* FIX: bg-white ensures logo looks correct in dark mode (no dark strips) */}
                 <div className="w-12 h-12 relative bg-white rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden shrink-0">
-                  {college.logo ? (
+                  {college.logo?.url ? (
                     /* FIX: p-1 padding + object-contain for perfect fit */
                     <div className="absolute inset-0 p-1">
                       <Image
-                        src={urlFor(college.logo).width(100).url()}
+                        src={college.logo.url}
                         alt={`${college.name} logo`}
                         fill
                         sizes="48px"

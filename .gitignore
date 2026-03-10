@@ -98,4 +98,14 @@ college-details-validation-report.csv
 
 # Local analysis reports (not for commit)
 /reports/
+oxlint_output.json
+
+# IDE files (extended)
+.vscode-main-site/
+.sanity/
+.kilocode/
+
+# Payload CMS (Generated)
+payload-types.ts
+src/app/(payload)/admin/importMap.js
 
