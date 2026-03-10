@@ -1,12 +1,11 @@
 'use client';
 
-import { client } from '../../sanity/lib/client';
 import useSWR from 'swr';
 import { format, isPast, isToday, differenceInCalendarDays, startOfDay } from 'date-fns';
 import Link from 'next/link';
 import { Calendar } from 'lucide-react';
 
-const fetcher = (query: string) => client.fetch(query);
+const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 interface TimelineEvent {
   _id: string;
@@ -30,12 +29,12 @@ export default function ImportantDates({
 }: ImportantDatesProps) {
 
   const { data: allEvents, isLoading } = useSWR<TimelineEvent[]>(
-    `*[_type == "timeline"] | order(date asc)`,
+    '/api/timeline',
     fetcher
   );
 
   // LOGIC: Filter data if a limit is set
-  const displayedEvents = allEvents ? (() => {
+  const displayedEvents = allEvents && Array.isArray(allEvents) ? (() => {
     if (!limit) return allEvents;
     const today = startOfDay(new Date());
     const upcomingEvents = allEvents.filter(event => {
@@ -82,11 +81,9 @@ export default function ImportantDates({
   if (!displayedEvents || displayedEvents.length === 0) return null;
 
   return (
-    // FIX: Using <section> and matching FeaturedColleges structure exactly (max-w-7xl mx-auto px-4)
     <section className={`w-full ${!compact ? 'py-8' : ''}`}>
       <div className={`w-full ${!compact ? 'max-w-7xl mx-auto px-4' : ''}`}>
 
-        {/* HEADER: Full width, no max-w constraint */}
         {!hideTitle && (
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
@@ -105,7 +102,6 @@ export default function ImportantDates({
           </div>
         )}
 
-        {/* LIST: We keep the list max-w-3xl so lines aren't too long, but Header stays wide */}
         <div className="max-w-3xl">
           <div className="flex flex-col gap-0 relative">
             {displayedEvents.map((event, index) => {

@@ -2,7 +2,15 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   // Next.js 16: Moved from experimental.serverComponentsExternalPackages
-  serverExternalPackages: ["jsdom", "isomorphic-dompurify"],
+  serverExternalPackages: [
+    "jsdom",
+    "isomorphic-dompurify",
+    // Payload CMS dependencies that must not be bundled by webpack
+    "@libsql",
+    "drizzle-kit",
+    "payload",
+    "@payloadcms/db-postgres",
+  ],
   images: {
     // FIX: Disable server optimization in dev to bypass local network IP blocks
     // Temporarily also disabled for local production testing
@@ -31,11 +39,10 @@ const nextConfig: NextConfig = {
   // Dev performance optimizations
   experimental: {
     // Faster dev server
-    optimizePackageImports: ['@sanity/ui', 'lucide-react'],
+    optimizePackageImports: ['lucide-react'],
   },
-
-  // Only transpile necessary packages
-  transpilePackages: ['@sanity/ui'],
 };
 
-export default nextConfig;
+import { withPayload } from '@payloadcms/next/withPayload'
+
+export default withPayload(nextConfig);

@@ -4,6 +4,7 @@ import reactPlugin from "eslint-plugin-react";
 import hooksPlugin from "eslint-plugin-react-hooks";
 import tsParser from "@typescript-eslint/parser";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
+import oxlint from 'eslint-plugin-oxlint';
 
 export default [
   // 1. Global Ignores
@@ -11,7 +12,7 @@ export default [
     ignores: [".next/**", "node_modules/**", "public/**", "next-env.d.ts"]
   },
 
-  // 2. TypeScript Configuration (Crucial Fix)
+  // 2. Base TypeScript Configuration (Parsing only)
   {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
@@ -19,7 +20,6 @@ export default [
       parserOptions: {
         ecmaFeatures: { modules: true, jsx: true },
         ecmaVersion: "latest",
-        project: "./tsconfig.json",
       },
     },
     plugins: {
@@ -27,9 +27,24 @@ export default [
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
-      // Turn off annoying rules that break builds
       "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+      "@typescript-eslint/no-unused-vars": [
+          "warn",
+          {
+            "argsIgnorePattern": "^_",
+            "varsIgnorePattern": "^_"
+          }
+        ],
+    },
+  },
+
+  // 2b. Type-Aware TypeScript Configuration (src only — matches tsconfig.json)
+  {
+    files: ["src/**/*.ts", "src/**/*.tsx"],
+    languageOptions: {
+      parserOptions: {
+        project: "./tsconfig.json",
+      },
     },
   },
 
@@ -87,5 +102,6 @@ export default [
     rules: {
       "no-undef": "off"
     }
-  }
+  },
+  ...oxlint.configs['flat/recommended'],
 ];

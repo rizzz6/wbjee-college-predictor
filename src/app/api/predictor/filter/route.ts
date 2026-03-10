@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/utils/logger';
 import { Redis } from '@upstash/redis';
 import zlib from 'zlib';
 import { promisify } from 'util';
@@ -42,7 +43,7 @@ const CACHE_TTL = 15 * 60 * 1000; // 15 minutes in milliseconds
 const getRedisClient = () => {
     try {
         if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
-            console.warn('[Filter API] Redis credentials not found in environment');
+            logger.warn('[Filter API] Redis credentials not found in environment');
             return null;
         }
         return new Redis({
@@ -50,7 +51,7 @@ const getRedisClient = () => {
             token: process.env.UPSTASH_REDIS_REST_TOKEN,
         });
     } catch (error) {
-        console.error('[Filter API] Failed to initialize Redis:', error);
+        logger.error('[Filter API] Failed to initialize Redis:', error);
         return null;
     }
 };
@@ -85,18 +86,18 @@ async function getMasterData(): Promise<CollegeData[]> {
 
     // 2. Ensure Redis is available
     if (!redis) {
-        console.error('❌ Redis client not initialized');
+        logger.error('❌ Redis client not initialized');
         throw new Error('Database unavailable - Redis credentials missing');
     }
 
-    console.log('🔄 Cache stale or empty. Fetching from Upstash...');
+    logger.debug('🔄 Cache stale or empty. Fetching from Upstash...');
 
     try {
         // 3. Fetch Compressed Blob from Redis
         const base64Data = await redis.get<string>('wbjee:master_data');
 
         if (!base64Data) {
-            console.error('❌ No data found in Redis key: wbjee:master_data');
+            logger.error('❌ No data found in Redis key: wbjee:master_data');
             throw new Error('Database not seeded - run seed-upstash script');
         }
 
@@ -111,11 +112,11 @@ async function getMasterData(): Promise<CollegeData[]> {
             timestamp: now
         };
 
-        console.log(`✅ Data loaded from Redis. Records: ${data.length}`);
+        logger.debug(`✅ Data loaded from Redis. Records: ${data.length}`);
         return data;
 
     } catch (error) {
-        console.error('❌ Redis fetch failed:', error);
+        logger.error('❌ Redis fetch failed:', error);
         throw new Error('Service temporarily unavailable');
     }
 }
@@ -182,7 +183,7 @@ export async function GET(request: NextRequest) {
 
             // Handle inverted data (OR > CR) - treat as invalid
             if (item.opening_rank > item.closing_rank) {
-                console.warn(`Invalid data for ${item.institute} - ${item.branch}: OR (${item.opening_rank}) > CR (${item.closing_rank})`);
+                logger.warn(`Invalid data for ${item.institute} - ${item.branch}: OR (${item.opening_rank}) > CR (${item.closing_rank})`);
                 return { ...item, prediction };
             }
 
@@ -271,9 +272,8 @@ export async function GET(request: NextRequest) {
                 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
             }
         });
-
     } catch (error) {
-        console.error('API Error:', error);
+        logger.error('API Error:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

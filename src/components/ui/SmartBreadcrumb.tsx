@@ -155,11 +155,6 @@ export default function SmartBreadcrumb({
     // Get current pathname from Next.js navigation hook (client-side)
     const pathname = usePathname();
 
-    // Don't render on Sanity Studio routes
-    if (pathname?.startsWith('/studio')) {
-        return null;
-    }
-
     // Use custom items if provided, otherwise generate from URL
     const breadcrumbItems = customItems || generateBreadcrumbs(pathname, overrides);
 

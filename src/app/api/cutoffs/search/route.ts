@@ -3,6 +3,7 @@ import { Redis } from '@upstash/redis';
 import zlib from 'zlib';
 import { promisify } from 'util';
 import { getServerSupabase } from '@/utils/database/supabase';
+import { logger } from '@/utils/logger';
 
 // Switch to Node.js runtime for zlib support
 export const runtime = 'nodejs';
@@ -79,7 +80,7 @@ const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 async function loadRecords(): Promise<RedisRecord[]> {
     // Tier 1: Check in-memory cache
     if (memoryCache.data && Date.now() - memoryCache.timestamp < CACHE_TTL) {
-        console.log('✅ Memory cache HIT');
+        logger.debug('✅ Memory cache HIT');
         return memoryCache.data;
     }
 
@@ -89,7 +90,7 @@ async function loadRecords(): Promise<RedisRecord[]> {
             const base64Data = await redis.get<string>('wbjee:master_data');
 
             if (base64Data) {
-                console.log('✅ Redis cache HIT - decompressing...');
+                logger.debug('✅ Redis cache HIT - decompressing...');
                 const buffer = Buffer.from(base64Data, 'base64');
                 const decompressed = await gunzip(buffer);
                 const records = JSON.parse(decompressed.toString()) as RedisRecord[];
@@ -100,18 +101,18 @@ async function loadRecords(): Promise<RedisRecord[]> {
                     timestamp: Date.now()
                 };
 
-                console.log(`✅ Decompressed ${records.length} records into memory`);
+                logger.debug(`✅ Decompressed ${records.length} records into memory`);
                 return records;
             }
 
-            console.log('⚠️ Redis cache MISS - falling back to Supabase');
+            logger.warn('⚠️ Redis cache MISS - falling back to Supabase');
         } catch (redisError) {
-            console.error('❌ Redis error:', redisError);
+            logger.error('❌ Redis error:', redisError);
         }
     }
 
     // Tier 3: Fallback to Supabase
-    console.log('⚠️ Falling back to Supabase (Redis unavailable or empty)');
+    logger.warn('⚠️ Falling back to Supabase (Redis unavailable or empty)');
     const supabase = getServerSupabase();
     const { data, error } = await supabase
         .from('cutoffs')
@@ -179,7 +180,7 @@ export async function GET(request: NextRequest) {
         const searchTime = Date.now() - startTime;
 
         if (!result) {
-            console.log(`❌ No data found for: ${searchParams.college} - ${searchParams.program} (${searchTime}ms)`);
+            logger.debug(`❌ No data found for: ${searchParams.college} - ${searchParams.program} (${searchTime}ms)`);
             return NextResponse.json(
                 {
                     error: 'No data found for the selected criteria',
@@ -193,7 +194,7 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        console.log(`✅ Search successful: ${searchParams.college} - ${searchParams.program} (${searchTime}ms)`);
+        logger.debug(`✅ Search successful: ${searchParams.college} - ${searchParams.program} (${searchTime}ms)`);
 
         return NextResponse.json({
             openingRank: result.opening_rank,
@@ -207,7 +208,7 @@ export async function GET(request: NextRequest) {
         });
 
     } catch (error) {
-        console.error('❌ Search error:', error);
+        logger.error('❌ Search error:', error);
         return NextResponse.json(
             {
                 error: 'Internal server error',
