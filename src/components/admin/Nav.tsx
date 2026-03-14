@@ -112,6 +112,8 @@ const NavLink = ({ href, icon: Icon, label, index }: { href: string, icon: React
 const Nav = () => {
   const { user, logOut } = useAuth()
   const [isProfileHovered, setIsProfileHovered] = useState(false)
+  const shouldShowGraphQLPlayground =
+    process.env.NODE_ENV !== 'production' || process.env.NEXT_PUBLIC_ENABLE_GRAPHQL_PLAYGROUND === 'true'
 
   let linkIndex = 0;
 
@@ -393,7 +395,9 @@ const Nav = () => {
           <NavLink href="/admin/collections/users" icon={Users} label="Users" index={linkIndex++} />
           <NavLink href="/admin/collections/media" icon={ImageIcon} label="Media" index={linkIndex++} />
           <NavLink href="/admin/globals/site-settings" icon={Settings} label="Global Info" index={linkIndex++} />
-          <NavLink href="/api/graphql-playground" icon={Code} label="GraphQL API" index={linkIndex++} />
+          {shouldShowGraphQLPlayground && (
+            <NavLink href="/api/graphql-playground" icon={Code} label="GraphQL API" index={linkIndex++} />
+          )}
         </NavGroup>
 
         <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: 'var(--dotted-border)', paddingLeft: '1.5rem', paddingRight: '1.5rem', position: 'relative' }}>
@@ -501,3 +505,4 @@ const Nav = () => {
 }
 
 export default Nav
+

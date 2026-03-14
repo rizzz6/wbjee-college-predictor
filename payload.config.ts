@@ -15,6 +15,17 @@ import { Users } from './src/collections/Users'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+const isProduction = process.env.NODE_ENV === 'production'
+
+function requireEnv(name: string): string {
+  const value = process.env[name]?.trim()
+
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`)
+  }
+
+  return value
+}
 
 export default buildConfig({
   admin: {
@@ -66,13 +77,13 @@ export default buildConfig({
   editor: lexicalEditor({}),
   collections: [Colleges, CollegeCutoffs, Media, Posts, Timeline, Users],
   globals: [SiteSettings],
-  secret: process.env.PAYLOAD_SECRET || 'temp-secret-local',
+  secret: requireEnv('PAYLOAD_SECRET'),
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI || '',
+      connectionString: requireEnv('DATABASE_URI'),
     },
     schemaName: 'payload',
-    push: true,
+    push: !isProduction,
   }),
   plugins: [
     s3Storage({
@@ -85,7 +96,7 @@ export default buildConfig({
           accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
           secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
         },
-        region: process.env.S3_REGION || 'ap-south-1', // Mumbai region for WBJEE context
+        region: process.env.S3_REGION || 'ap-south-1',
         endpoint: process.env.S3_ENDPOINT || '',
         forcePathStyle: true,
       },

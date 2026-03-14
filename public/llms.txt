@@ -1,0 +1,163 @@
+# rwbjee — WBJEE Companion
+
+> rwbjee.com is a free, community-built companion website for WBJEE (West Bengal Joint Entrance Examination) aspirants. It is NOT affiliated with the official WBJEEB. For official information, visit https://wbjeeb.nic.in/
+
+## Overview
+
+rwbjee.com helps WBJEE students in West Bengal, India make informed college admission decisions. It provides a free college predictor, historical cutoff data (2022–2025), a college directory, important dates/timeline, a blog, and community links — all in one place.
+
+- **Live Site**: https://www.rwbjee.com
+- **Reddit Community**: https://www.reddit.com/r/wbjee/
+- **Discord**: https://discord.gg/pTTKPYryDp
+- **Developer**: https://www.reddit.com/user/rizzz6/
+
+---
+
+## Key Features
+
+### 1. College Predictor (`/predictor`)
+Enter a WBJEE rank and get instant, real-time college admission predictions.
+- Predictions based on historical cutoff data from 2022–2025 across all categories (UR, OBC-A, OBC-B, SC, ST)
+- Smart filtering by branch, category, location, and college type
+- Favorites system: save and compare preferred colleges
+- 17,000+ data points for comprehensive predictions
+
+### 2. Cutoff Finder (`/cutoffs`)
+Browse and search historical WBJEE closing and opening ranks (cutoffs) across all colleges and programs.
+- **Desktop**: Loads the full dataset (106 KB compressed) for instant, 0ms client-side search
+- **Mobile**: Progressive/lazy loading — fetches data per college on demand (~5–33 KB each)
+- Filter by: college, program/branch, year (2022–2025), category, counseling round, seat type
+- Data covers 17,179 individual cutoff records
+
+### 3. College Directory (`/colleges`)
+Browse profiles of 138+ WBJEE-participating engineering and pharmacy colleges.
+- Individual college pages at `/colleges/[slug]`
+- Information includes: fee structure, programs/branches offered, placement stats, facilities
+- Indexed and filterable
+
+### 4. Timeline & Important Dates (`/timeline`)
+A chronological schedule of the WBJEE 2026 exam cycle:
+- Exam dates, admit card release, result announcement
+- Counseling rounds and schedule
+- Registration deadlines
+
+### 5. Blog & Resources (`/blog`)
+Articles, guides, and announcements for WBJEE students.
+- Content managed via Payload CMS
+- Individual post pages at `/blog/[slug]`
+- Topics: preparation strategies, counseling guides, college reviews, WBJEE news
+
+### 6. Community & Socials (`/socials`)
+Links and integration with the r/wbjee community:
+- Latest posts from the r/wbjee subreddit
+- Discord server invite
+- Reddit and social links
+
+### 7. FAQ (`/faq`)
+Answers to common questions about WBJEE, the predictor tool, and how to use the site.
+
+---
+
+## Data & Accuracy
+
+- **Data Source**: Official WBJEE cutoff data published by the West Bengal Joint Entrance Examinations Board (WBJEEB)
+- **Coverage**: Cutoff data from 2022 to 2025 (4 years), 17,179 records
+- **Colleges**: 138+ engineering and pharmacy colleges
+- **Update Cycle**: Data is updated after each WBJEE counseling cycle
+- **Disclaimer**: The predictor is based on historical trends and is a guide, NOT a guarantee. Always verify with official WBJEEB announcements.
+
+---
+
+## Site Pages & Routes
+
+| URL | Description |
+|-----|-------------|
+| `https://www.rwbjee.com/` | Homepage — hero, how it works, featured colleges, community |
+| `https://www.rwbjee.com/predictor` | College Predictor tool |
+| `https://www.rwbjee.com/cutoffs` | Cutoff Finder tool |
+| `https://www.rwbjee.com/colleges` | College directory listing |
+| `https://www.rwbjee.com/colleges/[slug]` | Individual college profile pages |
+| `https://www.rwbjee.com/blog` | Blog index |
+| `https://www.rwbjee.com/blog/[slug]` | Individual blog posts |
+| `https://www.rwbjee.com/timeline` | WBJEE 2026 important dates and schedule |
+| `https://www.rwbjee.com/socials` | Community links and Reddit integration |
+| `https://www.rwbjee.com/faq` | Frequently Asked Questions |
+| `https://www.rwbjee.com/privacy` | Privacy Policy |
+| `https://www.rwbjee.com/disclaimer` | Legal Disclaimer |
+
+---
+
+## Technical Architecture
+
+- **Framework**: Next.js 16 (App Router) with React 19, TypeScript 5
+- **Styling**: Tailwind CSS 4, Framer Motion 12
+- **Database**: Supabase (PostgreSQL)
+- **CMS**: Payload CMS 3 (for blog posts, colleges, site settings, timeline events)
+- **Caching**: Upstash Redis
+- **Hosting**: Vercel (Edge Network, Brotli compression)
+- **Media**: AWS S3
+
+### Adaptive Data Loading Strategy
+The cutoff and predictor tools use a device-aware loading strategy:
+- **Desktop**: Downloads the full compressed dataset (106 KB Brotli) once → 0ms instant filtering with no further API calls
+- **Mobile**: Downloads a 5 KB college index first → fetches individual college slices (~5–33 KB) on demand
+
+### Cutoff Data Format
+Data is stored in a custom Flat Columnar JSON format for 88% size reduction (911 KB → 106 KB):
+- Lookup tables deduplicate college/program names
+- Integer arrays store indices and rank values
+- Instantly decodable client-side with no binary format
+
+---
+
+## Content Collections (CMS)
+
+| Collection | Description |
+|------------|-------------|
+| `colleges` | 138+ WBJEE colleges with name, slug, location, fees, programs, placements |
+| `collegeCutoffs` | Cutoff records (opening/closing ranks per program, year, category, round) |
+| `posts` | Blog articles with rich text, author, tags, and slug |
+| `timeline` | WBJEE exam cycle events with dates and descriptions |
+| `siteSettings` | Global site configuration |
+| `media` | Uploaded images and files |
+
+---
+
+## Target Audience
+
+- WBJEE 2026 aspirants in West Bengal, India
+- Students researching engineering and pharmacy colleges for WBJEE admission
+- Parents and counselors helping students navigate college selection
+- Community members from r/wbjee (Reddit)
+
+---
+
+## Frequently Asked Questions
+
+**Q: Is rwbjee.com the official WBJEE website?**
+No. This is a free community resource. For official updates, visit https://wbjeeb.nic.in/
+
+**Q: How accurate is the college predictor?**
+It uses historical cutoff data from 2022–2025 to estimate admission chances. While highly accurate for trends, actual cutoffs vary each year. Use it as a guide, not a guarantee.
+
+**Q: Is the college data up to date?**
+Yes. Fee and placement stats are updated for the 2026–2027 session based on the latest available reports.
+
+**Q: Is the site free to use?**
+Yes, all tools on rwbjee.com are completely free.
+
+**Q: What categories are supported in the predictor?**
+UR (Unreserved), OBC-A, OBC-B, SC (Scheduled Caste), ST (Scheduled Tribe), and other WBJEE-recognized categories.
+
+**Q: What is the data source for cutoffs?**
+Official WBJEE cutoff data published by the West Bengal Joint Entrance Examinations Board (WBJEEB) after each counseling season.
+
+---
+
+## Legal
+
+- **Copyright**: © 2024–2025 rizzz6. All Rights Reserved.
+- **Data IP**: Cutoff data is the intellectual property of WBJEEB, used here for educational/informational purposes only.
+- **Disclaimer**: This tool provides guidance based on trends. Always consult official WBJEEB sources for authoritative information.
+- **Privacy Policy**: https://www.rwbjee.com/privacy
+- **Disclaimer Page**: https://www.rwbjee.com/disclaimer

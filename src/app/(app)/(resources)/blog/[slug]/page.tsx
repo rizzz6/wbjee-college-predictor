@@ -5,6 +5,7 @@ import { Metadata } from 'next';
 import { format } from 'date-fns';
 import { ArrowLeft, Calendar, User, Share2 } from 'lucide-react';
 import { getPayloadClient } from '@/lib/payload-client';
+import { sanitizeRichHtml } from '@/utils/sanitize-rich-html';
 
 export const revalidate = 60;
 
@@ -75,6 +76,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
   const mainImage = post.mainImage as PayloadMedia | null;
   const author = post.author as { name: string } | null;
+  const sanitizedBodyHtml = sanitizeRichHtml(post.bodyHtml || '');
 
   return (
     <article className="bg-white dark:bg-gray-900 pb-8 relative selection:bg-red-100 selection:text-red-900 dark:selection:bg-red-900/30 dark:selection:text-red-100">
@@ -139,7 +141,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         {/* --- CONTENT BODY --- */}
         <div 
           className="prose prose-lg md:prose-xl dark:prose-invert max-w-none prose-red prose-headings:font-bold prose-a:text-red-600 dark:prose-a:text-red-400"
-          dangerouslySetInnerHTML={{ __html: post.bodyHtml }} 
+          dangerouslySetInnerHTML={{ __html: sanitizedBodyHtml }} 
         />
 
         {/* --- FOOTER --- */}

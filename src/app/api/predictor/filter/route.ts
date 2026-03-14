@@ -169,11 +169,30 @@ export async function GET(request: NextRequest) {
             return true;
         });
 
-        // Add Predictions & Limit Results (Pagination: Top 50)
-        // Sort by how close closing_rank is to user rank (optional, but good for relevance)
-        // For now, prediction logic + simple slice
+        // Sort all matches by how close the closing rank is to the user's rank.
+        // The UI paginates client-side, so we return the full sorted result set.
+        const sortedByCloseness = [...filtered].sort((a, b) => {
+            const distanceA = a.closing_rank === null
+                ? Number.POSITIVE_INFINITY
+                : Math.abs(a.closing_rank - rank);
+            const distanceB = b.closing_rank === null
+                ? Number.POSITIVE_INFINITY
+                : Math.abs(b.closing_rank - rank);
 
-        const withPredictions = filtered.slice(0, 100).map(item => {
+            if (distanceA !== distanceB) {
+                return distanceA - distanceB;
+            }
+
+            const closingRankA = a.closing_rank ?? Number.POSITIVE_INFINITY;
+            const closingRankB = b.closing_rank ?? Number.POSITIVE_INFINITY;
+            if (closingRankA !== closingRankB) {
+                return closingRankA - closingRankB;
+            }
+
+            return a.institute.localeCompare(b.institute) || a.branch.localeCompare(b.branch);
+        });
+
+        const withPredictions = sortedByCloseness.map(item => {
             let prediction = { text: '-', order: 6 };
 
             // ===== DATA VALIDATION =====
@@ -258,7 +277,7 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({
             results: withPredictions,
-            total: filtered.length, // Return total matches for UI
+            total: withPredictions.length,
             metadata: {
                 filterUsed: { floor, ceiling, min: adaptive.min, max: adaptive.max },
                 rank,
@@ -277,3 +296,5 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
+
+

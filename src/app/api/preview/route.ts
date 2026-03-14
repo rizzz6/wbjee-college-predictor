@@ -17,7 +17,7 @@ export const GET = async (req: Request) => {
   // Verify the token with Payload
   // Note: Payload v3 verifyToken check
   try {
-    const user = await payload.auth({
+    const { user } = await payload.auth({
       headers: new Headers({
         Authorization: `JWT ${token}`,
       }),
@@ -38,3 +38,4 @@ export const GET = async (req: Request) => {
     return new Response('Internal Server Error', { status: 500 })
   }
 }
+

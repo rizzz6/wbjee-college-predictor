@@ -1,5 +1,7 @@
 import { CollectionConfig } from 'payload'
 
+import { sanitizeRichHtml } from '@/utils/sanitize-rich-html'
+
 export const Posts: CollectionConfig = {
   slug: 'posts',
   admin: {
@@ -19,6 +21,17 @@ export const Posts: CollectionConfig = {
   },
   access: {
     read: () => true,
+  },
+  hooks: {
+    beforeChange: [
+      ({ data }) => {
+        if (data && typeof data.bodyHtml === 'string') {
+          data.bodyHtml = sanitizeRichHtml(data.bodyHtml)
+        }
+
+        return data
+      },
+    ],
   },
   fields: [
     {
