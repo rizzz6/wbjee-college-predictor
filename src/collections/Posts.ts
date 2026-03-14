@@ -105,3 +105,5 @@ export const Posts: CollectionConfig = {
     },
   ],
 }
+
+

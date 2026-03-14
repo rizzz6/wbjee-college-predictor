@@ -3,7 +3,7 @@
 @plugin "tailwindcss-animate";
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is([data-theme='dark'] *));
 
 /* --- 1. WHITE FLASH FIX --- */
 /* Default: Light mode fallback */
@@ -11,13 +11,13 @@ html {
   background-color: #ffffff;
 }
 
-/* Dark mode when .dark class is present */
-html.dark {
+/* Dark mode when data-theme='dark' is present */
+html[data-theme='dark'] {
   background-color: #111827 !important;
 }
 
-/* Light mode when .light class is present */
-html.light {
+/* Light mode when data-theme='light' is present */
+html[data-theme='light'] {
   background-color: #ffffff !important;
 }
 
@@ -171,7 +171,7 @@ body {
       linear-gradient(to bottom, rgba(0, 0, 0, 0.01) 1px, transparent 1px);
   }
 
-  .dark .bg-grid-pattern {
+  [data-theme='dark'] .bg-grid-pattern {
     background-image:
       linear-gradient(to right, rgba(255, 255, 255, 0.01) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
@@ -238,7 +238,7 @@ body {
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-.dark {
+[data-theme='dark'] {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);

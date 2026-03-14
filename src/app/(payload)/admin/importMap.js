@@ -21,16 +21,16 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { default as default_a9d4b87e0306b3ddfe97926a52a69591 } from '@/components/admin/Nav'
-import { Icon as Icon_534076e2c753ea5d539a54b05f456b1b } from '@/components/admin/Icon'
-import { Logo as Logo_a44df17d0fc3dcd873dae43dc3bf66bd } from '@/components/admin/Logo'
-import { default as default_d9b8ebc322b66f91a59f7d686e8c09db } from '@/components/admin/DashboardAnalytics'
+import { default as default_e7c3e0be7ba0f360a623da272baaf9b0 } from '../../../../src/components/admin/Nav'
+import { Icon as Icon_910fbd41db4599531c5dd733cbf6422a } from '../../../../src/components/admin/Icon'
+import { Logo as Logo_2162a1138ad740950650c8c1da77367e } from '../../../../src/components/admin/Logo'
+import { default as default_99191e79edd65336c02a210134187f41 } from '../../../../src/components/admin/DashboardAnalytics'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
-import { default as default_2c54b024ef25aebf09027ac85fa8a8d8 } from '@/components/admin/views/Analytics/index'
-import { default as default_f2a6c35f04b5aa4c78f5ebfd2c57af55 } from '@/components/admin/views/QualityAudit/index'
-import { default as default_68f39bcb3d7f05152fd7a821a6c5e52c } from '@/components/admin/views/DataManagement/index'
-import { default as default_2d948353b1a4c7022424538af26fee5f } from '@/components/admin/views/Operations/index'
-import { default as default_8032db12b936212990f93a19f70eb0b8 } from '@/components/admin/views/Account/index'
+import { default as default_836eba7fc9409ae97e072c809f5d9757 } from '../../../../src/components/admin/views/Analytics/index'
+import { default as default_54055ef6cdcd7723280bb312709772d3 } from '../../../../src/components/admin/views/QualityAudit/index'
+import { default as default_80dfdce1c069fb983eb64b2aae61fcfe } from '../../../../src/components/admin/views/DataManagement/index'
+import { default as default_3ad6acf8b4b29a71f2757182eefb2e13 } from '../../../../src/components/admin/views/Operations/index'
+import { default as default_5d1df3c2ce3db590095dceeaaea1ce36 } from '../../../../src/components/admin/views/Account/index'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 export const importMap = {
@@ -57,15 +57,15 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@/components/admin/Nav#default": default_a9d4b87e0306b3ddfe97926a52a69591,
-  "@/components/admin/Icon#Icon": Icon_534076e2c753ea5d539a54b05f456b1b,
-  "@/components/admin/Logo#Logo": Logo_a44df17d0fc3dcd873dae43dc3bf66bd,
-  "@/components/admin/DashboardAnalytics#default": default_d9b8ebc322b66f91a59f7d686e8c09db,
+  "./src/components/admin/Nav#default": default_e7c3e0be7ba0f360a623da272baaf9b0,
+  "./src/components/admin/Icon#Icon": Icon_910fbd41db4599531c5dd733cbf6422a,
+  "./src/components/admin/Logo#Logo": Logo_2162a1138ad740950650c8c1da77367e,
+  "./src/components/admin/DashboardAnalytics#default": default_99191e79edd65336c02a210134187f41,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
-  "@/components/admin/views/Analytics/index#default": default_2c54b024ef25aebf09027ac85fa8a8d8,
-  "@/components/admin/views/QualityAudit/index#default": default_f2a6c35f04b5aa4c78f5ebfd2c57af55,
-  "@/components/admin/views/DataManagement/index#default": default_68f39bcb3d7f05152fd7a821a6c5e52c,
-  "@/components/admin/views/Operations/index#default": default_2d948353b1a4c7022424538af26fee5f,
-  "@/components/admin/views/Account/index#default": default_8032db12b936212990f93a19f70eb0b8,
+  "./src/components/admin/views/Analytics/index#default": default_836eba7fc9409ae97e072c809f5d9757,
+  "./src/components/admin/views/QualityAudit/index#default": default_54055ef6cdcd7723280bb312709772d3,
+  "./src/components/admin/views/DataManagement/index#default": default_80dfdce1c069fb983eb64b2aae61fcfe,
+  "./src/components/admin/views/Operations/index#default": default_3ad6acf8b4b29a71f2757182eefb2e13,
+  "./src/components/admin/views/Account/index#default": default_5d1df3c2ce3db590095dceeaaea1ce36,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

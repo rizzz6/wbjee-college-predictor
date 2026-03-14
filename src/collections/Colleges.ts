@@ -111,3 +111,5 @@ export const Colleges: CollectionConfig = {
     { name: 'sanityId', type: 'text', admin: { readOnly: true } },
   ],
 }
+
+

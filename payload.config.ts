@@ -45,31 +45,31 @@ export default buildConfig({
       },
     },
     components: {
-      Nav: '@/components/admin/Nav#default',
+      Nav: './src/components/admin/Nav#default',
       graphics: {
-        Logo: '@/components/admin/Logo#Logo',
-        Icon: '@/components/admin/Icon#Icon',
+        Logo: './src/components/admin/Logo#Logo',
+        Icon: './src/components/admin/Icon#Icon',
       },
-      afterDashboard: ['@/components/admin/DashboardAnalytics#default'],
+      afterDashboard: ['./src/components/admin/DashboardAnalytics#default'],
       views: {
         Analytics: {
-          Component: '@/components/admin/views/Analytics/index#default',
+          Component: './src/components/admin/views/Analytics/index#default',
           path: '/analytics',
         },
         Quality: {
-          Component: '@/components/admin/views/QualityAudit/index#default',
+          Component: './src/components/admin/views/QualityAudit/index#default',
           path: '/quality',
         },
         DataManagement: {
-          Component: '@/components/admin/views/DataManagement/index#default',
+          Component: './src/components/admin/views/DataManagement/index#default',
           path: '/data-management',
         },
         Operations: {
-          Component: '@/components/admin/views/Operations/index#default',
+          Component: './src/components/admin/views/Operations/index#default',
           path: '/operations',
         },
         account: {
-          Component: '@/components/admin/views/Account/index#default',
+          Component: './src/components/admin/views/Account/index#default',
         },
       },
     },

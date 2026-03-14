@@ -1,0 +1,101 @@
+[
+  {
+    "column_name": "id"
+  },
+  {
+    "column_name": "parent_id"
+  },
+  {
+    "column_name": "version_name"
+  },
+  {
+    "column_name": "version_slug"
+  },
+  {
+    "column_name": "version_short_name"
+  },
+  {
+    "column_name": "version_location"
+  },
+  {
+    "column_name": "version_type"
+  },
+  {
+    "column_name": "version_website"
+  },
+  {
+    "column_name": "version_is_visible"
+  },
+  {
+    "column_name": "version_est_year"
+  },
+  {
+    "column_name": "version_priority"
+  },
+  {
+    "column_name": "version_logo_id"
+  },
+  {
+    "column_name": "version_cover_image_id"
+  },
+  {
+    "column_name": "version_seo_description"
+  },
+  {
+    "column_name": "version_about_para1"
+  },
+  {
+    "column_name": "version_about_para2"
+  },
+  {
+    "column_name": "version_body"
+  },
+  {
+    "column_name": "version_placement_stats_highest_package"
+  },
+  {
+    "column_name": "version_placement_stats_average_package"
+  },
+  {
+    "column_name": "version_placement_stats_nirf_median_salary"
+  },
+  {
+    "column_name": "version_placement_stats_source_reliability"
+  },
+  {
+    "column_name": "version_placement_stats_data_source"
+  },
+  {
+    "column_name": "version_fees_stats_total_course_fee"
+  },
+  {
+    "column_name": "version_fees_stats_fee_per_semester"
+  },
+  {
+    "column_name": "version_cutoff_identifier_id"
+  },
+  {
+    "column_name": "version_sanity_id"
+  },
+  {
+    "column_name": "version_updated_at"
+  },
+  {
+    "column_name": "version_created_at"
+  },
+  {
+    "column_name": "version__status"
+  },
+  {
+    "column_name": "created_at"
+  },
+  {
+    "column_name": "updated_at"
+  },
+  {
+    "column_name": "latest"
+  },
+  {
+    "column_name": "autosave"
+  }
+]

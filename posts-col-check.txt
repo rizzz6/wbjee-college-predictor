@@ -1,0 +1,41 @@
+[
+  {
+    "column_name": "id"
+  },
+  {
+    "column_name": "title"
+  },
+  {
+    "column_name": "slug"
+  },
+  {
+    "column_name": "published_at"
+  },
+  {
+    "column_name": "main_image_id"
+  },
+  {
+    "column_name": "author_name"
+  },
+  {
+    "column_name": "tags"
+  },
+  {
+    "column_name": "body_html"
+  },
+  {
+    "column_name": "excerpt"
+  },
+  {
+    "column_name": "sanity_id"
+  },
+  {
+    "column_name": "updated_at"
+  },
+  {
+    "column_name": "created_at"
+  },
+  {
+    "column_name": "_status"
+  }
+]

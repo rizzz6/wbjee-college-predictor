@@ -1,0 +1,26 @@
+[
+  {
+    "table_schema": "payload",
+    "table_name": "_colleges_v_version_placement_stats_top_recruiters"
+  },
+  {
+    "table_schema": "payload",
+    "table_name": "_colleges_v"
+  },
+  {
+    "table_schema": "payload",
+    "table_name": "_colleges_v_version_highlights"
+  },
+  {
+    "table_schema": "payload",
+    "table_name": "colleges_placement_stats_top_recruiters"
+  },
+  {
+    "table_schema": "payload",
+    "table_name": "colleges"
+  },
+  {
+    "table_schema": "payload",
+    "table_name": "colleges_highlights"
+  }
+]

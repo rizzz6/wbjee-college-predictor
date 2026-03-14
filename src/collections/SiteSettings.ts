@@ -12,6 +12,7 @@ export const SiteSettings: GlobalConfig = {
     drafts: {
       autosave: true,
     },
+    max: 50,
   },
   fields: [
     {
@@ -65,3 +66,5 @@ export const SiteSettings: GlobalConfig = {
     },
   ],
 }
+
+

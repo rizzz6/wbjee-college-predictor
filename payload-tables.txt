@@ -1,0 +1,77 @@
+[
+  {
+    "table_name": "_colleges_v"
+  },
+  {
+    "table_name": "_colleges_v_version_highlights"
+  },
+  {
+    "table_name": "_colleges_v_version_placement_stats_top_recruiters"
+  },
+  {
+    "table_name": "_posts_v"
+  },
+  {
+    "table_name": "_site_settings_v"
+  },
+  {
+    "table_name": "_site_settings_v_version_deploy_hooks"
+  },
+  {
+    "table_name": "_timeline_v"
+  },
+  {
+    "table_name": "college_cutoffs"
+  },
+  {
+    "table_name": "college_cutoffs_cutoffs"
+  },
+  {
+    "table_name": "colleges"
+  },
+  {
+    "table_name": "colleges_highlights"
+  },
+  {
+    "table_name": "colleges_placement_stats_top_recruiters"
+  },
+  {
+    "table_name": "media"
+  },
+  {
+    "table_name": "payload_kv"
+  },
+  {
+    "table_name": "payload_locked_documents"
+  },
+  {
+    "table_name": "payload_locked_documents_rels"
+  },
+  {
+    "table_name": "payload_migrations"
+  },
+  {
+    "table_name": "payload_preferences"
+  },
+  {
+    "table_name": "payload_preferences_rels"
+  },
+  {
+    "table_name": "posts"
+  },
+  {
+    "table_name": "site_settings"
+  },
+  {
+    "table_name": "site_settings_deploy_hooks"
+  },
+  {
+    "table_name": "timeline"
+  },
+  {
+    "table_name": "users"
+  },
+  {
+    "table_name": "users_sessions"
+  }
+]

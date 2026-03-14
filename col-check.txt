@@ -1,0 +1,86 @@
+[
+  {
+    "column_name": "id"
+  },
+  {
+    "column_name": "name"
+  },
+  {
+    "column_name": "slug"
+  },
+  {
+    "column_name": "short_name"
+  },
+  {
+    "column_name": "location"
+  },
+  {
+    "column_name": "type"
+  },
+  {
+    "column_name": "website"
+  },
+  {
+    "column_name": "is_visible"
+  },
+  {
+    "column_name": "est_year"
+  },
+  {
+    "column_name": "priority"
+  },
+  {
+    "column_name": "logo_id"
+  },
+  {
+    "column_name": "cover_image_id"
+  },
+  {
+    "column_name": "seo_description"
+  },
+  {
+    "column_name": "about_para1"
+  },
+  {
+    "column_name": "about_para2"
+  },
+  {
+    "column_name": "body"
+  },
+  {
+    "column_name": "placement_stats_highest_package"
+  },
+  {
+    "column_name": "placement_stats_average_package"
+  },
+  {
+    "column_name": "placement_stats_nirf_median_salary"
+  },
+  {
+    "column_name": "placement_stats_source_reliability"
+  },
+  {
+    "column_name": "placement_stats_data_source"
+  },
+  {
+    "column_name": "fees_stats_total_course_fee"
+  },
+  {
+    "column_name": "fees_stats_fee_per_semester"
+  },
+  {
+    "column_name": "cutoff_identifier_id"
+  },
+  {
+    "column_name": "sanity_id"
+  },
+  {
+    "column_name": "updated_at"
+  },
+  {
+    "column_name": "created_at"
+  },
+  {
+    "column_name": "_status"
+  }
+]

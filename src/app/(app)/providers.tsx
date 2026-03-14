@@ -5,7 +5,8 @@ import { ThemeProvider } from 'next-themes'
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider
-      attribute="class"
+      attribute="data-theme"
+      storageKey="payload-theme"
       defaultTheme="system"
       enableSystem={true}
       disableTransitionOnChange
