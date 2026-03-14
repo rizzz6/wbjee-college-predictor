@@ -96,6 +96,7 @@ export default function FAQDedicated() {
                   {cat.questions.map((item, qIdx) => {
                     const key = `${catIdx}-${qIdx}`;
                     const isOpen = !!open[key];
+                    const contentId = `faq-dedicated-content-${key}`;
                     return (
                       <div
                         className="border-b border-gray-200 dark:border-gray-700 last:border-b-0 pb-4 last:pb-0"
@@ -104,6 +105,7 @@ export default function FAQDedicated() {
                         <button
                           className="w-full flex justify-between items-start gap-4 py-3 text-left group"
                           aria-expanded={isOpen}
+                          aria-controls={contentId}
                           onClick={() => handleToggle(catIdx, qIdx)}
                         >
                           <span className="text-lg font-semibold text-gray-800 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
@@ -117,6 +119,7 @@ export default function FAQDedicated() {
                           </span>
                         </button>
                         <div
+                          id={contentId}
                           className={`grid transition-all duration-300 ease-in-out ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
                             }`}
                         >

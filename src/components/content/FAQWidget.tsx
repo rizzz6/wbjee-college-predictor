@@ -27,12 +27,14 @@ export default function FAQWidget({ data, title = "Frequently Asked Questions", 
       <div className="w-full space-y-4">
         {data.map((item, idx) => {
           const isOpen = openIdx === idx;
+          const contentId = `faq-content-${idx}`;
           return (
             <div key={idx} className="border-b border-gray-200 dark:border-gray-700 pb-4">
               <button
                 className="w-full flex justify-between items-start text-left group focus:outline-none"
                 onClick={() => setOpenIdx(isOpen ? null : idx)}
                 aria-expanded={isOpen}
+                aria-controls={contentId}
               >
                 <span className={`text-lg font-medium transition-colors ${isOpen ? 'text-red-600 dark:text-red-400' : 'text-gray-800 dark:text-gray-200 group-hover:text-red-600 dark:group-hover:text-red-400'}`}>
                   {item.q}
@@ -47,6 +49,7 @@ export default function FAQWidget({ data, title = "Frequently Asked Questions", 
               </button>
 
               <div
+                id={contentId}
                 className={`grid transition-all duration-300 ease-in-out ${isOpen ? "grid-rows-[1fr] opacity-100 pt-4" : "grid-rows-[0fr] opacity-0"}`}
               >
                 <div className="overflow-hidden">
