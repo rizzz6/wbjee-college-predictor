@@ -241,12 +241,25 @@ const Nav = () => {
         .table, .table-wrap, .payload__list-view__table {
           border: 2px solid var(--glow-silver) !important;
           background-color: var(--paper-base) !important;
-          background-image: linear-gradient(rgba(235, 230, 210, 0.5), rgba(235, 230, 210, 0.5)), var(--paper-bg-filters) !important;
+          background-image: var(--paper-bg-filters) !important;
           border-radius: 12px !important;
           box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
           overflow: hidden !important;
           margin: 1rem 0 !important;
         }
+
+        html[data-theme='light'] .table, 
+        html[data-theme='light'] .table-wrap, 
+        html[data-theme='light'] .payload__list-view__table {
+          background-image: linear-gradient(rgba(235, 230, 210, 0.4), rgba(235, 230, 210, 0.4)), var(--paper-bg-filters) !important;
+        }
+
+        html[data-theme='dark'] .table, 
+        html[data-theme='dark'] .table-wrap, 
+        html[data-theme='dark'] .payload__list-view__table {
+          background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), var(--paper-bg-filters) !important;
+        }
+
         
         .table thead th {
           background-color: rgba(0,0,0,0.07) !important;
@@ -254,6 +267,31 @@ const Nav = () => {
           color: var(--secondary-text) !important;
           font-weight: bold !important;
         }
+
+        /* Prevent Payload's default zebra striping from leaking white/dark rows */
+        .table tbody tr, 
+        .payload__list-view__table tbody tr {
+          background-color: transparent !important;
+        }
+
+        .table tbody td, 
+        .payload__list-view__table tbody td {
+          background-color: transparent !important;
+          color: var(--theme-text) !important;
+          border-bottom: 1px solid var(--theme-elevation-150) !important;
+        }
+
+        /* Subtle theme-aware row highlights */
+        .table tbody tr:hover, 
+        .payload__list-view__table tbody tr:hover {
+          background-color: rgba(0, 0, 0, 0.03) !important;
+        }
+
+        html[data-theme='dark'] .table tbody tr:hover,
+        html[data-theme='dark'] .payload__list-view__table tbody tr:hover {
+          background-color: rgba(255, 255, 255, 0.05) !important;
+        }
+
         
         /* Ensure specific edit view wrappers don't get the giant rectangle */
         .collection-edit__main-wrapper, 
