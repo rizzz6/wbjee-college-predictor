@@ -141,7 +141,7 @@ export function usePredictorFilters(
             // Apply other filters normally
             Object.entries(activeFilters).forEach(([key, values]) => {
                 if (key === 'rank' || values.length === 0) return;
-                results = results.filter(item => values.includes(item[key as keyof CollegeData] as string));
+                results = results.filter(item => values.includes(String(item[key as keyof CollegeData])));
             });
         }
 
@@ -175,3 +175,4 @@ export function usePredictorFilters(
         resetFilters,
     };
 }
+

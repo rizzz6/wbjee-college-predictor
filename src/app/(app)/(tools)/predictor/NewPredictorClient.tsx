@@ -262,11 +262,9 @@ export default function NewPredictorClient() {
     setCanRefresh(false);
   }, [canRefresh, isRefreshing, handleRefresh]);
 
-  // Update filteredData when API results change
+  // Keep local display state in sync even when a search returns zero matches.
   useEffect(() => {
-    if (apiResults && apiResults.length > 0) {
-      setFilteredData(apiResults);
-    }
+    setFilteredData(apiResults);
   }, [apiResults]);
 
   // Auto-switch to card view on mobile
@@ -1430,3 +1428,4 @@ export default function NewPredictorClient() {
     </ErrorBoundary>
   );
 }
+

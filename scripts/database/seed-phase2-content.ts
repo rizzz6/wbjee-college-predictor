@@ -6,6 +6,8 @@ import readline from 'readline'
 import fetch from 'node-fetch'
 import { toHTML } from '@portabletext/to-html'
 
+import { sanitizeRichHtml } from '../../src/utils/sanitize-rich-html'
+
 dotenv.config({ path: path.join(process.cwd(), '.env.local') })
 
 async function run() {
@@ -56,8 +58,8 @@ async function run() {
           }
         }
 
-        // Convert PortableText to HTML
-        const bodyHtml = toHTML(doc.body || [])
+        // Convert PortableText to HTML and sanitize it before storage.
+        const bodyHtml = sanitizeRichHtml(toHTML(doc.body || []))
         
         // Create excerpt (first 160 chars of plain text)
         const plainText = (doc.body || [])
@@ -77,7 +79,7 @@ async function run() {
               name: doc.author?.name || 'rwbjee Team',
             },
             tags: doc.tags || [],
-            bodyHtml: bodyHtml,
+            bodyHtml,
             excerpt: excerpt,
             sanityId: doc._id,
           },

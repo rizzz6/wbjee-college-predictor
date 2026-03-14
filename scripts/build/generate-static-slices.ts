@@ -83,28 +83,56 @@ async function generateStaticSlices() {
     console.log(`Grouped into ${collegeMap.size} colleges\n`);
 
     // Create output directories
-    const dataDir = path.join(process.cwd(), 'public', 'data');
-    const collegesDir = path.join(dataDir, 'colleges');
-    const tempDir = path.join(dataDir, '.tmp-colleges');
+    const publicDir = path.join(process.cwd(), 'public');
+    const dataDir = path.join(publicDir, 'data');
+    const tempDataDir = path.join(publicDir, '.tmp-data');
+    const tempCollegesDir = path.join(tempDataDir, 'colleges');
+    const backupDataDir = path.join(publicDir, '.data-backup');
 
     // Ensure directories exist
-    if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true });
+    if (!fs.existsSync(publicDir)) {
+        fs.mkdirSync(publicDir, { recursive: true });
     }
 
-    // Clean up temp directory if it exists from previous failed build
-    if (fs.existsSync(tempDir)) {
-        fs.rmSync(tempDir, { recursive: true, force: true });
+    // Clean up temp directories from previous failed builds
+    if (fs.existsSync(tempDataDir)) {
+        fs.rmSync(tempDataDir, { recursive: true, force: true });
+    }
+    if (fs.existsSync(backupDataDir)) {
+        fs.rmSync(backupDataDir, { recursive: true, force: true });
     }
 
-    // Create temp directory for atomic write
-    fs.mkdirSync(tempDir, { recursive: true });
+    // Create temp directories for staged write
+    fs.mkdirSync(tempCollegesDir, { recursive: true });
+
+    // Preserve unrelated files already living under public/data
+    if (fs.existsSync(dataDir)) {
+        const existingEntries = fs.readdirSync(dataDir, { withFileTypes: true });
+        for (const entry of existingEntries) {
+            if (entry.name === 'colleges' || entry.name === 'mobile-index.json') {
+                continue;
+            }
+
+            const sourcePath = path.join(dataDir, entry.name);
+            const destinationPath = path.join(tempDataDir, entry.name);
+            fs.cpSync(sourcePath, destinationPath, { recursive: true });
+        }
+    }
 
     // Cleanup handler for interruptions
     const cleanup = () => {
-        if (fs.existsSync(tempDir)) {
+        if (fs.existsSync(tempDataDir)) {
             console.log('\n\nCleaning up temporary files...');
-            fs.rmSync(tempDir, { recursive: true, force: true });
+            fs.rmSync(tempDataDir, { recursive: true, force: true });
+        }
+
+        if (fs.existsSync(backupDataDir)) {
+            if (!fs.existsSync(dataDir)) {
+                console.log('Restoring previous data directory...');
+                fs.renameSync(backupDataDir, dataDir);
+            } else {
+                fs.rmSync(backupDataDir, { recursive: true, force: true });
+            }
         }
     };
 
@@ -147,7 +175,7 @@ async function generateStaticSlices() {
             const compressed = encodeColumnarData(cutoffs, false);
 
             // Write slice file to TEMP directory
-            const slicePath = path.join(tempDir, `${slug}.json`);
+            const slicePath = path.join(tempCollegesDir, `${slug}.json`);
             const sliceContent = JSON.stringify(compressed);
             fs.writeFileSync(slicePath, sliceContent);
 
@@ -161,17 +189,17 @@ async function generateStaticSlices() {
         }
         process.stdout.write('\n');
 
-        // Generate index file in temp directory
+        // Generate index file in staged data directory
         const index = { colleges, slugs };
-        const indexPath = path.join(dataDir, 'mobile-index.json');
+        const indexPath = path.join(tempDataDir, 'mobile-index.json');
         fs.writeFileSync(indexPath, JSON.stringify(index, null, 2));
 
         const indexSize = fs.statSync(indexPath).size;
 
         // Validate all files before commit
-        const files = fs.readdirSync(tempDir);
+        const files = fs.readdirSync(tempCollegesDir);
         const emptyFiles = files.filter(file => {
-            const filePath = path.join(tempDir, file);
+            const filePath = path.join(tempCollegesDir, file);
             return fs.statSync(filePath).size === 0;
         });
         const undefinedFiles = files.filter(file => file.includes('undefined'));
@@ -184,12 +212,15 @@ async function generateStaticSlices() {
             throw new Error(`Found ${undefinedFiles.length} undefined files: ${undefinedFiles.join(', ')}`);
         }
 
-        // ATOMIC COMMIT: Delete old directory and rename temp to final
+        // ATOMIC COMMIT: swap the staged data directory into place as one unit.
         console.log('\nCommitting files atomically...');
-        if (fs.existsSync(collegesDir)) {
-            fs.rmSync(collegesDir, { recursive: true, force: true });
+        if (fs.existsSync(dataDir)) {
+            fs.renameSync(dataDir, backupDataDir);
         }
-        fs.renameSync(tempDir, collegesDir);
+        fs.renameSync(tempDataDir, dataDir);
+        if (fs.existsSync(backupDataDir)) {
+            fs.rmSync(backupDataDir, { recursive: true, force: true });
+        }
 
         console.log('\nStatistics:');
         console.log(`   Colleges: ${colleges.length}`);
@@ -210,3 +241,4 @@ async function generateStaticSlices() {
 }
 
 generateStaticSlices().catch(console.error);
+
