@@ -29,6 +29,8 @@ export default function SearchableDropdown({ options, selectedOption, onSelect, 
     };
   }, [dropdownRef]);
 
+  const listboxId = `${label.replace(/\s+/g, '-').toLowerCase()}-listbox`;
+
   return (
     <div className="relative" ref={dropdownRef}>
       <label htmlFor={label} className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -36,6 +38,10 @@ export default function SearchableDropdown({ options, selectedOption, onSelect, 
       </label>
       <button
         type="button"
+        id={label}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-controls={isOpen ? listboxId : undefined}
         className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md dark:bg-gray-800 dark:border-gray-700 dark:text-white text-left"
         onClick={() => setIsOpen(!isOpen)}
       >
@@ -52,10 +58,16 @@ export default function SearchableDropdown({ options, selectedOption, onSelect, 
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <ul className="max-h-60 overflow-auto">
+          <ul
+            id={listboxId}
+            role="listbox"
+            className="max-h-60 overflow-auto"
+          >
             {filteredOptions.map((option) => (
               <li
                 key={option}
+                role="option"
+                aria-selected={option === selectedOption}
                 className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                 onClick={() => {
                   onSelect(option);
