@@ -18,8 +18,6 @@ import {
 
 dotenv.config({ path: path.join(process.cwd(), '.env.local') })
 
-import { COLLEGE_NAME_MAP } from './college-name-map'
-
 function slugify(text: string) {
   return text
     .toString()
@@ -74,7 +72,7 @@ async function seedColleges() {
 
   for (const item of jsonData) {
     const jsonName = item.college_name
-    const officialName = COLLEGE_NAME_MAP[jsonName] || jsonName
+    const officialName = jsonName
     const slug = slugify(jsonName)
 
     const existing = await payload.find({
