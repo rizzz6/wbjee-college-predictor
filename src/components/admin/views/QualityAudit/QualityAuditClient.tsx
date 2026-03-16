@@ -123,9 +123,9 @@ export default function QualityAuditClient({ initialColleges }: { initialCollege
                         fontSize: '0.75rem', 
                         padding: '0.25rem 0.5rem', 
                         borderRadius: '1rem', 
-                        backgroundColor: '#fef2f2', 
-                        color: '#991b1b',
-                        border: '1px solid #fecaca',
+                        backgroundColor: 'var(--error-bg)', 
+                        color: 'var(--error-text)',
+                        border: '1px solid var(--error-text)',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.25rem'
@@ -135,7 +135,7 @@ export default function QualityAuditClient({ initialColleges }: { initialCollege
                       </span>
                     ))}
                     {college.issues.length === 0 && (
-                      <span style={{ color: '#16a34a', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <span style={{ color: 'var(--success-text)', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                         <CheckCircle2 size={16} /> All good
                       </span>
                     )}
@@ -145,7 +145,7 @@ export default function QualityAuditClient({ initialColleges }: { initialCollege
                   <Link 
                     href={`/admin/collections/colleges/${college.id}`}
                     style={{ 
-                      color: '#2563eb', 
+                      color: 'var(--info-text)', 
                       textDecoration: 'none', 
                       display: 'flex', 
                       alignItems: 'center', 
@@ -157,6 +157,7 @@ export default function QualityAuditClient({ initialColleges }: { initialCollege
                     Edit <ExternalLink size={14} />
                   </Link>
                 </td>
+
               </tr>
             ))}
           </tbody>

@@ -1,5 +1,12 @@
 import { CollectionConfig } from 'payload'
 
+import {
+  convertParagraphsToRichText,
+  getAboutParagraphs,
+  getPayloadEditorConfig,
+  normalizeHighlightItems,
+} from '@/utils/payload-richtext'
+
 export const Colleges: CollectionConfig = {
   slug: 'colleges',
   admin: {
@@ -17,99 +24,225 @@ export const Colleges: CollectionConfig = {
     },
     maxPerDoc: 50,
   },
+  hooks: {
+    afterRead: [
+      ({ doc, findMany, req }) => {
+        if (findMany) {
+          return doc
+        }
+
+        if (!doc.overview) {
+          doc.overview = doc.body || convertParagraphsToRichText({
+            editorConfig: getPayloadEditorConfig(req.payload.config.editor),
+            paragraphs: getAboutParagraphs(doc.about),
+          })
+        }
+
+        doc.highlights = normalizeHighlightItems(doc.highlights)
+
+        if (!doc.cutoffSourceName) {
+          if (typeof doc.cutoffIdentifier === 'string') {
+            doc.cutoffSourceName = doc.cutoffIdentifier
+          } else if (doc.cutoffIdentifier && typeof doc.cutoffIdentifier === 'object' && 'institute' in doc.cutoffIdentifier) {
+            doc.cutoffSourceName = typeof doc.cutoffIdentifier.institute === 'string' ? doc.cutoffIdentifier.institute : undefined
+          }
+        }
+
+        return doc
+      },
+    ],
+  },
   fields: [
-    // --- Basic Info ---
-    { name: 'name', type: 'text', required: true },
-    { name: 'slug', type: 'text', required: true, unique: true },
-    { name: 'shortName', type: 'text' },
-    { name: 'location', type: 'text' },
     {
-      name: 'type',
-      type: 'select',
-      options: [
-        { label: 'Government', value: 'Government' },
-        { label: 'Private', value: 'Private' },
-        { label: 'University', value: 'University' },
-        { label: 'Semi-Government', value: 'Semi-Govt' },
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Basic Info',
+          fields: [
+            { name: 'name', type: 'text', required: true },
+            { name: 'slug', type: 'text', required: true, unique: true },
+            { name: 'shortName', type: 'text' },
+            { name: 'location', type: 'text' },
+            {
+              name: 'type',
+              type: 'select',
+              options: [
+                { label: 'Government', value: 'Government' },
+                { label: 'Private', value: 'Private' },
+                { label: 'University', value: 'University' },
+                { label: 'Institutional', value: 'Institutional' },
+                { label: 'Semi-Government', value: 'Semi-Govt' },
+              ],
+            },
+            { name: 'website', type: 'text' },
+            { name: 'estYear', type: 'number' },
+          ],
+        },
+        {
+          label: 'Content',
+          fields: [
+            { name: 'seoDescription', type: 'textarea' },
+            {
+              name: 'overview',
+              type: 'richText',
+              admin: {
+                description: 'Main overview content rendered in the About the Institute section.',
+              },
+            },
+            {
+              name: 'highlights',
+              type: 'array',
+              fields: [{ name: 'text', type: 'text', required: true }],
+            },
+          ],
+        },
+        {
+          label: 'Media',
+          fields: [
+            { name: 'logo', type: 'upload', relationTo: 'media' },
+            { name: 'coverImage', type: 'upload', relationTo: 'media' },
+          ],
+        },
+        {
+          label: 'Stats',
+          fields: [
+            {
+              name: 'rankingHistory',
+              type: 'array',
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'agency', type: 'text', required: true, admin: { width: '50%' } },
+                    { name: 'year', type: 'number', required: true, admin: { width: '50%' } },
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'rank', type: 'number', required: true, admin: { width: '50%' } },
+                    { name: 'stream', type: 'text', admin: { width: '50%' } },
+                  ],
+                },
+                { name: 'notes', type: 'textarea' },
+              ],
+            },
+            {
+              name: 'feesStats',
+              type: 'group',
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'totalCourseFeeAmount', type: 'number', admin: { width: '40%' } },
+                    { name: 'semesterFeeAmount', type: 'number', admin: { width: '40%' } },
+                    {
+                      name: 'currencyCode',
+                      type: 'select',
+                      defaultValue: 'INR',
+                      options: [
+                        { label: 'INR', value: 'INR' },
+                        { label: 'USD', value: 'USD' },
+                      ],
+                      admin: { width: '20%' },
+                    },
+                  ],
+                },
+                { name: 'feeNotes', type: 'textarea' },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Publishing',
+          fields: [
+            {
+              name: 'isVisible',
+              type: 'checkbox',
+              defaultValue: false,
+              admin: { description: 'Whether the college is visible on the public site' },
+            },
+            {
+              name: 'priority',
+              type: 'number',
+              defaultValue: 3,
+              admin: { description: '1=Top Tier, 2=High, 3=Standard' },
+            },
+            {
+              name: 'cutoffSourceName',
+              type: 'text',
+              admin: {
+                description: 'Name used to match this college with cutoff source data when seeding cutoffs.',
+              },
+            },
+          ],
+        },
+        {
+          label: 'Placements (Snapshot)',
+          fields: [
+            {
+              name: 'placementStats',
+              type: 'group',
+              admin: {
+                description: 'Legacy placement data snapshot. New data should be entered in the Placement Reports collection.',
+              },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'highestPackage', type: 'text', admin: { width: '50%' } },
+                    { name: 'averagePackage', type: 'text', admin: { width: '50%' } },
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'nirfMedianSalary', type: 'text', admin: { width: '50%' } },
+                    {
+                      name: 'sourceReliability',
+                      type: 'select',
+                      options: [
+                        { label: 'High', value: 'High' },
+                        { label: 'Medium', value: 'Medium' },
+                        { label: 'Low', value: 'Low' },
+                        { label: 'Official', value: 'Official' },
+                      ],
+                      admin: { width: '50%' },
+                    },
+                  ],
+                },
+                { name: 'dataSource', type: 'text' },
+              ],
+            },
+          ],
+        },
       ],
-    },
-    { name: 'website', type: 'text' },
-    {
-      name: 'isVisible',
-      type: 'checkbox',
-      defaultValue: false,
-      admin: { description: 'Whether the college is visible on the public site' },
-    },
-    { name: 'estYear', type: 'number' },
-    {
-      name: 'priority',
-      type: 'number',
-      defaultValue: 3,
-      admin: { description: '1=Top Tier, 2=High, 3=Standard' },
-    },
-
-    // --- Media ---
-    { name: 'logo', type: 'upload', relationTo: 'media' },
-    { name: 'coverImage', type: 'upload', relationTo: 'media' },
-
-    // --- Content ---
-    { name: 'seoDescription', type: 'textarea' },
-    {
-      name: 'highlights',
-      type: 'array',
-      fields: [{ name: 'value', type: 'text', required: true }],
     },
     {
       name: 'about',
       type: 'group',
+      admin: {
+        hidden: true,
+      },
       fields: [
         { name: 'para1', type: 'textarea' },
         { name: 'para2', type: 'textarea' },
       ],
     },
-    { name: 'body', type: 'richText' },
-
-    // --- Stats ---
     {
-      name: 'placementStats',
-      type: 'group',
-      fields: [
-        { name: 'highestPackage', type: 'text' },
-        { name: 'averagePackage', type: 'text' },
-        { name: 'nirfMedianSalary', type: 'text' },
-        {
-          name: 'topRecruiters',
-          type: 'array',
-          fields: [{ name: 'value', type: 'text', required: true }],
-        },
-        {
-          name: 'sourceReliability',
-          type: 'select',
-          options: ['High', 'Medium', 'Low'],
-        },
-        { name: 'dataSource', type: 'text' },
-      ],
+      name: 'body',
+      type: 'richText',
+      admin: {
+        hidden: true,
+      },
     },
-    {
-      name: 'feesStats',
-      type: 'group',
-      fields: [
-        { name: 'totalCourseFee', type: 'text' },
-        { name: 'feePerSemester', type: 'text' },
-      ],
-    },
-
-    // --- Sync / Linking ---
     {
       name: 'cutoffIdentifier',
       type: 'relationship',
       relationTo: 'college_cutoffs',
       admin: {
-        description: 'Linked record in the cutoffs collection (helps match cutoffs to this college)',
+        hidden: true,
       },
     },
-    { name: 'sanityId', type: 'text', admin: { readOnly: true } },
   ],
 }
-
-

@@ -32,14 +32,6 @@ export const Timeline: CollectionConfig = {
       type: 'checkbox',
       defaultValue: false,
     },
-    {
-      name: 'sanityId',
-      type: 'text',
-      admin: {
-        readOnly: true,
-        position: 'sidebar',
-      },
-    },
   ],
 }
 

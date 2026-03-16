@@ -5,17 +5,22 @@ import { Metadata } from 'next';
 import { MapPin, Building2, Calendar, Globe, Landmark, IndianRupee, TrendingUp, BarChart3, ArrowRight, CheckCircle2, Users } from 'lucide-react';
 import CutoffTable from '@/components/content/CutoffTable';
 import { getPayloadClient } from '@/lib/payload-client';
+import {
+  getAboutParagraphs,
+  normalizeHighlightItems,
+  normalizeRecruiterItems,
+  renderPlainParagraphsToHtml,
+  renderRichTextToHtml,
+} from '@/utils/payload-richtext';
 
 export const revalidate = 60;
 
-// ---------- Types ----------
 interface PayloadMedia {
   url: string;
   width?: number;
   height?: number;
 }
 
-// ---------- Static Params ----------
 export async function generateStaticParams() {
   const payload = await getPayloadClient();
   const res = await payload.find({
@@ -27,7 +32,6 @@ export async function generateStaticParams() {
   return res.docs.map((doc) => ({ slug: doc.slug }));
 }
 
-// ---------- Metadata ----------
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const payload = await getPayloadClient();
@@ -47,12 +51,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   const logo = college.logo as PayloadMedia | null;
-  
   const seoTitle = `${college.name}: Cutoffs, Fees & Placements | WBJEE 2026`;
   const description = college.seoDescription ||
     `Get quick info on ${college.name} for WBJEE 2026. Explore cutoffs, fee structures, and placement stats.`;
 
-  // Construct Dynamic OG Image URL
   const ogUrl = new URL('https://www.rwbjee.com/api/og');
   ogUrl.searchParams.set('type', 'college');
   ogUrl.searchParams.set('title', college.name);
@@ -76,12 +78,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-// ---------- Page Component ----------
 export default async function CollegeProfile({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const payload = await getPayloadClient();
 
-  // Fetch college
   const collegeRes = await payload.find({
     collection: 'colleges',
     where: { slug: { equals: slug }, isVisible: { equals: true } },
@@ -90,7 +90,6 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
   const college = collegeRes.docs[0];
   if (!college) notFound();
 
-  // Fetch linked cutoffs
   const cutoffRes = await payload.find({
     collection: 'college_cutoffs',
     where: { college: { equals: college.id } },
@@ -99,34 +98,48 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
   const cutoffDoc = cutoffRes.docs[0];
   const cutoffs = cutoffDoc?.cutoffs || [];
 
-  // Extract typed media
   const logo = college.logo as PayloadMedia | null;
   const cover = college.coverImage as PayloadMedia | null;
+  const highlights = normalizeHighlightItems(college.highlights).map((item) => item.text);
 
-  // Extract highlights from the array-of-objects format
-  const highlights = (college.highlights as { value: string }[] | undefined)?.map(h => h.value) || [];
+  // Fetch placement reports for this college
+  const placementRes = await payload.find({
+    collection: 'college_placement_reports',
+    where: { college: { equals: college.id } },
+    sort: '-reportYear',
+    limit: 1,
+  });
+  const latestReport = placementRes.docs[0];
 
-  // Extract placement stats
-  const ps = college.placementStats as {
-    highestPackage?: string; averagePackage?: string;
-    nirfMedianSalary?: string; topRecruiters?: { value: string }[];
-    sourceReliability?: string; dataSource?: string;
-  } | undefined;
+  const recruiters = normalizeRecruiterItems(
+    latestReport?.topRecruiters,
+  ).map((item) => item.name);
+  
+  interface FeesStats {
+    totalCourseFeeAmount?: number;
+    semesterFeeAmount?: number;
+  }
+  const fs = college.feesStats as FeesStats;
+  const isValidMoney = (val?: number | null) => typeof val === 'number' && val >= 1000;
 
-  // Extract fees stats
-  const fs = college.feesStats as {
-    totalCourseFee?: string; feePerSemester?: string;
-  } | undefined;
+  const formatINR = (val: number | null | undefined) => {
+    if (!isValidMoney(val)) return null;
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0,
+    }).format(val!);
+  };
 
-  // Extract about
-  const about = college.about as { para1?: string; para2?: string } | undefined;
+
+  const overviewHtml = renderRichTextToHtml({
+    content: college.overview || college.body,
+    fallbackHtml: renderPlainParagraphsToHtml(getAboutParagraphs(college.about)),
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
-
-      {/* HERO HEADER */}
       <div className="relative h-[300px] md:h-[400px] bg-white dark:bg-gray-900 transition-colors duration-300">
-
         {cover?.url ? (
           <div className="absolute inset-0 opacity-30 dark:opacity-60 transition-opacity duration-300">
             <Image src={cover.url} fill className="object-contain blur-[2px]" alt="Campus" />
@@ -138,10 +151,7 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
         <div className="absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-transparent dark:from-gray-900 dark:via-transparent dark:to-transparent"></div>
 
         <div className="container mx-auto px-6 h-full flex flex-col justify-end pb-6 relative z-10">
-
           <div className="flex flex-col md:flex-row md:items-end gap-6 text-left">
-
-            {/* LOGO BOX */}
             <div className="w-20 h-20 md:w-32 md:h-32 bg-white rounded-2xl shadow-xl shrink-0 relative overflow-hidden border border-gray-100 dark:border-gray-800">
               {logo?.url ? (
                 <div className="absolute inset-0 p-2 flex items-center justify-center">
@@ -167,8 +177,7 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
                     {college.shortName}
                   </span>
                 )}
-                <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-white ${college.type === 'Government' ? 'bg-green-700' : 'bg-gray-600'
-                  }`}>
+                <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-white ${college.type === 'Government' ? 'bg-green-700' : 'bg-gray-600'}`}>
                   {college.type}
                 </span>
               </div>
@@ -198,100 +207,97 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
         </div>
       </div>
 
-      {/* MAIN CONTENT CONTAINER */}
       <div className="container mx-auto px-6 py-6 max-w-7xl">
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mb-12">
-
-          {/* LEFT COLUMN */}
           <div className="lg:col-span-2 space-y-10 order-2 lg:order-1">
-            {/* About Section */}
-            {(about?.para1 || about?.para2) && (
+            {overviewHtml && (
               <section className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <span className="text-red-600"><Landmark className="w-6 h-6" /></span> About the Institute
                 </h2>
-                <div className="prose prose-red dark:prose-invert max-w-none space-y-4">
-                  {about.para1 && <p>{about.para1}</p>}
-                  {about.para2 && <p>{about.para2}</p>}
-                </div>
+                <div
+                  className="prose prose-red dark:prose-invert max-w-none"
+                  dangerouslySetInnerHTML={{ __html: overviewHtml }}
+                />
               </section>
             )}
 
-            {/* Fees Section */}
-            {(fs?.totalCourseFee || fs?.feePerSemester) && (
+            {(isValidMoney(fs?.totalCourseFeeAmount) || isValidMoney(fs?.semesterFeeAmount)) && (
               <section className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                   <span className="text-red-600"><IndianRupee className="w-6 h-6" /></span> Fee Structure
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {fs.totalCourseFee && (
+                  {isValidMoney(fs.totalCourseFeeAmount) && (
                     <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl">
                       <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Total Course Fee</p>
-                      <p className="text-xl font-bold text-gray-900 dark:text-white">{fs.totalCourseFee}</p>
+                      <p className="text-xl font-bold text-gray-900 dark:text-white">{formatINR(fs.totalCourseFeeAmount)}</p>
                     </div>
                   )}
-                  {fs.feePerSemester && (
+                  {isValidMoney(fs.semesterFeeAmount) && (
                     <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl">
                       <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Fee Per Semester</p>
-                      <p className="text-xl font-bold text-gray-900 dark:text-white">{fs.feePerSemester}</p>
+                      <p className="text-xl font-bold text-gray-900 dark:text-white">{formatINR(fs.semesterFeeAmount)}</p>
                     </div>
                   )}
                 </div>
               </section>
             )}
 
-            {/* Placements Section */}
-            {(ps?.highestPackage || ps?.averagePackage) && (
+            {(latestReport?.highestPackageLpa || latestReport?.averagePackageLpa || latestReport?.medianPackageLpa) && (
               <section className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                   <span className="text-red-600"><TrendingUp className="w-6 h-6" /></span> Placements & Stats
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
-                  {ps.highestPackage && (
+                  {latestReport?.highestPackageLpa && (
                     <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl border border-green-100 dark:border-green-900/30">
                       <p className="text-xs text-green-600 uppercase font-semibold mb-1">Highest Package</p>
-                      <p className="text-xl font-bold text-gray-900 dark:text-white">{ps.highestPackage}</p>
+                      <p className="text-xl font-bold text-gray-900 dark:text-white">
+                        Rs. {latestReport.highestPackageLpa} LPA
+                      </p>
                     </div>
                   )}
-                  {ps.averagePackage && (
+                  {latestReport?.averagePackageLpa && (
                     <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-900/30">
                       <p className="text-xs text-blue-600 uppercase font-semibold mb-1">Average Package</p>
-                      <p className="text-xl font-bold text-gray-900 dark:text-white">{ps.averagePackage}</p>
+                      <p className="text-xl font-bold text-gray-900 dark:text-white">
+                        Rs. {latestReport.averagePackageLpa} LPA
+                      </p>
                     </div>
                   )}
-                  {ps.nirfMedianSalary && (
+                  {latestReport?.medianPackageLpa && (
                     <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-xl border border-purple-100 dark:border-purple-900/30">
-                      <p className="text-xs text-purple-600 uppercase font-semibold mb-1">NIRF Median Salary</p>
-                      <p className="text-xl font-bold text-gray-900 dark:text-white">{ps.nirfMedianSalary}</p>
+                      <p className="text-xs text-purple-600 uppercase font-semibold mb-1">Median Salary</p>
+                      <p className="text-xl font-bold text-gray-900 dark:text-white">
+                        Rs. {latestReport.medianPackageLpa} LPA
+                      </p>
                     </div>
                   )}
                 </div>
 
-                {ps.topRecruiters && ps.topRecruiters.length > 0 && (
+                {recruiters.length > 0 && (
                   <div>
                     <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 uppercase tracking-wider flex items-center gap-2">
                       <Users className="w-4 h-4" /> Top Recruiters
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                      {ps.topRecruiters.map((r, i) => (
-                        <span key={i} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium">
-                          {r.value}
+                      {recruiters.map((recruiter, index) => (
+                        <span key={index} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium">
+                          {recruiter}
                         </span>
                       ))}
                     </div>
                   </div>
                 )}
-                {ps.dataSource && (
-                  <p className="text-xs text-gray-400 mt-4 italic">Source: {ps.dataSource}</p>
+                {latestReport?.sourceName && (
+                  <p className="text-xs text-gray-400 mt-4 italic">Source: {latestReport.sourceName}</p>
                 )}
               </section>
             )}
           </div>
 
-          {/* RIGHT COLUMN (Sidebar) */}
           <div className="space-y-6 order-1 lg:order-2">
-            {/* Quick Info Card */}
             <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 sticky top-24">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
                 Quick Information
@@ -322,7 +328,6 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
                 </div>
               </div>
 
-              {/* Key Highlights */}
               {highlights.length > 0 && (
                 <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700">
                   <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 uppercase tracking-wider">
@@ -339,7 +344,6 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
                 </div>
               )}
 
-              {/* SIDEBAR BUTTON: Visible on Mobile Only */}
               {college.website && (
                 <a
                   href={college.website}
@@ -362,7 +366,6 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
           </div>
         </div>
 
-        {/* BOTTOM SECTION: CUTOFFS */}
         {cutoffs.length > 0 && (
           <section className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
@@ -378,7 +381,6 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
         )}
       </div>
 
-      {/* Mobile Sticky Footer */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 md:hidden z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
         <Link
           href="/predictor"

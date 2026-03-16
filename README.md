@@ -155,11 +155,11 @@ Advanced filtering with real data (Jadavpur University CSE - Opening: 22, Closin
 
 ### Backend & Data
 
-- **Database**: Supabase (PostgreSQL) 2.89.0
-- **CMS**: Payload CMS 3.79.0
+- **Database**: PostgreSQL (Supabase / Managed via Payload)
+- **CMS**: Payload CMS 3.79.0 (Source of Truth ✨)
 - **Media Storage**: AWS S3 (via @payloadcms/storage-s3)
-- **Caching**: Upstash Redis 1.35.7
-- **Data Compression**: Flat Columnar JSON (custom implementation)
+- **Caching**: Upstash Redis 1.35.7 (Predictor Master Blob)
+- **Data Compression**: Gzip + Base64 (Redis) / Flat Columnar JSON (Static)
 - **Charts**: Chart.js 4.5.0 with react-chartjs-2
 - **Date Utilities**: date-fns 4.1.0
 
@@ -400,121 +400,52 @@ npm run lint                   # Run ESLint & Oxlint
 # Payload CMS
 npm run generate:importmap     # Update Payload admin import map
 
-# Data Management
+# Data Management (Payload CMS → Distribution)
+npm run seed:upstash           # Sync Payload cutoffs to Redis cache
+npm run build:mobile           # Generate static slices for mobile (from Payload)
+npm run build:desktop          # Generate cutoffs-data.json for desktop (from Payload)
+
+# CMS Seeding
 npm run seed:payload:colleges  # Seed colleges to Payload
 npm run seed:payload:cutoffs   # Seed cutoffs to Payload
-npm run build:metadata         # Generate metadata lookup
-npm run build:mobile           # Generate static slices for mobile
-npm run build:desktop          # Generate cutoffs-data.json for desktop
 
 # Testing & Validation
 npm run test:mobile            # Test static slicing implementation
 
 # Utilities
 npm run indexnow               # Submit URLs to IndexNow
-npm run seed:upstash           # Seed Redis cache
 ```
 
 ---
 
 ## 🏗️ Architecture
 
+### Data Flow & Source of Truth
+
+The application uses **Payload CMS** as the central source of truth for all data, including college profiles, blog posts, and cutoff ranks.
+
+```mermaid
+graph TD
+    CMS[Payload CMS / Postgres] -->|Seed Script| Redis[(Upstash Redis)]
+    CMS -->|Build Scripts| Static[Static JSON Slices]
+    
+    subgraph Tools["Tools (Predictor / Finder)"]
+        Redis -->|Gzip Blob| Predictor[Predictor API]
+        Static -->|Selective Fetch| Finder[Mobile Finder]
+    end
+
+    style CMS fill:#4ecdc4,color:#000
+    style Redis fill:#ff6b6b,color:#fff
+    style Static fill:#f57c00,color:#fff
+```
+
 ### Hybrid Adaptive Loading Strategy
 
 The application uses a **device-based data loading strategy** that optimizes for both desktop and mobile experiences:
 
-```mermaid
-graph TD
-    User[User Visits Cutoff Finder] --> Check{Device Type?}
-
-    Check -->|Desktop| D_Fetch
-    Check -->|Mobile| M_Fetch
-
-    subgraph Desktop[" "]
-        D_Fetch[Fetch Monolith JSON<br/>106 KB Brotli]
-        D_Fetch --> D_Decompress[Decompress Flat Columnar Data]
-        D_Decompress --> RAM[Load 17,179 Rows into RAM]
-        RAM --> D_Filter[Instant Client-Side Filtering<br/>0ms Search]
-        D_Filter --> D_UI[Render Data Table]
-    end
-
-    subgraph Mobile[" "]
-        M_Fetch[Fetch Index JSON<br/>5 KB]
-        M_Fetch --> M_UI[Render College Dropdown]
-        M_UI --> M_Slice[Fetch Static Slice<br/>e.g., jadavpur.json]
-        M_Slice --> M_Render[Render Program Cards]
-        M_Render -->|Change College| M_Slice
-    end
-
-    style Desktop stroke:#1976d2,stroke-width:3px
-    style Mobile stroke:#f57c00,stroke-width:3px
-    style D_Filter fill:#4caf50,color:#fff
-    style M_Slice fill:#ff9800,color:#fff
-```
-
-### Desktop (Fast Networks)
-
-- **Strategy**: Load entire dataset upfront
-- **File**: `cutoffs-data.json` (106 KB compressed, 465 KB raw)
-- **Format**: Flat Columnar JSON (custom compression)
-- **Benefit**: Zero-latency filtering, perfect for data exploration
-- **Trade-off**: Larger initial payload, but instant UX afterward
-
-### Mobile (Slow Networks)
-
-- **Strategy**: Lazy loading with static slices
-- **Initial**: `data/index.json` (5 KB) - Just college names
-- **On-Demand**: `data/{college-slug}.json` (~5-33 KB per college)
-- **Benefit**: Minimal initial load, targeted data fetching
-- **Trade-off**: Slight delay when switching colleges
-
-### Data Compression
-
-**Flat Columnar Format**:
-
-```json
-{
-  "lookup": {
-    "C": ["College 1", "College 2", ...],
-    "P": ["Program 1", "Program 2", ...],
-    "Y": [2022, 2023, 2024, 2025]
-  },
-  "data": {
-    "c": [0, 0, 1, 1, ...],  // College indices
-    "p": [0, 1, 0, 1, ...],  // Program indices
-    "o": [5, 45, 200, ...],  // Opening ranks
-    "k": [13, 67, 250, ...]  // Closing ranks
-  }
-}
-```
-
-**Benefits**:
-
-- **88% file size reduction** (911 KB → 106 KB)
-- Instant client-side decoding
-- Still JSON (debuggable, no binary format)
-- Automatic Brotli compression on Vercel
-- Deduplicates repeated strings (college/program names)
-
-### API Architecture
-
-```mermaid
-graph LR
-    Client[Client] --> API[API Routes]
-    API --> Cache{Redis Cache?}
-    Cache -->|Hit| Return[Return Cached]
-    Cache -->|Miss| DB[Payload CMS / Postgres]
-    DB --> Store[Store in Redis]
-    Store --> Return
-
-    style Cache fill:#ff6b6b
-    style DB fill:#4ecdc4
-```
-
-- **Caching Layer**: Upstash Redis for frequently accessed data
-- **Database**: PostgreSQL (Supabase) via Payload CMS
-- **CMS**: Payload CMS for blog and dynamic content
-- **Static Generation**: Pre-built JSON files for cutoff data
+- **Desktop (Monolith)**: Downloads a compressed columnar JSON (~106 KB) for instant 0ms searches without further API calls.
+- **Mobile (Slice-based)**: Fetches only the necessary data for the selected college (~5-33 KB) to minimize data usage on slower networks.
+- **Predictor API**: Uses a Gzipped master data blob stored in Redis for lightning-fast server-side filtering.
 
 ---
 

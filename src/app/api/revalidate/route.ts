@@ -3,21 +3,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/utils/logger'
 
 // Secret token to prevent unauthorized revalidation requests
-const REVALIDATE_TOKEN = process.env.PAYLOAD_REVALIDATE_TOKEN || process.env.SANITY_REVALIDATE_TOKEN
+const REVALIDATE_TOKEN = process.env.PAYLOAD_REVALIDATE_TOKEN
 
 /**
  * Webhook endpoint for on-demand revalidation
- * This is designed to be triggered by Payload (or previously Sanity) webhooks
+ * This is designed to be triggered by Payload webhooks
  * 
  * Usage: POST /api/revalidate?token=SECRET_TOKEN
  * Body: { collection: string, doc: { slug: string } } (Payload format)
- *       or { _type: string, slug: { current: string } } (Sanity format)
  */
 export async function POST(request: NextRequest) {
     const token = request.nextUrl.searchParams.get('token')
 
     if (!REVALIDATE_TOKEN) {
-        logger.error('[Revalidate] Revalidate token environment variable not set')
+        logger.error('[Revalidate] REVALIDATE_TOKEN environment variable not set')
         return NextResponse.json({
             success: false,
             error: 'Server configuration error',
@@ -39,9 +38,8 @@ export async function POST(request: NextRequest) {
 
         const pathsRevalidated: string[] = []
         
-        // Handle both Payload and Sanity formats
-        const type = body.collection || body._type
-        const slug = body.doc?.slug || body.slug?.current || body.slug
+        const type = body.collection
+        const slug = body.doc?.slug
 
         logger.info(`[Revalidate] Processing update on ${type} (slug: ${slug || 'none'})`)
 
@@ -57,12 +55,10 @@ export async function POST(request: NextRequest) {
         // Mapping types to paths
         switch (type) {
             case 'colleges':
-            case 'college':
                 await safeRevalidate('/colleges')
                 if (slug) await safeRevalidate(`/colleges/${slug}`)
                 break
             case 'posts':
-            case 'post':
                 await safeRevalidate('/blog')
                 if (slug) await safeRevalidate(`/blog/${slug}`)
                 break
@@ -71,7 +67,6 @@ export async function POST(request: NextRequest) {
                 await safeRevalidate('/')
                 break
             case 'site-settings':
-            case 'siteSettings':
                 await safeRevalidate('/')
                 await safeRevalidate('/colleges')
                 await safeRevalidate('/blog')

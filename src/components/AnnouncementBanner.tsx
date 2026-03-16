@@ -7,7 +7,7 @@ interface AnnouncementProps {
     message: string
     linkUrl?: string
     linkText?: string
-    variant: 'info' | 'warning' | 'alert'
+    variant: 'info' | 'warning' | 'success' | 'error' | string
 }
 
 export function AnnouncementBanner({ message, linkUrl, linkText = 'Learn More', variant }: AnnouncementProps) {
@@ -15,14 +15,17 @@ export function AnnouncementBanner({ message, linkUrl, linkText = 'Learn More', 
 
     if (isDismissed) return null
 
-    const variantStyles = {
+    const variantStyles: Record<string, string> = {
         info: 'bg-blue-600 text-white',
         warning: 'bg-yellow-500 text-gray-900',
-        alert: 'bg-red-600 text-white',
+        success: 'bg-green-600 text-white',
+        error: 'bg-red-600 text-white',
     }
 
+    const currentStyle = variantStyles[variant] || variantStyles.info
+
     return (
-        <div className={`${variantStyles[variant]} px-4 py-3 relative`}>
+        <div className={`${currentStyle} px-4 py-3 relative`}>
             <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
                 <p className="text-sm font-medium flex-1">
                     {message}

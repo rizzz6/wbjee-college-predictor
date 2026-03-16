@@ -39,6 +39,7 @@ export default async function BlogPage() {
   const payload = await getPayloadClient();
   const res = await payload.find({
     collection: 'posts',
+    where: { _status: { equals: 'published' } },
     sort: '-publishedAt',
     limit: 50,
   });
@@ -80,8 +81,27 @@ export default async function BlogPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
                   <div className="flex flex-col flex-1 p-8">
-                    <div className="text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400 mb-3">
-                      {post.publishedAt ? format(new Date(post.publishedAt), 'MMM d, yyyy') : 'Recent'}
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3">
+                      <div className="text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400">
+                        {post.publishedAt ? format(new Date(post.publishedAt), 'MMM d, yyyy') : 'Recent'}
+                      </div>
+                      
+                      {/* Author display */}
+                      {(() => {
+                        interface AuthorDoc { name?: string; }
+                        const authors = (Array.isArray(post.author) ? post.author : []) as (string | number | AuthorDoc)[];
+                        const authorNames = authors
+                          .map((a) => (typeof a === 'object' && a !== null ? (a as AuthorDoc).name : null))
+                          .filter((name): name is string => typeof name === 'string');
+                        const displayAuthor = authorNames.length > 0 ? authorNames.join(', ') : (post.authorName as string | undefined);
+                        
+                        return displayAuthor ? (
+                          <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                            <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
+                            <span>{displayAuthor}</span>
+                          </div>
+                        ) : null;
+                      })()}
                     </div>
 
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 leading-tight group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">

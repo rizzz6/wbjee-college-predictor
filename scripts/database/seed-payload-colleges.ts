@@ -9,9 +9,15 @@ import path from 'path'
 import fs from 'fs'
 import { getPayload } from 'payload'
 
+import {
+  convertParagraphsToRichText,
+  getPayloadEditorConfig,
+  normalizeHighlightItems,
+  normalizeRecruiterItems,
+} from '../../src/utils/payload-richtext'
+
 dotenv.config({ path: path.join(process.cwd(), '.env.local') })
 
-// The name map: JSON college_name → official cutoff institute name
 import { COLLEGE_NAME_MAP } from './college-name-map'
 
 function slugify(text: string) {
@@ -52,15 +58,15 @@ interface JsonCollege {
 }
 
 async function seedColleges() {
-  console.log('🏛️  Starting Payload College Seed...\n')
+  console.log('Starting Payload College Seed...\n')
 
   const { default: config } = await import('../../payload.config')
   const payload = await getPayload({ config })
+  const editorConfig = getPayloadEditorConfig(payload.config.editor)
 
-  // Load JSON
   const jsonPath = path.join(process.cwd(), 'public/data/individual-college-details.json')
   const jsonData: JsonCollege[] = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'))
-  console.log(`📄 Loaded ${jsonData.length} college records from JSON.\n`)
+  console.log(`Loaded ${jsonData.length} college records from JSON.\n`)
 
   let created = 0
   let skipped = 0
@@ -68,80 +74,87 @@ async function seedColleges() {
 
   for (const item of jsonData) {
     const jsonName = item.college_name
-    // Use the map to get the official cutoff name, fallback to the JSON name
     const officialName = COLLEGE_NAME_MAP[jsonName] || jsonName
-
-    // Determine slug
     const slug = slugify(jsonName)
 
-    // Check for existing
     const existing = await payload.find({
       collection: 'colleges',
       where: { slug: { equals: slug } },
       limit: 1,
     })
 
-    if (existing.docs.length > 0) {
-      skipped++
-      process.stdout.write('.')
-      continue
-    }
+    const existingId = existing.docs.length > 0 ? existing.docs[0].id : null
 
-    // Map type
+
     let collegeType: string | undefined = item.type
     if (collegeType === 'Govt') collegeType = 'Government'
     else if (collegeType === 'Pvt') collegeType = 'Private'
-    // If it doesn't match a valid option, keep as-is (University, etc.)
 
-    // Extract estYear from highlights (e.g. "Estd. 1955")
     const highlights = item.highlights || []
-    const estdHighlight = highlights.find((h) => h.toLowerCase().includes('estd'))
+    const estdHighlight = highlights.find((highlight) => highlight.toLowerCase().includes('estd'))
     const estYearMatch = estdHighlight?.match(/\d{4}/)
     const estYear = estYearMatch ? parseInt(estYearMatch[0]) : undefined
-    const filteredHighlights = highlights.filter((h) => !h.toLowerCase().includes('estd'))
+    const filteredHighlights = highlights.filter((highlight) => !highlight.toLowerCase().includes('estd'))
+    const overview = convertParagraphsToRichText({
+      editorConfig,
+      paragraphs: [item.about?.para1 || '', item.about?.para2 || ''].filter(Boolean),
+    })
 
     try {
-      await payload.create({
-        collection: 'colleges',
-        data: {
-          name: jsonName,
-          slug,
-          location: item.location || '',
-          type: collegeType as 'Government' | 'Private' | 'Institutional' | 'University',
-          website: item.website || '',
-          isVisible: false,
-          estYear,
-          priority: 3,
-          seoDescription: item.seo_desc || '',
-          cutoffIdentifier: officialName,
-          highlights: filteredHighlights.map((h) => ({ value: h })),
-          about: {
-            para1: item.about?.para1 || '',
-            para2: item.about?.para2 || '',
-          },
-          placementStats: {
-            highestPackage: item.placement_stats?.highest_package || '',
-            averagePackage: item.placement_stats?.average_package || '',
-            nirfMedianSalary: item.placement_stats?.nirf_median_salary || '',
-            topRecruiters: (item.placement_stats?.top_recruiters || []).map((r) => ({ value: r })),
-            sourceReliability: (item.placement_stats?.source_reliability as 'High' | 'Medium' | 'Low' | 'Official') || undefined,
-            dataSource: item.placement_stats?.data_source || '',
-          },
-          feesStats: {
-            totalCourseFee: item.fees_stats?.total_course_fee || '',
-            feePerSemester: item.fees_stats?.fee_per_semester || '',
-          },
+      const data = {
+        name: jsonName,
+        slug,
+        location: item.location || '',
+        type: collegeType as 'Government' | 'Private' | 'Institutional' | 'University' | 'Semi-Govt',
+        website: item.website || '',
+        isVisible: existingId ? existing.docs[0].isVisible : false,
+        estYear,
+        priority: existingId ? existing.docs[0].priority : 3,
+        seoDescription: item.seo_desc || '',
+        cutoffSourceName: officialName,
+        highlights: normalizeHighlightItems(filteredHighlights),
+        overview,
+        about: {
+          para1: item.about?.para1 || '',
+          para2: item.about?.para2 || '',
         },
-      })
-      created++
-      console.log(`✨ Created: ${jsonName}`)
+        placementStats: {
+          highestPackage: item.placement_stats?.highest_package || '',
+          averagePackage: item.placement_stats?.average_package || '',
+          nirfMedianSalary: item.placement_stats?.nirf_median_salary || '',
+          topRecruiters: normalizeRecruiterItems(item.placement_stats?.top_recruiters || []),
+          sourceReliability: (item.placement_stats?.source_reliability as 'High' | 'Medium' | 'Low' | 'Official') || undefined,
+          dataSource: item.placement_stats?.data_source || '',
+        },
+        feesStats: {
+          totalCourseFee: item.fees_stats?.total_course_fee || '',
+          feePerSemester: item.fees_stats?.fee_per_semester || '',
+        },
+      }
+
+      if (existingId) {
+        await payload.update({
+          collection: 'colleges',
+          id: existingId,
+          data,
+        })
+        console.log(`Updated: ${jsonName}`)
+      } else {
+        await payload.create({
+          collection: 'colleges',
+          data,
+        })
+        created++
+        console.log(`Created: ${jsonName}`)
+      }
     } catch (err) {
-      console.error(`\n❌ Error creating ${jsonName}:`, err)
+      console.error(`\nError saving ${jsonName}:`, err)
       errors++
     }
+
   }
 
-  console.log(`\n\n✅ Seed Complete!`)
+  console.log(`\n\nSeed Complete!`)
   console.log(`   Created: ${created}`)
   console.log(`   Skipped: ${skipped}`)
   console.log(`   Errors:  ${errors}`)

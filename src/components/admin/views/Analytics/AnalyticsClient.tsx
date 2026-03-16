@@ -93,7 +93,7 @@ export default function AnalyticsClient({
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
       <header style={{ marginBottom: '2.5rem' }}>
         <h1 style={{ fontSize: '2rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <BarChart3 size={32} color="#2563eb" />
+          <BarChart3 size={32} color="var(--info-text)" />
           Insight Analytics
         </h1>
         <p style={{ opacity: 0.6 }}>Detailed breakdown of college data distribution and composition.</p>
@@ -103,7 +103,7 @@ export default function AnalyticsClient({
         {/* Type Distribution */}
         <div style={{ backgroundColor: 'var(--theme-elevation-50, #fff)', padding: '2rem', borderRadius: '1.25rem', border: '1px solid var(--theme-elevation-150, #e5e7eb)' }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <PieChartIcon size={20} color="#2563eb" />
+            <PieChartIcon size={20} color="var(--info-text)" />
             College Type Distribution
           </h2>
           <div style={{ height: '300px', display: 'flex', justifyContent: 'center' }}>
@@ -114,7 +114,7 @@ export default function AnalyticsClient({
         {/* Location Breakdown */}
         <div style={{ backgroundColor: 'var(--theme-elevation-50, #fff)', padding: '2rem', borderRadius: '1.25rem', border: '1px solid var(--theme-elevation-150, #e5e7eb)' }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <MapPin size={20} color="#2563eb" />
+            <MapPin size={20} color="var(--info-text)" />
             Top Locations (Count)
           </h2>
           <div style={{ height: '300px' }}>
@@ -125,12 +125,13 @@ export default function AnalyticsClient({
         {/* Stats Grid */}
         <div style={{ gridColumn: 'span 2', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
           <div style={{ backgroundColor: 'var(--theme-elevation-50, #fff)', padding: '1.5rem', borderRadius: '1rem', border: '1px solid var(--theme-elevation-150, #e5e7eb)', textAlign: 'center' }}>
-             <TrendingUp size={24} color="#2563eb" style={{ marginBottom: '0.5rem', margin: '0 auto' }} />
+             <TrendingUp size={24} color="var(--info-text)" style={{ marginBottom: '0.5rem', margin: '0 auto' }} />
              <p style={{ fontSize: '0.875rem', opacity: 0.5, margin: 0 }}>Total Records</p>
              <p style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: '0.25rem 0 0 0' }}>{totalColleges}</p>
           </div>
         </div>
       </div>
+
     </div>
   )
 }

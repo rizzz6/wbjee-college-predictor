@@ -9,11 +9,9 @@
  * Platforms checked:
  * - Supabase (PostgreSQL)
  * - Upstash Redis
- * - Sanity CMS
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { createClient as createSanityClient } from '@sanity/client';
 import { Redis } from '@upstash/redis';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -240,82 +238,6 @@ async function verifyUpstash(): Promise<ValidationResult> {
     return result;
 }
 
-async function verifySanity(): Promise<ValidationResult> {
-    console.log('\n📊 Checking Sanity CMS...');
-
-    const result: ValidationResult = {
-        platform: 'Sanity CMS',
-        duplicates: 0,
-        nonNormalized: 0,
-        issues: []
-    };
-
-    try {
-        const sanity = createSanityClient({
-            projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
-            dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
-            useCdn: false,
-            apiVersion: '2024-01-01',
-            token: process.env.SANITY_API_TOKEN
-        });
-
-        // Fetch all colleges
-        const colleges = await sanity.fetch(`*[_type == "college"]{ name, slug }`);
-        console.log(`   Total colleges: ${colleges.length}`);
-
-        // Check for duplicate names
-        const namesSeen = new Set<string>();
-        colleges.forEach((college: { name: string }) => {
-            if (namesSeen.has(college.name)) {
-                result.duplicates++;
-                result.issues.push(`Duplicate college: ${college.name}`);
-            }
-            namesSeen.add(college.name);
-        });
-
-        // Check for non-normalized names
-        colleges.forEach((college: { name: string }) => {
-            const normalized = toTitleCase(college.name);
-            if (college.name !== normalized) {
-                result.nonNormalized++;
-                result.issues.push(`College: "${college.name}" should be "${normalized}"`);
-            }
-        });
-
-        // Fetch all collegeCutoff documents
-        const cutoffs = await sanity.fetch(`*[_type == "collegeCutoff"]{ institute }`);
-        console.log(`   Total cutoff documents: ${cutoffs.length}`);
-
-        // Check for duplicate institutes
-        const institutesSeen = new Set<string>();
-        cutoffs.forEach((cutoff: { institute: string }) => {
-            if (institutesSeen.has(cutoff.institute)) {
-                result.duplicates++;
-                result.issues.push(`Duplicate cutoff document: ${cutoff.institute}`);
-            }
-            institutesSeen.add(cutoff.institute);
-        });
-
-        // Check for non-normalized institutes
-        cutoffs.forEach((cutoff: { institute: string }) => {
-            const normalized = toTitleCase(cutoff.institute);
-            if (cutoff.institute !== normalized) {
-                result.nonNormalized++;
-                result.issues.push(`Cutoff institute: "${cutoff.institute}" should be "${normalized}"`);
-            }
-        });
-
-        console.log(`   ✅ Duplicates: ${result.duplicates}`);
-        console.log(`   ✅ Non-normalized: ${result.nonNormalized}`);
-
-    } catch (error) {
-        console.error('   ❌ Error:', error);
-        result.issues.push(`Error: ${error}`);
-    }
-
-    return result;
-}
-
 async function runVerification() {
     console.log('🔍 Starting Comprehensive Data Quality Verification\n');
     console.log('='.repeat(60));
@@ -325,7 +247,6 @@ async function runVerification() {
     // Check all platforms
     results.push(await verifySupabase());
     results.push(await verifyUpstash());
-    results.push(await verifySanity());
 
     // Summary
     console.log('\n' + '='.repeat(60));

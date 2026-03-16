@@ -1,3 +1,39 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// Fix for Undici / TypeError: Illegal constructor issues on Windows with Node 20+
+// This must run before any other imports that might initialize undici
+try {
+  if (typeof global !== 'undefined') {
+    const undici = (function() {
+      try {
+        // Use eval('require') to bypass Next.js static analysis/bundling
+        return eval('require')('undici')
+      } catch {
+        return null
+      }
+    })()
+
+    if (undici && (typeof (global as any).Request === 'undefined' || (global as any).Request.name !== 'Request')) {
+      ;(global as any).Request = undici.Request
+      ;(global as any).Response = undici.Response
+      ;(global as any).Headers = undici.Headers
+      ;(global as any).fetch = undici.fetch
+    }
+
+    // Shim caches to bypass problematic creation of a real CacheStorage on some environments
+    if (typeof (global as any).caches === 'undefined') {
+      ;(global as any).caches = {
+        open: () => Promise.resolve({}),
+        keys: () => Promise.resolve([]),
+        has: () => Promise.resolve(false),
+        delete: () => Promise.resolve(false),
+        match: () => Promise.resolve(undefined),
+      }
+    }
+  }
+} catch {
+  // Ignore errors if undici is not available
+}
+
 import { buildConfig } from 'payload'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { postgresAdapter } from '@payloadcms/db-postgres'
@@ -12,10 +48,12 @@ import { Posts } from './src/collections/Posts'
 import { Timeline } from './src/collections/Timeline'
 import { SiteSettings } from './src/collections/SiteSettings'
 import { Users } from './src/collections/Users'
+import { Tags } from './src/collections/Tags'
+import { Authors } from './src/collections/Authors'
+import { CollegePlacementReports } from './src/collections/CollegePlacementReports'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-const isProduction = process.env.NODE_ENV === 'production'
 
 function requireEnv(name: string): string {
   const value = process.env[name]?.trim()
@@ -75,7 +113,7 @@ export default buildConfig({
     },
   },
   editor: lexicalEditor({}),
-  collections: [Colleges, CollegeCutoffs, Media, Posts, Timeline, Users],
+  collections: [Colleges, CollegeCutoffs, Media, Posts, Timeline, Users, Tags, Authors, CollegePlacementReports],
   globals: [SiteSettings],
   secret: requireEnv('PAYLOAD_SECRET'),
   db: postgresAdapter({
@@ -83,7 +121,7 @@ export default buildConfig({
       connectionString: requireEnv('DATABASE_URI'),
     },
     schemaName: 'payload',
-    push: !isProduction,
+    push: false,
   }),
   plugins: [
     s3Storage({

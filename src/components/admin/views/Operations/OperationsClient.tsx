@@ -195,13 +195,15 @@ export default function OperationsClient({ deployHooks = [] }: { deployHooks: De
                 {status?.id === script.id && (
                   <div style={{ 
                     display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.825rem', 
-                    color: status.type === 'success' ? '#166534' : '#991b1b',
-                    padding: '0.5rem', backgroundColor: status.type === 'success' ? '#f0fdf4' : '#fef2f2', borderRadius: '0.375rem'
+                    color: status.type === 'success' ? 'var(--success-text)' : 'var(--error-text)',
+                    padding: '0.5rem', backgroundColor: status.type === 'success' ? 'var(--success-bg)' : 'var(--error-bg)', borderRadius: '0.375rem',
+                    border: `1px solid ${status.type === 'success' ? 'var(--success-text)' : 'var(--error-text)'}`
                   }}>
                     {status.type === 'success' ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
                     {status.message}
                   </div>
                 )}
+
 
                 {output?.id === script.id && (
                   <div style={{ marginTop: '0.75rem', padding: '0.75rem', backgroundColor: '#1e293b', color: '#cbd5e1', borderRadius: '0.375rem', fontSize: '0.7rem', maxHeight: '150px', overflowY: 'auto', fontFamily: 'monospace' }}>

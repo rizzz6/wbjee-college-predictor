@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Redis } from '@upstash/redis';
 import zlib from 'zlib';
 import { promisify } from 'util';
-import { getServerSupabase } from '@/utils/database/supabase';
+import { getPayloadClient } from '@/lib/payload-client';
 import { logger } from '@/utils/logger';
 
 // Switch to Node.js runtime for zlib support
@@ -75,7 +75,7 @@ const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
  * Load data with multi-tier caching:
  * Tier 1: In-Memory Cache (fastest, ~1ms)
  * Tier 2: Redis Cache (~5ms + decompress ~10ms)
- * Tier 3: Supabase Fallback (~200ms)
+ * Tier 3: Payload Fallback (~200ms)
  */
 async function loadRecords(): Promise<RedisRecord[]> {
     // Tier 1: Check in-memory cache
@@ -105,36 +105,45 @@ async function loadRecords(): Promise<RedisRecord[]> {
                 return records;
             }
 
-            logger.warn('⚠️ Redis cache MISS - falling back to Supabase');
+            logger.warn('⚠️ Redis cache MISS - falling back to Payload');
         } catch (redisError) {
             logger.error('❌ Redis error:', redisError);
         }
     }
 
-    // Tier 3: Fallback to Supabase
-    logger.warn('⚠️ Falling back to Supabase (Redis unavailable or empty)');
-    const supabase = getServerSupabase();
-    const { data, error } = await supabase
-        .from('cutoffs')
-        .select('*');
+    // Tier 3: Fallback to Payload Local API
+    logger.warn('⚠️ Falling back to Payload (Redis unavailable or empty)');
+    const payload = await getPayloadClient();
+    
+    // Fetch all college cutoffs documents
+    // Note: This could be slow if there are thousands of documents, 
+    // but the search API needs all of them to search through.
+    const { docs } = await payload.find({
+        collection: 'college_cutoffs',
+        limit: 1000,
+        pagination: false,
+    });
 
-    if (error) {
-        throw new Error(`Supabase error: ${error.message}`);
+    const records: RedisRecord[] = [];
+
+    for (const doc of docs) {
+        if (doc.cutoffs && Array.isArray(doc.cutoffs)) {
+            for (const cutoff of doc.cutoffs) {
+                records.push({
+                    id: doc.id.toString() + '-' + (cutoff.id || Math.random().toString()),
+                    institute: doc.institute,
+                    branch: cutoff.program,
+                    category: cutoff.category || '',
+                    seat_type: cutoff.seatType || '',
+                    quota: cutoff.quota || '',
+                    round: cutoff.round || '',
+                    year: cutoff.year,
+                    opening_rank: cutoff.openingRank || null,
+                    closing_rank: cutoff.closingRank || null,
+                });
+            }
+        }
     }
-
-    // Map Supabase fields to Redis format
-    const records: RedisRecord[] = data.map(row => ({
-        id: row.id.toString(),
-        institute: row.institute,
-        branch: row.program,    // ✅ Map program → branch
-        category: row.category,
-        seat_type: row.seat_type,
-        quota: row.quota || '',
-        round: row.round,
-        year: row.year,
-        opening_rank: row.opening_rank,
-        closing_rank: row.closing_rank,
-    }));
 
     // Cache in memory
     memoryCache = {

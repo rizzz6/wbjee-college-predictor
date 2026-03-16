@@ -29,12 +29,12 @@
                          ↓ npm run import:csv
                          ↓
 ┌──────────────────────────────────────────────────────────────┐
-│ 4. SUPABASE (PostgreSQL) - SOURCE OF TRUTH ✨                │
-│    - All cutoff data stored here                             │
-│    - ~17,179 records                                         │
+│ 4. PAYLOAD CMS (PostgreSQL) - SOURCE OF TRUTH ✨             │
+│    - All college, post, and cutoff data managed here         │
+│    - Schema: `payload`                                       │
 └──────────────────────────────────────────────────────────────┘
                          ↓
-                         ↓ (Automatic reads)
+                         ↓ (Automatic reads / Local API)
                          ↓
         ┌────────────────┴────────────────┐
         │                                  │
@@ -42,10 +42,33 @@
 ┌─────────────────┐              ┌──────────────────┐
 │ Build Scripts   │              │ Upstash Redis    │
 │ - Desktop data  │              │ - API cache      │
-│ - Mobile slices │              │                  │
-│ - Metadata      │              │                  │
+│ - Mobile slices │              │ (Seeded from     │
+│ - Metadata      │              │  Payload CMS)    │
 └─────────────────┘              └──────────────────┘
 ```
+
+---
+
+## 🏛️ College Visibility & Status
+
+The `Colleges` collection uses two separate toggles to control public availability. **A college must have BOTH set correctly to appear on the frontend.**
+
+### 1. `isVisible` (Custom Toggle)
+- **Type:** Checkbox
+- **Purpose:** A high-level administrative switch to show or hide a college from the public directory.
+- **Use Case:** Hide a college if its data is incomplete, outdated, or if it has been closed, even if the record itself is "Published" in the CMS.
+- **Frontend Logic:** Filtered via `where: { isVisible: { equals: true } }`.
+
+### 2. `_status` (Payload Native Status)
+- **Type:** Select (`draft` | `published`)
+- **Purpose:** Controls Payload's internal versioning and publishing workflow.
+- **Use Case:** Set to `draft` while actively editing the college's description or placement reports. Set to `published` once ready for the site.
+- **Frontend Logic:** Filtered via `where: { _status: { equals: 'published' } }`.
+
+**Summary:**
+- `isVisible: false` + `_status: 'published'` = **HIDDEN** (Administrative override)
+- `isVisible: true` + `_status: 'draft'` = **HIDDEN** (Draft safety)
+- `isVisible: true` + `_status: 'published'` = **VISIBLE**
 
 ---
 

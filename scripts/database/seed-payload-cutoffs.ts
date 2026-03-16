@@ -24,26 +24,23 @@ interface SupabaseCutoff {
 }
 
 async function seedCutoffs() {
-  console.log('📊 Starting Payload Cutoff Seed...\n')
+  console.log('Starting Payload Cutoff Seed...\n')
 
-  // --- Init Payload ---
   const { default: config } = await import('../../payload.config')
   const payload = await getPayload({ config })
 
-  // --- Init Supabase ---
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
   const supabaseKey = process.env.SUPABASE_SECRET_KEY!
 
   if (!supabaseUrl || !supabaseKey) {
-    console.error('❌ Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SECRET_KEY')
+    console.error('Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SECRET_KEY')
     process.exit(1)
   }
 
   const supabase = createClient(supabaseUrl, supabaseKey)
-  console.log('✅ Clients initialized\n')
+  console.log('Clients initialized\n')
 
-  // --- Fetch all cutoffs from Supabase with pagination ---
-  console.log('📥 Fetching cutoffs from Supabase...')
+  console.log('Fetching cutoffs from Supabase...')
   let allRows: SupabaseCutoff[] = []
   let from = 0
   const batchSize = 1000
@@ -55,7 +52,7 @@ async function seedCutoffs() {
       .range(from, from + batchSize - 1)
 
     if (error) {
-      console.error('❌ Supabase error:', error)
+      console.error('Supabase error:', error)
       process.exit(1)
     }
     if (!data || data.length === 0) break
@@ -65,9 +62,8 @@ async function seedCutoffs() {
     if (data.length < batchSize) break
   }
 
-  console.log(`\n📊 Total rows: ${allRows.length}\n`)
+  console.log(`\nTotal rows: ${allRows.length}\n`)
 
-  // --- Group by institute ---
   const grouped: Record<string, SupabaseCutoff[]> = {}
   for (const row of allRows) {
     if (!grouped[row.institute]) grouped[row.institute] = []
@@ -75,65 +71,62 @@ async function seedCutoffs() {
   }
 
   const institutes = Object.keys(grouped)
-  console.log(`🧩 Found ${institutes.length} institutes.\n`)
+  console.log(`Found ${institutes.length} institutes.\n`)
 
-  // --- Pre-load all Payload colleges for lookup ---
-  console.log('🔍 Loading Payload colleges for matching...')
+  console.log('Loading Payload colleges for matching...')
   const allColleges = await payload.find({
     collection: 'colleges',
     limit: 500,
     pagination: false,
   })
-  // Build lookup: cutoffIdentifier → payloadId, and name → payloadId
+
   const collegeMap = new Map<string, number>()
   for (const doc of allColleges.docs) {
-    if (doc.cutoffIdentifier) collegeMap.set(doc.cutoffIdentifier, doc.id as number)
+    if (doc.cutoffSourceName) collegeMap.set(doc.cutoffSourceName, doc.id as number)
     collegeMap.set(doc.name, doc.id as number)
   }
   console.log(`   Loaded ${allColleges.docs.length} colleges.\n`)
 
-  // --- Insert cutoffs ---
   let created = 0
   let unmatched = 0
   let errors = 0
 
-  for (const [index, inst] of institutes.entries()) {
-    const rows = grouped[inst]
-    const collegeId = collegeMap.get(inst)
+  for (const [index, institute] of institutes.entries()) {
+    const rows = grouped[institute]
+    const collegeId = collegeMap.get(institute)
 
     if (!collegeId) {
       unmatched++
-      // Still create the document, just without the relationship
     }
 
-    process.stdout.write(`\r   Processing ${index + 1}/${institutes.length}: ${inst.substring(0, 40)}...`)
+    process.stdout.write(`\r   Processing ${index + 1}/${institutes.length}: ${institute.substring(0, 40)}...`)
 
     try {
       await payload.create({
         collection: 'college_cutoffs',
         data: {
-          institute: inst,
+          institute,
           college: collegeId || undefined,
-          cutoffs: rows.map((r) => ({
-            year: r.year,
-            program: r.program,
-            quota: r.quota,
-            category: r.category,
-            seatType: r.seat_type,
-            round: r.round,
-            openingRank: r.opening_rank,
-            closingRank: r.closing_rank,
+          cutoffs: rows.map((row) => ({
+            year: row.year,
+            program: row.program,
+            quota: row.quota,
+            category: row.category,
+            seatType: row.seat_type,
+            round: row.round,
+            openingRank: row.opening_rank,
+            closingRank: row.closing_rank,
           })),
         },
       })
       created++
     } catch (err) {
-      console.error(`\n❌ Error for ${inst}:`, err)
+      console.error(`\nError for ${institute}:`, err)
       errors++
     }
   }
 
-  console.log(`\n\n✅ Seed Complete!`)
+  console.log(`\n\nSeed Complete!`)
   console.log(`   Created:   ${created}`)
   console.log(`   Unmatched: ${unmatched} (created without college link)`)
   console.log(`   Errors:    ${errors}`)

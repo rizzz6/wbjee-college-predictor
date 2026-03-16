@@ -143,15 +143,17 @@ export default function DataManagementClient() {
           display: 'flex',
           alignItems: 'center',
           gap: '1rem',
-          backgroundColor: status.type === 'success' ? '#f0fdf4' : '#fef2f2',
-          border: `1px solid ${status.type === 'success' ? '#bbf7d0' : '#fecaca'}`,
-          color: status.type === 'success' ? '#166534' : '#991b1b'
+          backgroundColor: status.type === 'success' ? 'var(--success-bg)' : 'var(--error-bg)',
+          border: `1px solid ${status.type === 'success' ? 'var(--success-text)' : 'var(--error-text)'}`,
+          color: status.type === 'success' ? 'var(--success-text)' : 'var(--error-text)',
+          opacity: 0.9
         }}>
           {status.type === 'success' ? <CheckCircle2 size={20} /> : <XCircle size={20} />}
           <p style={{ margin: 0, fontWeight: 500 }}>{status.message}</p>
-          <button onClick={() => setStatus(null)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>&times;</button>
+          <button onClick={() => setStatus(null)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', color: 'inherit' }}>&times;</button>
         </div>
       )}
+
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem' }}>
         {collections.map((col) => (

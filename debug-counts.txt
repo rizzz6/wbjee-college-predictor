@@ -1,7 +1,0 @@
---- TABLE COUNTS ---
-colleges: 136
-_colleges_v: 0
-posts: 1
-_posts_v: 0
-timeline: 1
-_timeline_v: 0

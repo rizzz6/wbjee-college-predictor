@@ -10,7 +10,8 @@ import {
   Users,
   Database,
   Settings,
-  Globe
+  Globe,
+  Clock
 } from 'lucide-react'
 
 const DashboardAnalytics = async () => {
@@ -43,116 +44,188 @@ const DashboardAnalytics = async () => {
   const invisibleColleges = colleges.totalDocs - (visibleColleges.totalDocs || 0)
 
   const stats = [
-    { label: 'Total Colleges', count: colleges.totalDocs, color: 'var(--ghibli-sky)', bgHover: 'rgba(135, 206, 235, 0.15)', icon: School, href: '/admin/collections/colleges' },
-    { label: 'Visible Colleges', count: visibleColleges.totalDocs, color: 'var(--ghibli-forest)', bgHover: 'rgba(45, 90, 39, 0.15)', icon: Eye, href: '/admin/collections/colleges?where[isVisible][equals]=true' },
-    { label: 'Hidden Colleges', count: invisibleColleges, color: 'var(--ghibli-earth)', bgHover: 'rgba(230, 126, 34, 0.15)', icon: EyeOff, href: '/admin/collections/colleges?where[isVisible][equals]=false' },
-    { label: 'Cutoff Data', count: cutoffs.totalDocs, color: 'var(--ghibli-sky)', bgHover: 'rgba(135, 206, 235, 0.15)', icon: FileText, href: '/admin/collections/college_cutoffs' },
-    { label: 'Blog Posts', count: posts.totalDocs, color: 'var(--ghibli-earth)', bgHover: 'rgba(230, 126, 34, 0.15)', icon: FileText, href: '/admin/collections/posts' },
-    { label: 'Users', count: users.totalDocs, color: 'var(--ghibli-forest)', bgHover: 'rgba(45, 90, 39, 0.15)', icon: Users, href: '/admin/collections/users' },
+    { label: 'Total Colleges', count: colleges.totalDocs, color: '#3b82f6', icon: School, href: '/admin/collections/colleges' },
+    { label: 'Visible Colleges', count: visibleColleges.totalDocs, color: '#10b981', icon: Eye, href: '/admin/collections/colleges?where[isVisible][equals]=true' },
+    { label: 'Hidden Colleges', count: invisibleColleges, color: '#f59e0b', icon: EyeOff, href: '/admin/collections/colleges?where[isVisible][equals]=false' },
+    { label: 'Cutoff Data', count: cutoffs.totalDocs, color: '#6366f1', icon: FileText, href: '/admin/collections/college_cutoffs' },
+    { label: 'Blog Posts', count: posts.totalDocs, color: '#ec4899', icon: FileText, href: '/admin/collections/posts' },
+    { label: 'Users', count: users.totalDocs, color: '#8b5cf6', icon: Users, href: '/admin/collections/users' },
   ]
 
   return (
-    <div style={{ padding: '2rem', minHeight: '100vh' }}>
-      <div className="journal-page deckled-edge">
-          {/* Header */}
-          <header className="g-flex g-flex-col md:g-flex-row g-justify-between g-items-center g-mb-12 g-border-b-2 g-border-gray-400" style={{ borderBottomStyle: 'dotted', paddingBottom: '1.5rem' }}>
-            <div>
-              <h1 className="g-text-5xl g-font-bold" style={{ color: '#2D5A27', fontFamily: "'Nanum Pen Script', cursive" }}>Analytics Overview</h1>
-              <p className="g-text-sm g-italic g-text-gray-500">Dashboard &amp; Statistics • {new Date().toLocaleDateString()}</p>
+    <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+      <header style={{ marginBottom: '3rem', borderBottom: '1px solid var(--theme-elevation-150)', paddingBottom: '1.5rem' }}>
+        <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '0 0 0.5rem 0' }}>Analytics Overview</h1>
+        <p style={{ color: 'var(--theme-elevation-500)', margin: 0 }}>Statistics and system status for WBJEE Predictor</p>
+      </header>
+
+      <section style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
+        gap: '1.5rem', 
+        marginBottom: '3rem' 
+      }}>
+        {stats.map((stat) => (
+          <Link href={stat.href} key={stat.label} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <div style={{ 
+              backgroundColor: 'var(--theme-elevation-50)',
+              border: '1px solid var(--theme-elevation-150)',
+              borderRadius: '12px',
+              padding: '1.5rem',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              cursor: 'pointer',
+              position: 'relative'
+            }}>
+              <div style={{ 
+                position: 'absolute', 
+                top: '1.5rem', 
+                right: '1.5rem', 
+                color: stat.color,
+                opacity: 0.8
+              }}>
+                <stat.icon size={24} />
+              </div>
+              <h3 style={{ 
+                fontSize: '0.875rem', 
+                textTransform: 'uppercase', 
+                letterSpacing: '0.05em', 
+                color: 'var(--theme-elevation-600)',
+                margin: '0 0 0.5rem 0'
+              }}>{stat.label}</h3>
+              <div style={{ fontSize: '2.25rem', fontWeight: 'bold' }}>{stat.count}</div>
+              <div style={{ 
+                marginTop: '1rem', 
+                height: '4px', 
+                width: '100%', 
+                backgroundColor: 'var(--theme-elevation-150)', 
+                borderRadius: '2px',
+                overflow: 'hidden'
+              }}>
+                <div style={{ 
+                  height: '100%', 
+                  backgroundColor: stat.color, 
+                  width: '65%',
+                  borderRadius: '2px'
+                }}></div>
+              </div>
             </div>
-          </header>
+          </Link>
+        ))}
+      </section>
 
-          {/* Stats Grid */}
-          <section className="g-grid g-grid-cols-1 md:g-grid-cols-3 g-gap-8 g-mb-12">
-            {stats.map((stat) => (
-              <Link href={stat.href} key={stat.label} className="g-text-decoration-none" style={{ color: 'inherit' }}>
-                <div 
-                  className="hand-drawn-border g-p-6 g-transition-colors hover-card" 
-                  style={{ backgroundColor: 'var(--paper-base)', position: 'relative', '--bg-hover': stat.bgHover } as React.CSSProperties}
-                >
-                  <div style={{ position: 'absolute', top: '0.75rem', right: '0.75rem', opacity: 0.6, color: stat.color }}>
-                    <stat.icon size={28} strokeWidth={2.5} />
-                  </div>
-                  <h3 className="g-text-xl g-font-semibold" style={{ color: stat.color }}>{stat.label}</h3>
-                  <div className="g-flex g-items-center g-gap-4" style={{ marginTop: '0.5rem' }}>
-                    <span className="g-text-4xl g-font-bold" style={{ color: 'var(--theme-text)' }}>{stat.count}</span>
-                  </div>
-                  <div style={{ marginTop: '1rem', height: '0.25rem', width: '100%', backgroundColor: 'rgba(0,0,0,0.05)', borderRadius: '0.25rem' }}>
-                    <div style={{ height: '0.25rem', backgroundColor: stat.color, borderRadius: '0.25rem', width: '70%', opacity: 0.8 }}></div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </section>
-
-          {/* Two-column layout for Activity and Inventory */}
-          <div className="g-grid g-grid-cols-1 md:g-grid-cols-3 g-gap-8">
-            
-            {/* Quick Actions (Replacing the Chart Area) */}
-            <section className="g-border-b g-border-gray-200" style={{ gridColumn: 'span 2' }}>
-               <h2 className="g-text-2xl g-font-bold g-mb-6" style={{ textDecoration: 'underline wavy #87CEEB', color: 'var(--ghibli-forest)' }}>Quick Actions</h2>
-               <div className="g-grid g-grid-cols-1 g-gap-6 md:g-grid-cols-2">
-                 <Link href="/" target="_blank" className="g-text-decoration-none">
-                    <div className="hand-drawn-border g-p-6 btn-watercolor g-flex g-items-center g-justify-center g-gap-3" style={{ backgroundColor: 'rgba(135, 206, 235, 0.1)', color: 'var(--ghibli-forest)' }}>
-                      <Globe size={20} />
-                      <span className="g-text-xl g-font-bold">View Live Website</span>
-                    </div>
-                 </Link>
-                 <Link href="/admin/data-management" className="g-text-decoration-none">
-                    <div className="hand-drawn-border g-p-6 btn-watercolor g-flex g-items-center g-justify-center g-gap-3" style={{ backgroundColor: 'rgba(45, 90, 39, 0.1)', color: 'var(--ghibli-sky)' }}>
-                      <Database size={20} />
-                      <span className="g-text-xl g-font-bold">Data Management</span>
-                    </div>
-                 </Link>
-                 <Link href="/admin/operations" className="g-text-decoration-none" style={{ gridColumn: 'span 2' }}>
-                    <div className="hand-drawn-border g-p-6 btn-watercolor g-flex g-items-center g-justify-center g-gap-3" style={{ backgroundColor: 'rgba(230, 126, 34, 0.1)', color: 'var(--ghibli-earth)' }}>
-                      <Settings size={20} />
-                      <span className="g-text-xl g-font-bold">System Operations</span>
-                    </div>
-                 </Link>
-               </div>
-               
-               {/* Quick Info Box in place of table */}
-               <div className="hand-drawn-border g-p-6" style={{ marginTop: '2rem', backgroundColor: 'var(--paper-base)', borderStyle: 'dotted' }}>
-                  <h2 className="g-text-2xl g-font-bold g-mb-4" style={{ textDecoration: 'underline wavy var(--ghibli-forest)', color: 'var(--ghibli-forest)' }}>Current Scope</h2>
-                  <p className="g-italic g-text-gray-500" style={{ color: 'var(--secondary-text)' }}>
-                    The platform contains <strong style={{ color: 'var(--ghibli-sky)' }}>{colleges.totalDocs}</strong> colleges across the state. <strong style={{ color: 'var(--ghibli-forest)' }}>{visibleColleges.totalDocs}</strong> are currently visible to users. There are <strong style={{ color: 'var(--ghibli-earth)' }}>{cutoffs.totalDocs}</strong> cutoff data points stored.
-                  </p>
-               </div>
-            </section>
-
-            {/* Recent Activity Sidebar */}
-            <aside className="hand-drawn-border g-p-6" style={{ backgroundColor: 'var(--paper-base)' }}>
-              <h2 className="g-text-2xl g-font-bold g-mb-6 g-border-b g-border-gray-200" style={{ paddingBottom: '0.5rem', color: 'var(--ghibli-forest)' }}>Recent Updates</h2>
-              <ul style={{ padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1.5rem', margin: 0 }}>
-                {recentColleges.docs.map((doc: unknown, i: number) => {
-                  const college = doc as { id: string | number; name: string; updatedAt: string };
-                  return (
-                    <li key={college.id} className="g-flex g-gap-4">
-                      <span style={{ width: '0.5rem', height: '0.5rem', marginTop: '0.5rem', borderRadius: '9999px', backgroundColor: i % 2 === 0 ? 'var(--ghibli-sky)' : 'var(--ghibli-forest)', flexShrink: 0, display: 'inline-block' }}></span>
-                      <div>
-                        <Link href={`/admin/collections/colleges/${college.id}`} className="g-text-decoration-none" style={{ color: 'inherit' }}>
-                          <p className="g-text-sm g-font-bold" style={{ margin: 0, color: 'var(--theme-text)' }}>{college.name}</p>
-                        </Link>
-                        <p className="g-text-xs g-text-gray-500" style={{ margin: 0, marginTop: '0.25rem', color: 'var(--secondary-text)' }}>Updated {new Date(college.updatedAt).toLocaleDateString()}</p>
-                      </div>
-                    </li>
-                  )
-                })}
-              </ul>
-              <Link href="/admin/collections/colleges" className="g-text-decoration-none">
-                <button className="g-w-full btn-watercolor g-font-bold" style={{ marginTop: '2rem', padding: '0.5rem 0', backgroundColor: 'var(--desk-bg)', color: 'var(--theme-text)', cursor: 'pointer', border: '2px solid var(--glow-silver)' }}>
-                  View All Colleges
-                </button>
-              </Link>
-            </aside>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
+        <section>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>Quick Actions</h2>
+          <div style={{ display: 'grid', gap: '1rem' }}>
+            <Link href="/" target="_blank" style={{ textDecoration: 'none' }}>
+              <div style={{ 
+                padding: '1rem 1.5rem', 
+                backgroundColor: 'var(--theme-elevation-100)', 
+                borderRadius: '8px',
+                border: '1px solid var(--theme-elevation-200)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                color: 'var(--theme-text)',
+                fontWeight: 600
+              }}>
+                <Globe size={20} />
+                <span>Visit Live Website</span>
+              </div>
+            </Link>
+            <Link href="/admin/data-management" style={{ textDecoration: 'none' }}>
+              <div style={{ 
+                padding: '1rem 1.5rem', 
+                backgroundColor: 'var(--theme-elevation-100)', 
+                borderRadius: '8px',
+                border: '1px solid var(--theme-elevation-200)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                color: 'var(--theme-text)',
+                fontWeight: 600
+              }}>
+                <Database size={20} />
+                <span>Export/Import Management</span>
+              </div>
+            </Link>
+            <Link href="/admin/operations" style={{ textDecoration: 'none' }}>
+              <div style={{ 
+                padding: '1rem 1.5rem', 
+                backgroundColor: 'var(--theme-elevation-100)', 
+                borderRadius: '8px',
+                border: '1px solid var(--theme-elevation-200)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                color: 'var(--theme-text)',
+                fontWeight: 600
+              }}>
+                <Settings size={20} />
+                <span>System Operations</span>
+              </div>
+            </Link>
           </div>
+        </section>
 
-          {/* Footer */}
-          <footer style={{ marginTop: '3rem', paddingTop: '1.5rem', borderTop: 'var(--dotted-border)', display: 'flex', justifyContent: 'space-between', color: 'var(--secondary-text)', fontStyle: 'italic', fontSize: '0.875rem' }}>
-            <p>© {new Date().getFullYear()} WBJEE Predictor Admin Panel</p>
-          </footer>
-        </div>
+        <section>
+          <div style={{ 
+            backgroundColor: 'var(--theme-elevation-50)',
+            border: '1px solid var(--theme-elevation-150)',
+            borderRadius: '12px',
+            padding: '1.5rem'
+          }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Clock size={20} />
+              Recent Updates
+            </h2>
+            <div style={{ display: 'grid', gap: '1.25rem' }}>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {recentColleges.docs.map((doc: any) => (
+                <Link key={doc.id} href={`/admin/collections/colleges/${doc.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{doc.name}</div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--theme-elevation-500)' }}>
+                        Updated {new Date(doc.updatedAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', backgroundColor: 'var(--theme-elevation-150)', borderRadius: '4px' }}>
+                      Edit
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <Link href="/admin/collections/colleges" style={{ textDecoration: 'none' }}>
+              <button style={{ 
+                width: '100%', 
+                marginTop: '1.5rem', 
+                padding: '0.75rem', 
+                backgroundColor: 'var(--theme-elevation-800)', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '8px',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}>
+                View All Colleges
+              </button>
+            </Link>
+          </div>
+        </section>
+      </div>
+
+      <footer style={{ 
+        marginTop: '5rem', 
+        paddingTop: '2rem', 
+        borderTop: '1px solid var(--theme-elevation-150)', 
+        color: 'var(--theme-elevation-400)',
+        fontSize: '0.85rem',
+        textAlign: 'center'
+      }}>
+        © {new Date().getFullYear()} WBJEE Predictor Admin Panel • Build v1.4.1
+      </footer>
     </div>
   )
 }

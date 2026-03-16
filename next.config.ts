@@ -29,10 +29,6 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "b.thumbs.redditmedia.com",
       },
-      {
-        protocol: "https",
-        hostname: "cdn.sanity.io",
-      },
     ],
   },
 

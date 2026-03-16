@@ -1,9 +1,10 @@
 import React from 'react'
+import Image from 'next/image'
 
 export const Icon: React.FC = () => {
   return (
     <div className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <img
+      <Image
         src="/assets/logo.svg"
         alt="rwbjee Icon"
         width={24}

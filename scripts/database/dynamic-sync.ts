@@ -1,10 +1,15 @@
 
 import pg from 'pg';
+import dotenv from 'dotenv';
+import path from 'path';
+
+dotenv.config({ path: path.join(process.cwd(), '.env.local') });
+
 const { Client } = pg;
 
 async function run() {
   const client = new Client({
-    connectionString: "postgresql://postgres.odahbrkrhaturgyiuutu:***REMOVED***@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true",
+    connectionString: process.env.DATABASE_URI,
   });
   await client.connect();
 
@@ -63,7 +68,6 @@ async function run() {
         insertCols.push(`"${vCol}"`);
         if (enumCols.includes(col)) {
           // Cast status to the version-specific enum type
-          const enumType = `enum_${m.version}_version_${col.replace(/^_/, '')}`;
           // Payload v3 sometimes names them differently (double underscores etc)
           // We'll try to find the exact enum type if needed, but the pattern is usually consistent.
           // Let's use a subquery or just a simple guess based on our previous enum-check.txt
@@ -92,9 +96,9 @@ async function run() {
       const res = await client.query(fixedSql);
       console.log(`  Synced ${res.rowCount} records.`);
       await client.query('COMMIT');
-    } catch (err: any) {
+    } catch (err: unknown) {
       await client.query('ROLLBACK');
-      console.error(`  Error syncing ${m.main}:`, err.message);
+      console.error(`  Error syncing ${m.main}:`, (err as Error).message);
     }
   }
 
