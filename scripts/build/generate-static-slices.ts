@@ -4,6 +4,7 @@ import path from 'path';
 import { config } from 'dotenv';
 import { encodeColumnarData, createSlug, type Cutoff } from '../../src/utils/compression/cutoff-decoder';
 import { FETCH_BATCH_SIZE, TABLES } from './config';
+import { ProgressBar } from '../utils/progress-bar';
 
 config({ path: '.env.local', quiet: true });
 
@@ -157,6 +158,7 @@ async function generateStaticSlices() {
 
     let count = 0;
     const total = collegeMap.size;
+    const progressBar = new ProgressBar(total, 'Slices');
 
     try {
         for (const [college, cutoffs] of collegeMap.entries()) {
@@ -185,9 +187,9 @@ async function generateStaticSlices() {
             maxSize = Math.max(maxSize, fileSize);
 
             count++;
-            process.stdout.write(`\r   Generated ${count}/${total} slices...`);
+            progressBar.update(count, slug);
         }
-        process.stdout.write('\n');
+        progressBar.finish();
 
         // Generate index file in staged data directory
         const index = { colleges, slugs };

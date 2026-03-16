@@ -9,6 +9,7 @@ import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import dotenv from 'dotenv';
 import { FETCH_BATCH_SIZE, TABLES } from './config';
+import { ProgressBar } from '../utils/progress-bar';
 
 dotenv.config({ path: '.env.local', quiet: true });
 
@@ -87,6 +88,9 @@ async function buildFlatColumnar() {
         k: [] as number[]   // Closing ranks (using 'k' to avoid conflict with 'c')
     };
 
+    const progressBar = new ProgressBar(allData.length, 'Columnar');
+
+    let count = 0;
     for (const row of allData) {
         data.c.push(lookup.C.indexOf(row.institute));
         data.p.push(lookup.P.indexOf(row.program));
@@ -96,9 +100,13 @@ async function buildFlatColumnar() {
         data.s.push(lookup.S.indexOf(row.seat_type));
         data.o.push(row.opening_rank);
         data.k.push(row.closing_rank);
+        
+        count++;
+        if (count % 100 === 0 || count === allData.length) {
+            progressBar.update(count);
+        }
     }
-
-    console.log(`   >> Built ${data.c.length} columnar entries\n`);
+    progressBar.finish();
 
     // 4. Write to public directory
     const output = { lookup, data };

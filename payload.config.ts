@@ -119,7 +119,7 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: requireEnv('DATABASE_URI'),
-      max: process.env.NODE_ENV === 'production' ? 1 : 10, // Limit connections during build/production
+      max: process.env.NODE_ENV === 'production' ? 3 : 10, // 3 connections per worker = ~9-12 total
     },
     schemaName: 'payload',
     push: false,
