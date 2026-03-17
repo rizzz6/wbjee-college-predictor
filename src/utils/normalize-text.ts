@@ -149,7 +149,7 @@ export function toTitleCase(input: string): string {
 
         // Handle words with internal parentheses/brackets
         // Extract leading/trailing punctuation
-        const match = word.match(/^([(\[{]*)(.*?)([)\]}.,;:!?]*)$/);
+        const match = word.match(/^([([{]*)(.*?)([)\]}.,;:!?]*)$/);
         if (!match) return word;
 
         const [, leadingPunc, coreWord, trailingPunc] = match;

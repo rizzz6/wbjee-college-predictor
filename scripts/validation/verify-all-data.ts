@@ -17,7 +17,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import zlib from 'zlib';
 import { promisify } from 'util';
-import { toTitleCase } from '../utils/normalize-text';
+import { toTitleCase } from '../../src/utils/normalize-text';
 
 const gunzip = promisify(zlib.gunzip);
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { MapPin, GraduationCap } from 'lucide-react';
 import type { GroupedCollege } from '../../types';
 import { PREDICTION_COLORS } from '../../types';
@@ -16,17 +16,17 @@ interface CollegeCardProps {
  * Premium college card with gradient border
  * Displays institute info, best prediction, rank visualization, and expandable branches
  */
-export function CollegeCard({ college, userRank, favorites, onToggleFavorite }: CollegeCardProps) {
+export const CollegeCard = React.memo(function CollegeCard({ college, userRank, favorites, onToggleFavorite }: CollegeCardProps) {
     const colors = PREDICTION_COLORS[college.bestPrediction.text] || PREDICTION_COLORS['-'];
 
-    // Get initials for logo
-    const getInitials = (name: string): string => {
-        const words = name.split(' ');
+    // ⚡ OPTIMIZATION: Memoize initials to avoid redundant string splitting
+    const initials = useMemo(() => {
+        const words = college.institute.split(' ');
         if (words.length >= 2) {
             return words[0][0] + words[1][0];
         }
-        return name.substring(0, 2);
-    };
+        return college.institute.substring(0, 2);
+    }, [college.institute]);
 
     return (
         <div className="group relative overflow-hidden">
@@ -51,7 +51,7 @@ export function CollegeCard({ college, userRank, favorites, onToggleFavorite }: 
                 flex items-center justify-center 
                 text-white text-lg sm:text-xl font-bold shadow-md
               `}>
-                                {getInitials(college.institute)}
+                                {initials}
                             </div>
                         </div>
 
@@ -100,4 +100,4 @@ export function CollegeCard({ college, userRank, favorites, onToggleFavorite }: 
             </div>
         </div>
     );
-}
+});

@@ -65,6 +65,7 @@ export default async function JoinCommunity({ showHeader = false }: JoinCommunit
             fill
             className="object-cover"
             priority
+            unoptimized
           />
         </div>
         <div className="p-4 md:p-6">
@@ -75,6 +76,7 @@ export default async function JoinCommunity({ showHeader = false }: JoinCommunit
               className="w-16 h-16 rounded-full border-4 border-white dark:border-gray-800"
               width={64}
               height={64}
+              unoptimized
             />
             <div className="ml-4">
               <h2 className="text-xl font-bold text-gray-800 dark:text-white">

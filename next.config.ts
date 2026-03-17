@@ -12,22 +12,30 @@ const nextConfig: NextConfig = {
     "@payloadcms/db-postgres",
   ],
   images: {
-    // FIX: Disable server optimization in dev to bypass local network IP blocks
-    // Temporarily also disabled for local production testing
-    unoptimized: true, // Change back to: process.env.NODE_ENV === 'development' for real deployment
-
+    contentDispositionType: 'inline',
+    // loader: 'custom',
+    // loaderFile: './src/utils/supabase-image-loader.ts',
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "odahbrkrhaturgyiuutu.supabase.co",
+        pathname: '/**',
+      },
+      {
+        protocol: "https",
         hostname: "styles.redditmedia.com",
+        pathname: '/**',
       },
       {
         protocol: "https",
         hostname: "i.redd.it",
+        pathname: '/**',
       },
       {
         protocol: "https",
         hostname: "b.thumbs.redditmedia.com",
+        pathname: '/**',
       },
     ],
   },

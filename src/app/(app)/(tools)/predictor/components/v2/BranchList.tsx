@@ -15,7 +15,7 @@ interface BranchListProps {
  * Expandable branch list with smooth accordion animation
  * Shows available branches for a college
  */
-export function BranchList({ branches, userRank, isDefaultExpanded = false, favorites, onToggleFavorite }: BranchListProps) {
+export const BranchList = React.memo(function BranchList({ branches, userRank, isDefaultExpanded = false, favorites, onToggleFavorite }: BranchListProps) {
     const [isExpanded, setIsExpanded] = useState(isDefaultExpanded);
 
     return (
@@ -56,4 +56,4 @@ export function BranchList({ branches, userRank, isDefaultExpanded = false, favo
             </div>
         </div>
     );
-}
+});

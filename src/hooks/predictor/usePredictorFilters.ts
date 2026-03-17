@@ -97,56 +97,35 @@ export function usePredictorFilters(
         }
     }, [rankError, validateRank, setCurrentPage]);
 
-    // Apply filters
+    // ⚡ OPTIMIZATION: Trust the API's smart filtering. 
+    // Client-side filtering is now only for instant feedback on secondary 
+    // selections (Category, Round, etc.) within the fetched result set.
     const filteredResults = useMemo(() => {
         let results = filteredData;
 
+        // 1. Filter by Favorites (if enabled)
         if (isShowingFavorites) {
             results = results.filter(item => favorites.has(item.id));
         }
 
-        // Apply smart filtering if enabled
-        if (isSmartFilteringEnabled && activeFilters.rank && !isNaN(parseInt(activeFilters.rank))) {
-            const userRank = parseInt(activeFilters.rank);
-            // Smooth dynamic multiplier: eliminates cliff effects
-            // Formula: max(1.5, 3 - (log10(rank) * 0.425))
-            const getDynamicMultiplier = (rank: number) => {
-                if (rank <= 0) return 1.5;
-                const logRank = Math.log10(rank);
-                const multiplier = 3 - (logRank * 0.425);
-                return Math.max(1.5, multiplier);
-            };
+        // 2. Apply secondary UI filters (Institute, Branch, Category, etc.)
+        // These are applied client-side so the UI updates instantly without an API call.
+        // We only apply filters that have active selections.
+        const activeFilterKeys = (Object.keys(activeFilters) as Array<keyof Filters>)
+            .filter(key => key !== 'rank' && activeFilters[key].length > 0);
 
-            const multiplier = getDynamicMultiplier(userRank);
-            const maxDisplayRank = Math.round(userRank * multiplier);
-
+        if (activeFilterKeys.length > 0) {
             results = results.filter(item => {
-                // Filter by rank range: show colleges where user has a realistic chance
-                // User can get into colleges where closing_rank is between user_rank and maxDisplayRank
-                if (item.closing_rank === null ||
-                    item.closing_rank < userRank ||
-                    item.closing_rank > maxDisplayRank) {
-                    return false;
-                }
-
-                // Apply other filters
-                for (const key of ['institute', 'branch', 'category', 'year', 'round', 'quota', 'seat_type']) {
-                    if (activeFilters[key as keyof Filters].length > 0 && !activeFilters[key as keyof Filters].includes(String(item[key as keyof CollegeData]))) {
-                        return false;
-                    }
+                for (const key of activeFilterKeys) {
+                    const val = String(item[key as keyof CollegeData]);
+                    if (!activeFilters[key].includes(val)) return false;
                 }
                 return true;
-            });
-        } else {
-            // Apply other filters normally
-            Object.entries(activeFilters).forEach(([key, values]) => {
-                if (key === 'rank' || values.length === 0) return;
-                results = results.filter(item => values.includes(String(item[key as keyof CollegeData])));
             });
         }
 
         return results;
-    }, [filteredData, activeFilters, favorites, isShowingFavorites, isSmartFilteringEnabled]);
+    }, [filteredData, activeFilters, favorites, isShowingFavorites]);
 
     const resetFilters = useCallback(() => {
         setActiveFilters(DEFAULT_FILTERS);

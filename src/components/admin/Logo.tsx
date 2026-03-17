@@ -10,6 +10,7 @@ export const Logo: React.FC = () => {
         width={35}
         height={35}
         style={{ height: '35px', width: 'auto' }}
+        unoptimized
       />
       <span style={{ 
         fontWeight: 700, 

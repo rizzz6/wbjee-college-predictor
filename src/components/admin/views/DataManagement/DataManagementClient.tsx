@@ -10,6 +10,8 @@ import {
   Database
 } from 'lucide-react'
 
+import SyncDashboard from './SyncDashboard'
+
 const collections = [
   { slug: 'colleges', label: 'Colleges' },
   { slug: 'college_cutoffs', label: 'College Cutoffs' },
@@ -112,7 +114,7 @@ export default function DataManagementClient() {
       <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Data Management</h1>
-          <p style={{ opacity: 0.7 }}>Bulk operations for your collections</p>
+          <p style={{ opacity: 0.7 }}>Unified control for WBJEE tools and CMS collections</p>
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
             <button 
@@ -154,8 +156,15 @@ export default function DataManagementClient() {
         </div>
       )}
 
+      {/* 🚀 New Unified Sync Dashboard */}
+      <SyncDashboard />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem' }}>
+      {/* 📁 Legacy/Backup Collections */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem', marginTop: '3rem' }}>
+        <div style={{ gridColumn: '1 / -1' }}>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: '1rem 0 0.5rem 0' }}>Collection Backups</h2>
+          <p style={{ opacity: 0.7, marginBottom: '1rem' }}>Export or import raw JSON snapshots of individual CMS collections.</p>
+        </div>
         {collections.map((col) => (
           <div key={col.slug} style={{ 
             backgroundColor: 'var(--theme-elevation-50, #fff)', 

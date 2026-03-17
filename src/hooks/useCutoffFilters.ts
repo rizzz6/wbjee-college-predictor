@@ -31,36 +31,40 @@ interface UseCutoffFiltersProps {
  * Custom hook to manage cutoff table filters and data visibility
  */
 export function useCutoffFilters({ cutoffs, initialRowCount = 10 }: UseCutoffFiltersProps) {
-    // Extract unique values
-    const uniqueYears = useMemo(
-        () => [...new Set(cutoffs.map(c => c.year))].sort((a, b) => b - a),
-        [cutoffs]
-    )
+    // ⚡ OPTIMIZATION: Extract all unique values in a single O(n) pass
+    const {
+        uniqueYears,
+        uniqueRounds,
+        uniqueCategories,
+        uniquePrograms,
+        uniqueQuotas,
+        uniqueSeatTypes
+    } = useMemo(() => {
+        const years = new Set<number>();
+        const rounds = new Set<string>();
+        const categories = new Set<string>();
+        const programs = new Set<string>();
+        const quotas = new Set<string>();
+        const seatTypes = new Set<string>();
 
-    const uniqueRounds = useMemo(
-        () => [...new Set(cutoffs.map(c => c.round))].sort(),
-        [cutoffs]
-    )
+        for (const c of cutoffs) {
+            years.add(c.year);
+            rounds.add(c.round);
+            categories.add(c.category);
+            programs.add(c.program);
+            if (c.quota) quotas.add(c.quota);
+            if (c.seatType) seatTypes.add(c.seatType);
+        }
 
-    const uniqueCategories = useMemo(
-        () => [...new Set(cutoffs.map(c => c.category))].sort(),
-        [cutoffs]
-    )
-
-    const uniquePrograms = useMemo(
-        () => [...new Set(cutoffs.map(c => c.program))].sort(),
-        [cutoffs]
-    )
-
-    const uniqueQuotas = useMemo(
-        () => [...new Set(cutoffs.map(c => c.quota))].filter(Boolean).sort(),
-        [cutoffs]
-    )
-
-    const uniqueSeatTypes = useMemo(
-        () => [...new Set(cutoffs.map(c => c.seatType))].filter(Boolean).sort(),
-        [cutoffs]
-    )
+        return {
+            uniqueYears: Array.from(years).sort((a, b) => b - a),
+            uniqueRounds: Array.from(rounds).sort(),
+            uniqueCategories: Array.from(categories).sort(),
+            uniquePrograms: Array.from(programs).sort(),
+            uniqueQuotas: Array.from(quotas).sort(),
+            uniqueSeatTypes: Array.from(seatTypes).sort()
+        };
+    }, [cutoffs]);
 
     // Determine which filters to show
     const showQuota = uniqueQuotas.length > 1

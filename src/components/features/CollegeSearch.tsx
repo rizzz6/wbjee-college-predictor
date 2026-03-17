@@ -23,12 +23,22 @@ export default function CollegeSearch({ colleges }: CollegeSearchProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('All');
 
+  // ⚡ OPTIMIZATION: Efficient filtering logic with pre-calculated lower-case search term
   const filteredColleges = useMemo(() => {
+    const trimmedSearch = searchTerm.trim().toLowerCase();
+    
     return colleges.filter((college) => {
-      const matchesSearch = college.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        college.shortName.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesType = filterType === 'All' || college.type === filterType;
-      return matchesSearch && matchesType;
+      // 1. Type filter first (fastest)
+      if (filterType !== 'All' && college.type !== filterType) return false;
+      
+      // 2. Search filter (if exists)
+      if (trimmedSearch) {
+        const matchesName = college.name.toLowerCase().includes(trimmedSearch);
+        const matchesShortName = college.shortName.toLowerCase().includes(trimmedSearch);
+        if (!matchesName && !matchesShortName) return false;
+      }
+      
+      return true;
     });
   }, [colleges, searchTerm, filterType]);
 

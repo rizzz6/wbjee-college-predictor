@@ -1,3 +1,4 @@
+import React, { useMemo } from 'react';
 import { Star, Info } from 'lucide-react';
 import type { CollegeData } from '../../types';
 import { PredictionBadge } from './PredictionBadge';
@@ -14,7 +15,29 @@ interface BranchItemProps {
  * Individual branch item display within a college card
  * Shows branch details and admission prediction
  */
-export function BranchItem({ branch, userRank, isFavorite, onToggleFavorite }: BranchItemProps) {
+export const BranchItem = React.memo(function BranchItem({ branch, userRank, isFavorite, onToggleFavorite }: BranchItemProps) {
+    // ⚡ OPTIMIZATION: Memoize tooltip content to avoid re-calculating on every render
+    const tooltipContent = useMemo(() => {
+        if (!branch.opening_rank || !branch.closing_rank || branch.prediction.text === 'No Chance') {
+            return null;
+        }
+
+        const confidence = calculateConfidence(
+            userRank,
+            branch.opening_rank,
+            branch.closing_rank,
+            branch.prediction.text
+        );
+        const reasoning = getPredictionReasoning(
+            userRank,
+            branch.opening_rank,
+            branch.closing_rank,
+            branch.prediction.text
+        );
+        const label = getConfidenceLabel(confidence);
+        return `${label} (${confidence}%)\n${reasoning}`;
+    }, [branch.opening_rank, branch.closing_rank, branch.prediction.text, userRank]);
+
     return (
         <div className="group/branch p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600 bg-white dark:bg-gray-800/50 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-all duration-200">
             <div className="flex flex-col gap-2 relative">
@@ -28,26 +51,11 @@ export function BranchItem({ branch, userRank, isFavorite, onToggleFavorite }: B
                     <div className="flex items-center gap-1.5">
                         <PredictionBadge prediction={branch.prediction.text} size="xs" />
 
-                        {/* Info icon with tooltip - HIDDEN for "No Chance" to avoid confusion */}
-                        {branch.opening_rank && branch.closing_rank && branch.prediction.text !== 'No Chance' && (
+                        {/* Info icon with tooltip */}
+                        {tooltipContent && (
                             <div
                                 className="group/info relative cursor-help"
-                                title={(() => {
-                                    const confidence = calculateConfidence(
-                                        userRank,
-                                        branch.opening_rank,
-                                        branch.closing_rank,
-                                        branch.prediction.text
-                                    );
-                                    const reasoning = getPredictionReasoning(
-                                        userRank,
-                                        branch.opening_rank,
-                                        branch.closing_rank,
-                                        branch.prediction.text
-                                    );
-                                    const label = getConfidenceLabel(confidence);
-                                    return `${label} (${confidence}%)\n${reasoning}`;
-                                })()}
+                                title={tooltipContent}
                             >
                                 <Info className="w-3.5 h-3.5 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" />
                             </div>
@@ -109,4 +117,4 @@ export function BranchItem({ branch, userRank, isFavorite, onToggleFavorite }: B
             </div>
         </div>
     );
-}
+});

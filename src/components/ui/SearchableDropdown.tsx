@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 
 interface SearchableDropdownProps {
   options: string[];
@@ -12,9 +12,13 @@ export default function SearchableDropdown({ options, selectedOption, onSelect, 
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const filteredOptions = options.filter((option) =>
-    option.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // ⚡ OPTIMIZATION: Memoize filtered options to avoid re-filtering on every render cycle
+  const filteredOptions = useMemo(() => {
+    const lowerSearch = searchTerm.toLowerCase();
+    return options.filter((option) =>
+      option.toLowerCase().includes(lowerSearch)
+    );
+  }, [options, searchTerm]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

@@ -1,5 +1,8 @@
 import type { CollegeData, GroupedCollege } from '../types';
 
+// ⚡ OPTIMIZATION: Cache for institute locations to avoid redundant regex/splitting
+const locationCache = new Map<string, string>();
+
 /**
  * Extract location from institute name
  * Examples: 
@@ -7,19 +10,26 @@ import type { CollegeData, GroupedCollege } from '../types';
  *   "IIT Kharagpur" -> "Kharagpur"  
  */
 function extractLocation(institute: string): string {
+    if (locationCache.has(institute)) {
+        return locationCache.get(institute)!;
+    }
+
+    let location = 'West Bengal';
+
     // Try to extract from parentheses first
     const match = institute.match(/\(([^)]+)\)/);
     if (match) {
-        return match[1];
+        location = match[1];
+    } else {
+        // Otherwise, try to extract from the last word
+        const words = institute.split(' ');
+        if (words.length >= 2) {
+            location = words[words.length - 1];
+        }
     }
 
-    // Otherwise, try to extract from the last word
-    const words = institute.split(' ');
-    if (words.length >= 2) {
-        return words[words.length - 1];
-    }
-
-    return 'West Bengal';
+    locationCache.set(institute, location);
+    return location;
 }
 
 /**

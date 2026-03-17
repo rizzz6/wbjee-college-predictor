@@ -142,7 +142,14 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
       <div className="relative h-[300px] md:h-[400px] bg-white dark:bg-gray-900 transition-colors duration-300">
         {cover?.url ? (
           <div className="absolute inset-0 opacity-30 dark:opacity-60 transition-opacity duration-300">
-            <Image src={cover.url} fill className="object-contain blur-[2px]" alt="Campus" />
+            <Image 
+              src={cover.url} 
+              fill 
+              priority
+              sizes="100vw"
+              className="object-contain blur-[2px]" 
+              alt="Campus" 
+            />
           </div>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-100 dark:from-gray-900 dark:to-gray-800"></div>
@@ -159,6 +166,7 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
                     src={logo.url}
                     alt={college.name}
                     fill
+                    priority
                     sizes="(max-width: 768px) 80px, 128px"
                     className="object-contain"
                   />

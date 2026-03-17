@@ -10,6 +10,7 @@ export const Icon: React.FC = () => {
         width={24}
         height={24}
         style={{ height: '24px', width: 'auto' }}
+        unoptimized
       />
     </div>
   )

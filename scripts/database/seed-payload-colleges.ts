@@ -13,8 +13,8 @@ import {
   convertParagraphsToRichText,
   getPayloadEditorConfig,
   normalizeHighlightItems,
-  normalizeRecruiterItems,
 } from '../../src/utils/payload-richtext'
+import { parseIndianMoneyBound } from '../../src/utils/money-parser'
 
 dotenv.config({ path: path.join(process.cwd(), '.env.local') })
 
@@ -81,7 +81,8 @@ async function seedColleges() {
       limit: 1,
     })
 
-    const existingId = existing.docs.length > 0 ? existing.docs[0].id : null
+    const existingDoc = existing.docs.length > 0 ? (existing.docs[0] as unknown as { id: string | number; isVisible: boolean; priority: number }) : null
+    const existingId = existingDoc ? existingDoc.id : null
 
 
     let collegeType: string | undefined = item.type
@@ -105,9 +106,9 @@ async function seedColleges() {
         location: item.location || '',
         type: collegeType as 'Government' | 'Private' | 'Institutional' | 'University' | 'Semi-Govt',
         website: item.website || '',
-        isVisible: existingId ? existing.docs[0].isVisible : false,
+        isVisible: existingDoc ? existingDoc.isVisible : false,
         estYear,
-        priority: existingId ? existing.docs[0].priority : 3,
+        priority: existingDoc ? existingDoc.priority : 3,
         seoDescription: item.seo_desc || '',
         cutoffSourceName: officialName,
         highlights: normalizeHighlightItems(filteredHighlights),
@@ -120,13 +121,13 @@ async function seedColleges() {
           highestPackage: item.placement_stats?.highest_package || '',
           averagePackage: item.placement_stats?.average_package || '',
           nirfMedianSalary: item.placement_stats?.nirf_median_salary || '',
-          topRecruiters: normalizeRecruiterItems(item.placement_stats?.top_recruiters || []),
           sourceReliability: (item.placement_stats?.source_reliability as 'High' | 'Medium' | 'Low' | 'Official') || undefined,
           dataSource: item.placement_stats?.data_source || '',
         },
         feesStats: {
-          totalCourseFee: item.fees_stats?.total_course_fee || '',
-          feePerSemester: item.fees_stats?.fee_per_semester || '',
+          totalCourseFeeAmount: parseIndianMoneyBound(item.fees_stats?.total_course_fee),
+          semesterFeeAmount: parseIndianMoneyBound(item.fees_stats?.fee_per_semester),
+          currencyCode: 'INR' as const,
         },
       }
 

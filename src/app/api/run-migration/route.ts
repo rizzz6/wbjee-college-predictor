@@ -1,14 +1,21 @@
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { NextResponse } from 'next/server'
+import { headers as getHeaders } from 'next/headers'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+export async function POST() {
   try {
     console.log('--- Initializing Payload for Migration ---')
     const payload = await getPayload({ config: configPromise })
     
+    // Auth check
+    const { user } = await payload.auth({ headers: await getHeaders() })
+    if (!user || user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     console.log('--- Checking for Tables ---')
     // This will force Payload to ensure tables exist in some environments, 
     // though db:push usually does this. In Next.js dev mode, it usually auto-syncs.

@@ -16,7 +16,7 @@ import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import https from 'https';
 import http from 'http';
-import { toTitleCase } from '../utils/normalize-text';
+import { toTitleCase } from '../../src/utils/normalize-text';
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });

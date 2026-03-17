@@ -1,4 +1,5 @@
 import useSWR from 'swr';
+import { useMemo } from 'react';
 
 interface Filters {
     rank: string;
@@ -41,21 +42,35 @@ interface PredictorResponse {
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export function usePredictorAPI(filters: Filters) {
-    // Build query params
-    const params = new URLSearchParams();
+    // ⚡ OPTIMIZATION: Memoize the URL to prevent useSWR from re-evaluating on every render
+    const apiUrl = useMemo(() => {
+        if (!filters.rank) return null;
 
-    if (filters.rank) params.set('rank', filters.rank);
+        const params = new URLSearchParams();
+        params.set('rank', filters.rank);
 
-    filters.institute.forEach(v => params.append('institute', v));
-    filters.branch.forEach(v => params.append('branch', v));
-    filters.category.forEach(v => params.append('category', v));
-    filters.year.forEach(v => params.append('year', v));
-    filters.round.forEach(v => params.append('round', v));
-    filters.quota.forEach(v => params.append('quota', v));
-    filters.seat_type.forEach(v => params.append('seat_type', v));
+        if (filters.institute.length > 0) filters.institute.forEach(v => params.append('institute', v));
+        if (filters.branch.length > 0) filters.branch.forEach(v => params.append('branch', v));
+        if (filters.category.length > 0) filters.category.forEach(v => params.append('category', v));
+        if (filters.year.length > 0) filters.year.forEach(v => params.append('year', v));
+        if (filters.round.length > 0) filters.round.forEach(v => params.append('round', v));
+        if (filters.quota.length > 0) filters.quota.forEach(v => params.append('quota', v));
+        if (filters.seat_type.length > 0) filters.seat_type.forEach(v => params.append('seat_type', v));
+
+        return `/api/predictor/filter?${params.toString()}`;
+    }, [
+        filters.rank,
+        filters.institute,
+        filters.branch,
+        filters.category,
+        filters.year,
+        filters.round,
+        filters.quota,
+        filters.seat_type
+    ]);
 
     const { data, error, isLoading, mutate } = useSWR<PredictorResponse>(
-        filters.rank ? `/api/predictor/filter?${params.toString()}` : null,
+        apiUrl,
         fetcher,
         {
             revalidateOnFocus: false,

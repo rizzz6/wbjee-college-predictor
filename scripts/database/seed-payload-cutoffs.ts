@@ -87,6 +87,20 @@ async function seedCutoffs() {
   }
   console.log(`   Loaded ${allColleges.docs.length} colleges.\n`)
 
+  console.log('Clearing existing cutoffs...')
+  const { errors: deleteErrors } = await payload.delete({
+    collection: 'college_cutoffs',
+    where: {
+      id: { exists: true },
+    },
+  })
+
+  if (deleteErrors && deleteErrors.length > 0) {
+    console.error('Failed to clear some cutoffs:', deleteErrors)
+  } else {
+    console.log('   Cutoffs cleared successfully.\n')
+  }
+
   let created = 0
   let unmatched = 0
   let errors = 0

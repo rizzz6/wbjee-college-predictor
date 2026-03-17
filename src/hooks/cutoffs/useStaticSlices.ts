@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { decodeColumnarData, type CompressedData, type Cutoff } from '@/utils/compression/cutoff-decoder';
 
 interface MobileIndex {
@@ -19,32 +19,22 @@ interface CollegeData {
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 /**
- * Decodes slice data and extracts unique filter values
+ * Decodes slice data and extracts unique filter values.
+ * ⚡ OPTIMIZATION: Uses lookup tables from CompressedData directly instead of
+ * re-calculating unique values by iterating over cutoffs.
  */
 function decodeSliceData(sliceData: CompressedData): CollegeData {
     const cutoffs = decodeColumnarData(sliceData);
-
-    // Extract unique values for filters
-    const programs = new Set<string>();
-    const years = new Set<number>();
-    const categories = new Set<string>();
-    const rounds = new Set<string>();
-    const seatTypes = new Set<string>();
-
-    cutoffs.forEach(cutoff => {
-        programs.add(cutoff.program);
-        years.add(cutoff.year);
-        categories.add(cutoff.category);
-        rounds.add(cutoff.round);
-        seatTypes.add(cutoff.seatType);
-    });
+    const { lookup } = sliceData;
 
     return {
-        programs: Array.from(programs).sort(),
-        years: Array.from(years).sort((a, b) => b - a),
-        categories: Array.from(categories).sort(),
-        rounds: Array.from(rounds).sort(),
-        seatTypes: Array.from(seatTypes).sort(),
+        // Encoder already builds these lookups from unique values and sorts them.
+        programs: lookup.P,
+        // Encoder uses ascending sort, we need descending for the UI.
+        years: [...lookup.Y].sort((a, b) => b - a),
+        categories: lookup.T,
+        rounds: lookup.R,
+        seatTypes: lookup.S,
         cutoffs
     };
 }
@@ -107,8 +97,12 @@ export function useStaticSlices() {
         }
     );
 
-    // Decode the slice data
-    const collegeData: CollegeData | null = sliceData ? decodeSliceData(sliceData) : null;
+    // ⚡ OPTIMIZATION: Memoize decoded data to avoid re-decoding on every render.
+    // decodeSliceData involves object creation for every row (~500+ rows).
+    const collegeData = useMemo(() => {
+        if (!sliceData) return null;
+        return decodeSliceData(sliceData);
+    }, [sliceData]);
 
     const selectCollege = useCallback((college: string) => {
         if (!index) return;
@@ -118,9 +112,14 @@ export function useStaticSlices() {
         }
     }, [index]);
 
+    // ⚡ OPTIMIZATION: Memoize index sorting to avoid .sort() on every render.
+    const colleges = useMemo(() => {
+        return index?.colleges.slice().sort() ?? [];
+    }, [index]);
+
     return {
-        // Index data - sort colleges alphabetically
-        colleges: index?.colleges.slice().sort() ?? [],
+        // Index data
+        colleges,
         isLoadingIndex,
         indexError,
 

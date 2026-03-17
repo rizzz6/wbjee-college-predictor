@@ -59,7 +59,7 @@ async function listColleges() {
     console.log(`\nTotal: ${uniqueNames.length} unique colleges`);
 
     // Import normalization function
-    const { toTitleCase } = await import('../utils/normalize-text');
+    const { toTitleCase } = await import('../../src/utils/normalize-text');
 
     // Check each name against its normalized version
     const issues: Array<{ original: string; expected: string }> = [];

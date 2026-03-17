@@ -323,14 +323,45 @@ export default function NewPredictorClient() {
 
   // Get filtered options for cascading filters (uses metadata when available)
   const getFilteredOptions = useMemo(() => {
+    if (filterMetadata) {
+      return {
+        institute: filterMetadata.institutes,
+        branch: filterMetadata.branches,
+        category: filterMetadata.categories,
+        quota: filterMetadata.quotas,
+        seat_type: filterMetadata.seat_types,
+        year: filterMetadata.years.map(String),
+        round: filterMetadata.rounds
+      };
+    }
+
+    // ⚡ OPTIMIZATION: Single O(n) pass instead of 7 separate .map().filter().Set() chains
+    const institutes = new Set<string>();
+    const branches = new Set<string>();
+    const categories = new Set<string>();
+    const quotas = new Set<string>();
+    const seatTypes = new Set<string>();
+    const years = new Set<string>();
+    const rounds = new Set<string>();
+
+    for (const item of filteredData) {
+      if (item.institute) institutes.add(item.institute);
+      if (item.branch) branches.add(item.branch);
+      if (item.category) categories.add(item.category);
+      if (item.quota) quotas.add(item.quota);
+      if (item.seat_type) seatTypes.add(item.seat_type);
+      if (item.year) years.add(String(item.year));
+      if (item.round) rounds.add(item.round);
+    }
+
     return {
-      institute: filterMetadata?.institutes || [...new Set(filteredData.map(item => item.institute))].sort(),
-      branch: filterMetadata?.branches || [...new Set(filteredData.map(item => item.branch))].sort(),
-      category: filterMetadata?.categories || [...new Set(filteredData.map(item => item.category))].sort(),
-      quota: filterMetadata?.quotas || [...new Set(filteredData.map(item => item.quota))].sort(),
-      seat_type: filterMetadata?.seat_types || [...new Set(filteredData.map(item => item.seat_type))].sort(),
-      year: filterMetadata?.years || [...new Set(filteredData.map(item => item.year).filter(Boolean))].map(String).sort(),
-      round: filterMetadata?.rounds || [...new Set(filteredData.map(item => item.round))].sort()
+      institute: Array.from(institutes).sort(),
+      branch: Array.from(branches).sort(),
+      category: Array.from(categories).sort(),
+      quota: Array.from(quotas).sort(),
+      seat_type: Array.from(seatTypes).sort(),
+      year: Array.from(years).sort(),
+      round: Array.from(rounds).sort()
     };
   }, [filterMetadata, filteredData]);
 

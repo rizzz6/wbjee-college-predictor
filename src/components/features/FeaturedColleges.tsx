@@ -46,7 +46,7 @@ export default function FeaturedColleges({ colleges }: { colleges: College[] }) 
                       src={col.logo.url}
                       alt={col.shortName || col.name}
                       fill
-                      sizes="80px"
+                      sizes="(max-width: 640px) 80px, (max-width: 768px) 40vw, 80px"
                       className="object-contain"
                       priority={true}
                     />

@@ -14,7 +14,7 @@ import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
-import { toTitleCase } from '../utils/normalize-text';
+import { toTitleCase } from '../../src/utils/normalize-text';
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });
