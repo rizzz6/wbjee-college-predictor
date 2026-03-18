@@ -10,6 +10,7 @@ import { GoogleTagManager } from '@next/third-parties/google';
 import EasterEggLoader from "@/components/eastereggs/EasterEggLoader";
 import { getPayloadClient } from "@/lib/payload-client";
 import { AnnouncementBanner } from "@/components/AnnouncementBanner";
+import PreviewBanner from "@/components/PreviewBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -121,6 +122,7 @@ export default async function RootLayout({
 
       <body className={`${geistSans.variable} ${geistMono.variable} ${notoBengali.variable} ${notoDevanagari.variable} antialiased bg-transparent text-gray-900 dark:text-white`}>
         <Providers>
+          <PreviewBanner />
           {/* Announcement Banner */}
           {announcement?.enabled && (
             <AnnouncementBanner

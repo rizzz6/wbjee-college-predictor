@@ -1,4 +1,5 @@
 import { CollectionConfig } from 'payload'
+import { revalidateCollection } from '../hooks/revalidate'
 
 export const Timeline: CollectionConfig = {
   slug: 'timeline',
@@ -15,6 +16,10 @@ export const Timeline: CollectionConfig = {
   },
   access: {
     read: () => true,
+  },
+  hooks: {
+    afterChange: [revalidateCollection(['/timeline', '/', '/api/v1/timeline'])],
+    afterDelete: [revalidateCollection(['/timeline', '/', '/api/v1/timeline'])],
   },
   fields: [
     {

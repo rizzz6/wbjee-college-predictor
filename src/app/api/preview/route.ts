@@ -30,12 +30,12 @@ export const GET = async (req: Request) => {
     // Enable Draft Mode in Next.js
     const draft = await draftMode()
     draft.enable()
-    
-    // Redirect to the actual page
-    redirect(url)
   } catch (error) {
     console.error('Preview error:', error)
     return new Response('Internal Server Error', { status: 500 })
   }
+
+  // Redirect to the actual page (must be outside try-catch because redirect throws an error)
+  redirect(url)
 }
 

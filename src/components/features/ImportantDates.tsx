@@ -29,7 +29,7 @@ export default function ImportantDates({
 }: ImportantDatesProps) {
 
   const { data: allEvents, isLoading } = useSWR<TimelineEvent[]>(
-    '/api/timeline',
+    '/api/v1/timeline',
     fetcher
   );
 

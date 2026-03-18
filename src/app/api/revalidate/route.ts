@@ -54,17 +54,23 @@ export async function POST(request: NextRequest) {
 
         // Mapping types to paths
         switch (type) {
+            case 'manual':
+                if (slug) await safeRevalidate(slug)
+                break
             case 'colleges':
                 await safeRevalidate('/colleges')
+                await safeRevalidate('/')
                 if (slug) await safeRevalidate(`/colleges/${slug}`)
                 break
             case 'posts':
                 await safeRevalidate('/blog')
+                await safeRevalidate('/')
                 if (slug) await safeRevalidate(`/blog/${slug}`)
                 break
             case 'timeline':
                 await safeRevalidate('/timeline')
                 await safeRevalidate('/')
+                await safeRevalidate('/api/v1/timeline')
                 break
             case 'site-settings':
                 await safeRevalidate('/')

@@ -1,4 +1,5 @@
 import { GlobalConfig } from 'payload'
+import { revalidateGlobal } from '../hooks/revalidateGlobal'
 
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
@@ -13,6 +14,9 @@ export const SiteSettings: GlobalConfig = {
       autosave: true,
     },
     max: 50,
+  },
+  hooks: {
+    afterChange: [revalidateGlobal(['/', '/colleges', '/blog'])],
   },
   fields: [
     {

@@ -1,4 +1,5 @@
 import { CollectionConfig } from 'payload'
+import { revalidateCollection } from '../hooks/revalidate'
 
 import {
   convertParagraphsToRichText,
@@ -14,7 +15,7 @@ export const Colleges: CollectionConfig = {
     group: 'Content',
     defaultColumns: ['name', 'type', 'location', 'isVisible', 'priority'],
     preview: (doc, { token }) => {
-      const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+      const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || ''
       return `${serverUrl}/api/preview?url=/colleges/${doc.slug}&token=${token}`
     },
   },
@@ -25,6 +26,18 @@ export const Colleges: CollectionConfig = {
     maxPerDoc: 50,
   },
   hooks: {
+    afterChange: [
+      revalidateCollection((doc) => {
+        const d = doc as { slug: string }
+        return ['/colleges', `/colleges/${d.slug}`, '/']
+      }),
+    ],
+    afterDelete: [
+      revalidateCollection((doc) => {
+        const d = doc as { slug: string }
+        return ['/colleges', `/colleges/${d.slug}`, '/']
+      }),
+    ],
     afterRead: [
       ({ doc, findMany, req }) => {
         if (findMany) {
@@ -67,11 +80,13 @@ export const Colleges: CollectionConfig = {
               name: 'type',
               type: 'select',
               options: [
-                { label: 'Government', value: 'Government' },
-                { label: 'Private', value: 'Private' },
                 { label: 'University', value: 'University' },
-                { label: 'Institutional', value: 'Institutional' },
-                { label: 'Semi-Government', value: 'Semi-Govt' },
+                { label: 'State Govt Engineering College', value: 'State Govt Engineering' },
+                { label: 'State Govt Pharmacy College', value: 'State Govt Pharmacy' },
+                { label: 'Central Govt Engineering College', value: 'Central Govt Engineering' },
+                { label: 'Private University', value: 'Private University' },
+                { label: 'Private Engineering College', value: 'Private Engineering' },
+                { label: 'Standalone Private Pharmacy College', value: 'Standalone Private Pharmacy' },
               ],
             },
             { name: 'website', type: 'text' },

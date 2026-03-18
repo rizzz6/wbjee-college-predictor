@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
+import { draftMode } from 'next/headers';
 import { MapPin, Building2, Calendar, Globe, Landmark, IndianRupee, TrendingUp, BarChart3, ArrowRight, CheckCircle2, Users } from 'lucide-react';
 import CutoffTable from '@/components/content/CutoffTable';
 import { getPayloadClient } from '@/lib/payload-client';
@@ -34,11 +35,17 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
+  const { isEnabled: isDraftMode } = await draftMode();
   const payload = await getPayloadClient();
+  
   const res = await payload.find({
     collection: 'colleges',
-    where: { slug: { equals: slug } },
+    where: { 
+      slug: { equals: slug },
+      ...(isDraftMode ? {} : { isVisible: { equals: true } })
+    },
     limit: 1,
+    draft: isDraftMode,
   });
   const college = res.docs[0];
 
@@ -80,12 +87,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function CollegeProfile({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const { isEnabled: isDraftMode } = await draftMode();
   const payload = await getPayloadClient();
 
   const collegeRes = await payload.find({
     collection: 'colleges',
-    where: { slug: { equals: slug }, isVisible: { equals: true } },
+    where: { 
+      slug: { equals: slug },
+      ...(isDraftMode ? {} : { isVisible: { equals: true } })
+    },
     limit: 1,
+    draft: isDraftMode,
   });
   const college = collegeRes.docs[0];
   if (!college) notFound();
@@ -94,6 +106,7 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
     collection: 'college_cutoffs',
     where: { college: { equals: college.id } },
     limit: 1,
+    draft: isDraftMode,
   });
   const cutoffDoc = cutoffRes.docs[0];
   const cutoffs = cutoffDoc?.cutoffs || [];
@@ -108,6 +121,7 @@ export default async function CollegeProfile({ params }: { params: Promise<{ slu
     where: { college: { equals: college.id } },
     sort: '-reportYear',
     limit: 1,
+    draft: isDraftMode,
   });
   const latestReport = placementRes.docs[0];
 

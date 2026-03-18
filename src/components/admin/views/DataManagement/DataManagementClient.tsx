@@ -96,11 +96,26 @@ export default function DataManagementClient() {
     }
   }
 
-  const handleRevalidate = async () => {
-    setLoading('revalidate')
+  const triggerRevalidate = async (collection: string, slug?: string) => {
+    setLoading(`revalidate-${collection}`)
     try {
-      // TODO: Implement actual revalidation logic if needed on this view
-      setStatus({ type: 'success', message: 'Revalidation triggered' })
+      const resp = await fetch(`/api/revalidate?token=${process.env.NEXT_PUBLIC_PAYLOAD_REVALIDATE_TOKEN || ''}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          collection, 
+          doc: slug ? { slug: slug.startsWith('/') ? slug : `/${slug}` } : undefined
+        })
+      })
+      
+      const result = await resp.json()
+      if (!resp.ok) throw new Error(result.error || 'Revalidation failed')
+      
+      setStatus({ 
+        type: 'success', 
+        message: `Successfully revalidated: ${result.paths?.join(', ') || 'Home'}` 
+      })
+      if (collection === 'manual') setRevalidatePath('')
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Revalidation failed'
       setStatus({ type: 'error', message })
@@ -131,7 +146,7 @@ export default function DataManagementClient() {
                 cursor: 'pointer' 
               }}
             >
-             <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+             <RefreshCw size={16} className={loading === 'stats' ? 'animate-spin' : ''} />
              Refresh Stats
            </button>
         </div>
@@ -242,30 +257,100 @@ export default function DataManagementClient() {
           <RefreshCw size={24} />
           Cache & Revalidation
         </h2>
-        <p style={{ marginBottom: '1.5rem', opacity: 0.7 }}>Trigger on-demand revalidation for specific paths or the entire site.</p>
+        <p style={{ marginBottom: '1.5rem', opacity: 0.7 }}>Trigger on-demand revalidation for specific paths or entire sections.</p>
         
-        <div style={{ display: 'flex', gap: '1rem', maxWidth: '600px' }}>
-          <input 
-            type="text" 
-            placeholder="/colleges/some-slug" 
-            value={revalidatePath}
-            onChange={(e) => setRevalidatePath(e.target.value)}
-            style={{ 
-              flex: 1, 
-              padding: '0.75rem', 
-              borderRadius: '0.5rem', 
-              border: '1px solid var(--theme-elevation-200, #d1d5db)',
-              backgroundColor: 'var(--theme-elevation-0, #fff)',
-              color: 'var(--theme-text)'
-            }}
-          />
-          <button 
-            onClick={() => handleRevalidate()}
-            disabled={!!loading}
-            style={{ padding: '0.75rem 1.5rem', borderRadius: '0.5rem', background: '#111827', color: '#fff', fontWeight: 500, border: 'none', cursor: 'pointer' }}
-          >
-            Revalidate
-          </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {/* Custom Path Revalidation */}
+          <div>
+            <p style={{ fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Manual Path Revalidation</p>
+            <div style={{ display: 'flex', gap: '1rem', maxWidth: '600px' }}>
+              <input 
+                type="text" 
+                placeholder="/colleges/some-slug" 
+                value={revalidatePath}
+                onChange={(e) => setRevalidatePath(e.target.value)}
+                style={{ 
+                  flex: 1, 
+                  padding: '0.75rem', 
+                  borderRadius: '0.5rem', 
+                  border: '1px solid var(--theme-elevation-200, #d1d5db)',
+                  backgroundColor: 'var(--theme-elevation-0, #fff)',
+                  color: 'var(--theme-text)'
+                }}
+              />
+              <button 
+                onClick={() => triggerRevalidate('manual', revalidatePath)}
+                disabled={!!loading || !revalidatePath}
+                style={{ 
+                  padding: '0.75rem 1.5rem', 
+                  borderRadius: '0.5rem', 
+                  background: '#111827', 
+                  color: '#fff', 
+                  fontWeight: 500, 
+                  border: 'none', 
+                  cursor: (loading || !revalidatePath) ? 'not-allowed' : 'pointer',
+                  opacity: (loading || !revalidatePath) ? 0.5 : 1
+                }}
+              >
+                Revalidate Path
+              </button>
+            </div>
+          </div>
+
+          {/* Bulk Collection Revalidation */}
+          <div>
+            <p style={{ fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Bulk Section Revalidation</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <button 
+                onClick={() => triggerRevalidate('colleges')}
+                disabled={!!loading}
+                style={{ 
+                  padding: '0.6rem 1.25rem', borderRadius: '0.5rem', 
+                  border: '1px solid var(--theme-elevation-200, #d1d5db)',
+                  background: 'var(--theme-elevation-100, #fff)', color: 'var(--theme-text)',
+                  fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.5 : 1
+                }}
+              >
+                All Colleges
+              </button>
+              <button 
+                onClick={() => triggerRevalidate('posts')}
+                disabled={!!loading}
+                style={{ 
+                  padding: '0.6rem 1.25rem', borderRadius: '0.5rem', 
+                  border: '1px solid var(--theme-elevation-200, #d1d5db)',
+                  background: 'var(--theme-elevation-100, #fff)', color: 'var(--theme-text)',
+                  fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.5 : 1
+                }}
+              >
+                All Posts
+              </button>
+              <button 
+                onClick={() => triggerRevalidate('timeline')}
+                disabled={!!loading}
+                style={{ 
+                  padding: '0.6rem 1.25rem', borderRadius: '0.5rem', 
+                  border: '1px solid var(--theme-elevation-200, #d1d5db)',
+                  background: 'var(--theme-elevation-100, #fff)', color: 'var(--theme-text)',
+                  fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.5 : 1
+                }}
+              >
+                Full Timeline
+              </button>
+              <button 
+                onClick={() => triggerRevalidate('home')}
+                disabled={!!loading}
+                style={{ 
+                  padding: '0.6rem 1.25rem', borderRadius: '0.5rem', 
+                  border: '1px solid #111827',
+                  background: '#111827', color: '#fff',
+                  fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.5 : 1
+                }}
+              >
+                Home Page Only
+              </button>
+            </div>
+          </div>
         </div>
       </section>
     </div>

@@ -55,8 +55,8 @@ const DashboardAnalytics = async () => {
   return (
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
       <header style={{ marginBottom: '3rem', borderBottom: '1px solid var(--theme-elevation-150)', paddingBottom: '1.5rem' }}>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '0 0 0.5rem 0' }}>Analytics Overview</h1>
-        <p style={{ color: 'var(--theme-elevation-500)', margin: 0 }}>Statistics and system status for WBJEE Predictor</p>
+        <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '0 0 0.5rem 0' }}>Command Center</h1>
+        <p style={{ color: 'var(--theme-elevation-500)', margin: 0 }}>High-level system overview and priority actions</p>
       </header>
 
       <section style={{ 

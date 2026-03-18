@@ -94,8 +94,8 @@ const Nav = () => {
       <div style={{ flex: 1 }}>
         <NavGroup title="Monitoring">
           <NavLink href="/admin" icon={LayoutDashboard} label="Dashboard" />
-          <NavLink href="/admin/analytics" icon={BarChart3} label="Insights" />
-          <NavLink href="/admin/quality" icon={ShieldCheck} label="Audit Logs" />
+          <NavLink href="/admin/analytics" icon={BarChart3} label="Analytics" />
+          <NavLink href="/admin/quality" icon={ShieldCheck} label="Data Quality" />
         </NavGroup>
 
         <NavGroup title="Infrastructure">

@@ -1,4 +1,5 @@
 import { CollectionConfig } from 'payload'
+import { revalidateCollection } from '../hooks/revalidate'
 
 import {
   convertHtmlToRichText,
@@ -13,7 +14,7 @@ export const Posts: CollectionConfig = {
     defaultColumns: ['title', 'slug', 'publishedAt'],
     group: 'Content',
     preview: (doc, { token }) => {
-      const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+      const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || ''
       return `${serverUrl}/api/preview?url=/blog/${doc.slug}&token=${token}`
     },
   },
@@ -27,6 +28,18 @@ export const Posts: CollectionConfig = {
     read: () => true,
   },
   hooks: {
+    afterChange: [
+      revalidateCollection((doc) => {
+        const d = doc as { slug: string }
+        return ['/blog', `/blog/${d.slug}`, '/']
+      }),
+    ],
+    afterDelete: [
+      revalidateCollection((doc) => {
+        const d = doc as { slug: string }
+        return ['/blog', `/blog/${d.slug}`, '/']
+      }),
+    ],
     beforeChange: [
       ({ data }) => {
         if (data.body) {

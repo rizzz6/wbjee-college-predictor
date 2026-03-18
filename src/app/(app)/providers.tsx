@@ -6,7 +6,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider
       attribute="data-theme"
-      storageKey="payload-theme"
+      storageKey="rwbjee-theme"
       defaultTheme="system"
       enableSystem={true}
       disableTransitionOnChange
