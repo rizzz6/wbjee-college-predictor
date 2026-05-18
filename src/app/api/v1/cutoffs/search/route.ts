@@ -207,12 +207,13 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({
             openingRank: result.opening_rank,
-            closingRank: result.closing_rank
+            closing_rank: result.closing_rank
         }, {
             headers: {
                 'X-Source': memoryCache.data ? 'Memory-Cache' : 'Redis-MasterData',
                 'X-Search-Time': `${searchTime}ms`,
-                'Cache-Control': 'public, s-maxage=900, stale-while-revalidate=1800',
+                // Edge cache: 1 day. stale-while-revalidate: 1 hour
+                'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600',
             }
         });
 

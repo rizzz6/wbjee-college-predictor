@@ -287,8 +287,8 @@ export async function GET(request: NextRequest) {
             }
         }, {
             headers: {
-                // Browser cache: 5 minutes. serverless cache (if any): 10 minutes
-                'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+                // Edge cache: 1 day. stale-while-revalidate: 1 hour (as backup)
+                'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600',
             }
         });
     } catch (error) {

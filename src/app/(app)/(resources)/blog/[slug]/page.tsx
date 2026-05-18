@@ -7,7 +7,7 @@ import { ArrowLeft, Calendar, User, Share2 } from 'lucide-react';
 import { getPayloadClient } from '@/lib/payload-client';
 import { renderRichTextToHtml } from '@/utils/payload-richtext';
 
-export const revalidate = 60;
+export const revalidate = 86400; // 24 hours ISR
 
 interface PayloadMedia {
   url: string;

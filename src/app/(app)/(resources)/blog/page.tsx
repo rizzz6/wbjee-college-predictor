@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import { PageHero } from '@/components/layout/PageHero';
 import { getPayloadClient } from '@/lib/payload-client';
 
-export const revalidate = 60;
+export const revalidate = 86400; // 24 hours ISR
 
 interface PayloadMedia {
   url: string;

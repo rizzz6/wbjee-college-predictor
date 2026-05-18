@@ -3,6 +3,9 @@
 **rwbjee.com** - Your comprehensive WBJEE 2026 companion website  
 Find your potential colleges based on WBJEE rank, access cutoff data, important dates, and join the community.
 
+> [!NOTE]
+> This application is **vibecoded** — the code is entirely architected and written by AI.
+
 🌐 **Live Site**: [www.rwbjee.com](https://www.rwbjee.com)  
 💬 **Community**: [r/wbjee on Reddit](https://www.reddit.com/r/wbjee/)  
 🚀 **Discord**: [Join our Discord](https://discord.gg/pTTKPYryDp)
@@ -155,9 +158,9 @@ Advanced filtering with real data (Jadavpur University CSE - Opening: 22, Closin
 
 ### Backend & Data
 
-- **Database**: PostgreSQL (Supabase / Managed via Payload)
+- **Database**: Postgres (Supabase – Payload uses its own schema in the same DB)
 - **CMS**: Payload CMS 3.79.0 (Source of Truth ✨)
-- **Media Storage**: AWS S3 (via @payloadcms/storage-s3)
+- **Media Storage**: Supabase Storage (S3-compatible via @payloadcms/storage-s3)
 - **Caching**: Upstash Redis 1.35.7 (Predictor Master Blob)
 - **Data Compression**: Gzip + Base64 (Redis) / Flat Columnar JSON (Static)
 - **Charts**: Chart.js 4.5.0 with react-chartjs-2
@@ -230,7 +233,7 @@ Advanced filtering with real data (Jadavpur University CSE - Opening: 22, Closin
 - Node.js 20+
 - npm or yarn
 - Supabase account (PostgreSQL)
-- AWS S3 compatible storage (for media)
+- Supabase Storage (S3-compatible) for media
 
 ### Installation
 
@@ -400,10 +403,10 @@ npm run lint                   # Run ESLint & Oxlint
 # Payload CMS
 npm run generate:importmap     # Update Payload admin import map
 
-# Data Management (Payload CMS → Distribution)
+# Data Management (Payload CMS / Supabase → Distribution)
 npm run seed:upstash           # Sync Payload cutoffs to Redis cache
 npm run build:mobile           # Generate static slices for mobile (from Payload)
-npm run build:desktop          # Generate cutoffs-data.json for desktop (from Payload)
+npm run build:desktop          # Generate cutoffs-data.json for desktop (Fetched from Supabase table)
 
 # CMS Seeding
 npm run seed:payload:colleges  # Seed colleges to Payload
@@ -422,21 +425,28 @@ npm run indexnow               # Submit URLs to IndexNow
 
 ### Data Flow & Source of Truth
 
-The application uses **Payload CMS** as the central source of truth for all data, including college profiles, blog posts, and cutoff ranks.
+The application uses a **hybrid source-of-truth strategy**:
+- **Payload CMS** manages high-level content (College profiles, Blogs, Timeline).
+- **Supabase (Postgres)** stores the raw cutoff data table.
 
 ```mermaid
 graph TD
-    CMS[Payload CMS / Postgres] -->|Seed Script| Redis[(Upstash Redis)]
-    CMS -->|Build Scripts| Static[Static JSON Slices]
+    Payload[Payload CMS / Postgres] -->|Next.js SSG| Content[College Pages / Blog]
+    Supabase[Supabase Table] -->|Seed Script| Redis[Upstash Redis]
+    Supabase -->|Build Scripts| Static[Static JSON Slices]
     
-    subgraph Tools["Tools (Predictor / Finder)"]
+    subgraph Tools[Predictor and Finder Tools]
         Redis -->|Gzip Blob| Predictor[Predictor API]
         Static -->|Selective Fetch| Finder[Mobile Finder]
     end
 
-    style CMS fill:#4ecdc4,color:#000
+    style Payload fill:#4ecdc4,color:#000
+    style Content fill:#4ecdc4,color:#000
+    style Supabase fill:#4ecdc4,color:#000
     style Redis fill:#ff6b6b,color:#fff
     style Static fill:#f57c00,color:#fff
+    style Predictor fill:#f57c00,color:#fff
+    style Finder fill:#f57c00,color:#fff
 ```
 
 ### Hybrid Adaptive Loading Strategy

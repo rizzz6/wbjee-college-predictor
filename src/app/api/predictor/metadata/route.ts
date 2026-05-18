@@ -102,7 +102,17 @@ export async function GET() {
             ex: 15552000  // 6 months in seconds (180 days)
         });
 
-        return NextResponse.json(metadata);
+        return NextResponse.json(metadata, {
+            headers: {
+                // Edge cache: 1 day. stale-while-revalidate: 1 hour
+                'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600',
+            }
+        });
+            headers: {
+                // Edge cache: 1 hour. stale-while-revalidate: 24 hours
+                'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+            }
+        });
 
     } catch (error) {
         console.error('Error fetching metadata:', error);

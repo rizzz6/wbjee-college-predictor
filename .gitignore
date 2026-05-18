@@ -109,3 +109,6 @@ oxlint_output.json
 payload-types.ts
 src/app/(payload)/admin/importMap.js
 
+# Agent Skills
+.agents/
+

@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { PageHero } from '@/components/layout/PageHero';
 import { getPayloadClient } from '@/lib/payload-client';
 
-export const revalidate = 60;
+export const revalidate = 86400; // 24 hours ISR
 
 export const metadata: Metadata = {
   title: "List of All Engineering Colleges in West Bengal | WBJEE 2026 Directory",

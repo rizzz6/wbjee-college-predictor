@@ -10,7 +10,8 @@ BEGIN
   FROM cutoffs c
   ORDER BY c.institute;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = public;
 
 -- Function to get distinct categories
 CREATE OR REPLACE FUNCTION get_distinct_categories()
@@ -21,7 +22,8 @@ BEGIN
   FROM cutoffs c
   ORDER BY c.category;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = public;
 
 -- Function to get distinct years
 CREATE OR REPLACE FUNCTION get_distinct_years()
@@ -32,7 +34,8 @@ BEGIN
   FROM cutoffs c
   ORDER BY c.year DESC;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = public;
 
 -- Function to get distinct rounds
 CREATE OR REPLACE FUNCTION get_distinct_rounds()
@@ -43,7 +46,8 @@ BEGIN
   FROM cutoffs c
   ORDER BY c.round;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = public;
 
 -- Function to get distinct seat types
 CREATE OR REPLACE FUNCTION get_distinct_seat_types()
@@ -54,4 +58,5 @@ BEGIN
   FROM cutoffs c
   ORDER BY c.seat_type;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = public;

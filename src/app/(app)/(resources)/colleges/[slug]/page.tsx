@@ -14,7 +14,7 @@ import {
   renderRichTextToHtml,
 } from '@/utils/payload-richtext';
 
-export const revalidate = 60;
+export const revalidate = 86400; // 24 hours ISR
 
 interface PayloadMedia {
   url: string;

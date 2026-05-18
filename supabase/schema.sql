@@ -77,6 +77,10 @@ CREATE TABLE IF NOT EXISTS user_wishlists (
 CREATE INDEX IF NOT EXISTS idx_wishlists_user 
 ON user_wishlists(user_id, created_at DESC);
 
+-- Index for foreign key lookups and joins
+CREATE INDEX IF NOT EXISTS idx_wishlists_cutoff 
+ON user_wishlists(cutoff_id);
+
 -- ============================================
 -- ROW-LEVEL SECURITY (RLS)
 -- ============================================
@@ -85,23 +89,27 @@ ON user_wishlists(user_id, created_at DESC);
 ALTER TABLE user_wishlists ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Users can only view their own wishlists
+DROP POLICY IF EXISTS "Users can view own wishlists" ON user_wishlists;
 CREATE POLICY "Users can view own wishlists"
 ON user_wishlists FOR SELECT
-USING (auth.uid() = user_id);
+USING ((SELECT auth.uid()) = user_id);
 
 -- Policy: Users can insert their own wishlists
+DROP POLICY IF EXISTS "Users can insert own wishlists" ON user_wishlists;
 CREATE POLICY "Users can insert own wishlists"
 ON user_wishlists FOR INSERT
-WITH CHECK (auth.uid() = user_id);
+WITH CHECK ((SELECT auth.uid()) = user_id);
 
 -- Policy: Users can delete their own wishlists
+DROP POLICY IF EXISTS "Users can delete own wishlists" ON user_wishlists;
 CREATE POLICY "Users can delete own wishlists"
 ON user_wishlists FOR DELETE
-USING (auth.uid() = user_id);
+USING ((SELECT auth.uid()) = user_id);
 
 -- Cutoffs table: Public read access (no auth required)
 ALTER TABLE cutoffs ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public cutoffs read access" ON cutoffs;
 CREATE POLICY "Public cutoffs read access"
 ON cutoffs FOR SELECT
 USING (true); -- Everyone can read
@@ -117,8 +125,10 @@ BEGIN
     NEW.updated_at = NOW();
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = public;
 
+DROP TRIGGER IF EXISTS update_cutoffs_updated_at ON cutoffs;
 CREATE TRIGGER update_cutoffs_updated_at
 BEFORE UPDATE ON cutoffs
 FOR EACH ROW
