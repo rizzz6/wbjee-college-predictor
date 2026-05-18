@@ -24,11 +24,6 @@ export async function GET() {
         'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600',
       }
     })
-      headers: {
-        // Edge cache: 10 minutes. stale-while-revalidate: 1 hour
-        'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=3600',
-      }
-    })
   } catch (error) {
     console.error('Timeline API Error:', error)
     return NextResponse.json({ error: 'Failed to fetch timeline' }, { status: 500 })

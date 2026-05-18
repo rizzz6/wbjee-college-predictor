@@ -108,11 +108,6 @@ export async function GET() {
                 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600',
             }
         });
-            headers: {
-                // Edge cache: 1 hour. stale-while-revalidate: 24 hours
-                'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
-            }
-        });
 
     } catch (error) {
         console.error('Error fetching metadata:', error);
